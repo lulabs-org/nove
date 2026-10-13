@@ -1,0 +1,23 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "agentGuidance": false,
+  "globalDependencies": ["tsconfig.base.json", ".prettierrc"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "src/generated/prisma/**", ".vitepress/dist/**"]
+    },
+    "lint": {
+      "cache": false
+    },
+    "test": {
+      "cache": false,
+      "passThroughEnv": ["*"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["*"]
+    }
+  }
+}

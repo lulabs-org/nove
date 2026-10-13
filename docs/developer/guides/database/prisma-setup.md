@@ -1,5 +1,7 @@
 # Prisma 集成说明
 
+> Monorepo 路径约定：本文的后端源码、配置和脚本路径相对于 `apps/api/`。直接调用 `pnpm exec` 或运行脚本前先 `cd apps/api`；仓库根目录保留 `db:*`、`test:*` 等转发命令。依赖统一在仓库根目录通过 `pnpm install --frozen-lockfile` 安装。
+
 本项目使用 Prisma ORM **7.10.0**，提供类型安全的 PostgreSQL 访问。
 
 ## Prisma 7 运行要求与升级

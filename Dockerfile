@@ -1,65 +1,28 @@
-# ==========================================
-# LuLab Backend - Multi-stage Docker Build
-# ==========================================
-# This Dockerfile uses multi-stage build to optimize image size
-# Stage 1: Build environment with all dependencies
-# Stage 2: Production environment with only runtime dependencies
-
-# ==========================================
-# Build Stage
-# ==========================================
+# Build from the workspace root; the API owns its dependencies and artifacts.
 FROM node:22.23.1-alpine AS build
-
-# Enable Corepack for modern package manager support (pnpm/yarn)
-# This allows using pnpm as the package manager in the container
 RUN corepack enable
-
-# Set working directory for the build process
 WORKDIR /usr/src/app
 
-# Copy package manager files first for better layer caching
-# This allows Docker to cache the dependency installation layer
-# when only source code changes
-COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml* ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/api/package.json ./apps/api/package.json
+RUN pnpm --filter @nove/api... install --frozen-lockfile
 
-# Install dependencies with permissions defined in pnpm-workspace.yaml
-RUN pnpm install --frozen-lockfile
+COPY tsconfig.base.json ./
+COPY apps/api ./apps/api
+RUN pnpm build:api && \
+    find apps/api/dist -type f -name "*.map" -delete && \
+    CI=true pnpm --filter @nove/api... install --prod --frozen-lockfile
 
-# Copy source code after dependencies are installed
-COPY . .
-
-# Generate Prisma client, build application, and prune dev dependencies
-# This multi-command RUN reduces layer count and image size
-RUN pnpm run db:generate && \
-    pnpm run build && \
-    find dist -type f -name "*.map" -delete && \
-    pnpm install --prod --frozen-lockfile
-
-# ==========================================
-# Production Stage
-# ==========================================
 FROM node:22.23.1-alpine AS production
-
-# Set working directory for the production application
-WORKDIR /usr/src/app
-
-# Set Node.js environment to production
-# This optimizes dependencies and disables development features
 ENV NODE_ENV=production
+WORKDIR /usr/src/app/apps/api
 
-# Copy built application artifacts from build stage
-# Only copy necessary files to minimize image size
-COPY --from=build --chown=node:node /usr/src/app/dist ./dist
-COPY --from=build --chown=node:node /usr/src/app/node_modules ./node_modules
-COPY --from=build --chown=node:node /usr/src/app/package.json ./package.json
+# Preserve pnpm's workspace-relative links to the root virtual store.
+COPY --from=build --chown=node:node /usr/src/app/node_modules /usr/src/app/node_modules
+COPY --from=build --chown=node:node /usr/src/app/apps/api/node_modules ./node_modules
+COPY --from=build --chown=node:node /usr/src/app/apps/api/dist ./dist
+COPY --from=build --chown=node:node /usr/src/app/apps/api/package.json ./package.json
 
-# Switch to non-root user for security
-# 'node' user is created by the official Node.js Alpine image
 USER node
-
-# Expose application port
 EXPOSE 3000
-
-# Define the command to run the application
-# Using array format for proper signal handling
 CMD ["node", "dist/src/main.js"]

@@ -23,6 +23,9 @@
 
 set -e
 
+# Docker build context remains the workspace root.
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+
 # ==========================================
 # Color Codes for Output
 # ==========================================
@@ -248,8 +251,8 @@ validate_dockerfile() {
 validate_source_code() {
     log_step "Validating source code..."
 
-    if [[ ! -d "src" ]]; then
-        log_error "Source directory 'src' not found"
+    if [[ ! -d "apps/api/src" ]]; then
+        log_error "Source directory 'apps/api/src' not found"
         exit 1
     fi
 
@@ -423,7 +426,7 @@ print_build_summary() {
     echo "  docker run -p 3000:3000 -e NODE_ENV=$ENVIRONMENT $TAG"
     echo ""
     echo "  # Run with custom configuration"
-    echo "  docker run -p 3000:3000 -v \$(pwd)/.env:/app/.env $TAG"
+    echo "  docker run -p 3000:3000 -v \$(pwd)/apps/api/.env:/usr/src/app/apps/api/.env $TAG"
 }
 
 # ==========================================

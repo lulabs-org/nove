@@ -1,5 +1,7 @@
 # Package 脚本
 
+> Monorepo 路径约定：本文的后端源码、配置和脚本路径相对于 `apps/api/`。直接调用 `pnpm exec` 或运行脚本前先 `cd apps/api`；仓库根目录保留 `db:*`、`test:*` 等转发命令。依赖统一在仓库根目录通过 `pnpm install --frozen-lockfile` 安装。
+
 以下命令与根 `package.json` 保持一致。统一使用 pnpm，并在仓库根目录执行。
 
 ## 构建与运行

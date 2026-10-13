@@ -1,5 +1,7 @@
 # 数据库 & Prisma 设计规范（Enhanced Edition）
 
+> Monorepo 路径约定：本文的后端源码、配置和脚本路径相对于 `apps/api/`。直接调用 `pnpm exec` 或运行脚本前先 `cd apps/api`；仓库根目录保留 `db:*`、`test:*` 等转发命令。依赖统一在仓库根目录通过 `pnpm install --frozen-lockfile` 安装。
+
 适用于 **PostgreSQL + Prisma**  
 目标：**一致性 / 可维护性 / 可演进性 / 可审计性**
 

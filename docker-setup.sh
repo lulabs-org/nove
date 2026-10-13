@@ -55,7 +55,7 @@ echo "  Starting Docker Compose"
 echo "=========================================="
 
 # Start docker-compose
-docker-compose up -d
+docker compose --env-file apps/api/.env up -d
 
 echo ""
 echo "=========================================="
@@ -63,11 +63,11 @@ echo "  Setup Complete!"
 echo "=========================================="
 echo ""
 echo "Services are starting. You can check the status with:"
-echo "  docker-compose ps"
+echo "  docker compose --env-file apps/api/.env ps"
 echo ""
 echo "View logs with:"
-echo "  docker-compose logs -f"
+echo "  docker compose --env-file apps/api/.env logs -f"
 echo ""
 echo "Stop services with:"
-echo "  docker-compose down"
+echo "  docker compose --env-file apps/api/.env down"
 echo ""

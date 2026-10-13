@@ -1,7 +1,7 @@
 # compiled output
-/dist
-/node_modules
-/build
+dist
+node_modules
+build
 
 # Logs
 logs
@@ -13,15 +13,15 @@ yarn-error.log*
 lerna-debug.log*
 
 # Daily log files (runtime Docker logs, not source files)
-/daily-log
+/apps/api/daily-log
 
 # OS
 .DS_Store
 
 # Tests
-/coverage
-/.nyc_output
-/test/wechat-shop-sandbox
+coverage
+.nyc_output
+/apps/api/test/wechat-shop-sandbox
 
 # IDEs and editors
 /.idea
@@ -52,7 +52,7 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
-/temp-data
+/apps/api/temp-data
 
 # Database (if using local files)
 *.db
@@ -67,15 +67,15 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-/generated/prisma
-/src/generated/prisma
+/apps/api/generated/prisma
+/apps/api/src/generated/prisma
 
 # Backup files
-/scripts/backups
-/scripts/csv_data
+/apps/api/scripts/backups
+/apps/api/scripts/csv_data
 
 # Documentation (auto-generated)
-/documentation
+/apps/api/documentation
 
 .codex/
 .specify/
@@ -85,3 +85,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .kiro
 .trae
 # File Tree: nove_api.md
+
+# Workspace task cache
+.turbo/
+*.tsbuildinfo

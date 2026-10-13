@@ -34,26 +34,57 @@ Nove API 的所有文档（包括架构设计、API 参考、开发指南、第�
 
 - [**👨‍💻 开发者文档**](./docs/developer/index.md) - 面向开发团队成员，包含环境配置、技术实现细节、架构设计、开发与提交规范等。
 - [**👤 用户文档**](./docs/user/index.md) - 面向系统最终用户与 API 调用方，包含如何使用系统功能、API 接口指引、常见问题等。
-- [**📖 完整文档目录**](./docs/README.md) - 浏览所有文档入口。
+- [**📖 完整文档目录**](./docs/index.md) - 浏览所有文档入口。
 
 > **提示**：您也可以在本地运行以下命令启动文档站点：
 > ```bash
 > cd docs
-> pnpm install
+> pnpm install --frozen-lockfile
 > pnpm run docs:dev
 > ```
 > 随后访问 `http://localhost:5173` 即可获得最佳的阅读体验。
 
 ---
 
+## 工作区结构
+
+本仓库已完成 Monorepo 的工作区初始化和后端迁移（Issue #510 阶段 1–2）：
+
+```text
+apps/api/           # @nove/api：NestJS 源码、Prisma、测试、脚本与独立依赖
+  src/ prisma/ test/ scripts/
+  .env.example      # 复制为同目录的 .env，勿放在根目录
+  package.json
+  tsconfig.json
+docs/               # VitePress 文档站，保持当前位置
+packages/           # 工作区已预留匹配规则，尚无共享包
+package.json        # 根任务入口和公共开发工具
+pnpm-lock.yaml      # 工作区安装使用的锁文件
+pnpm-workspace.yaml
+tsconfig.base.json  # 通用编译选项；Node/DOM 与路径配置由应用各自维护
+turbo.json          # 构建缓存及任务调度
+```
+
+根目录运行 `pnpm dev` / `pnpm build` 会调度当前 API 与文档站；`pnpm dev:api` / `pnpm build:api` 只操作后端。`pnpm lint` / `pnpm test` 调度应用对应任务，测试仍包含原有各测试项目，需要隔离数据库等服务；仅运行单元测试请用 `pnpm test:unit --runInBand`。
+
+根目录的 `start:*`、`db:*`、`test:*` 等原有命令继续转发给 API。需要直接调用应用工具时，使用 `pnpm --filter @nove/api exec <工具>`，例如 `pnpm --filter @nove/api exec jest --selectProjects unit --runInBand`。维护脚本从 `apps/api` 执行，Docker 构建脚本会自动定位仓库根目录。
+
+构建缓存包含 API 的 `dist`、生成的 Prisma Client 和文档站输出；修改公共 TS/格式配置会使缓存失效。带外部依赖的测试、lint 和开发进程不缓存，dev/test 保留注入的运行环境变量。
+
+从旧目录升级时，将本地 `.env`、`.env.test` 和其他 API 私有配置迁至 `apps/api/`，重新运行 `pnpm install --frozen-lockfile`。如使用相对路径的运行数据（例如 `temp-data`），也应迁至应用目录。Docker Compose 使用 `pnpm compose up -d`，统一读取 `apps/api/.env`。
+
+`apps/admin`、共享业务包与契约生成属于后续阶段；预留的 `dev:admin`、`build:admin`、`generate:api` 会在 Admin 尚未迁入时明确失败。CI/Docker 本次仅修正迁移必需的路径，受影响应用检测和 `turbo prune` 留待阶段 5。
+
+---
+
 ## 🚀 快速开始
 
-如果想马上启动后端服务，请参考以下精简步骤。详细步骤请参考 [环境配置与部署指南](./docs/developer/setup/deployment/guide.md)：
+如果想马上启动后端服务，请参考以下精简步骤。详细步骤请参考 [环境配置与部署指南](./docs/developer/guides/deployment/guide.md)：
 
 ### 1. 环境准备
 
-- Node.js 18+
-- pnpm 8+
+- Node.js 22.12+（CI 使用 22.23.1）
+- pnpm 9.15.9
 - PostgreSQL 14+
 - Redis 6+
 
@@ -61,11 +92,11 @@ Nove API 的所有文档（包括架构设计、API 参考、开发指南、第�
 
 ```bash
 # 1. 安装依赖
-pnpm install
+pnpm install --frozen-lockfile
 
 # 2. 配置环境变量
-cp .env.example .env
-# 请在 .env 中填入 DATABASE_URL、REDIS_URL 等必要配置
+cp apps/api/.env.example apps/api/.env
+# 请在 apps/api/.env 中填入 DATABASE_URL、REDIS_URL 等必要配置
 
 # 3. 初始化数据库结构
 pnpm db:generate

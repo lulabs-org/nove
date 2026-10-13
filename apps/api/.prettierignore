@@ -1,0 +1,4 @@
+# Prisma owns generated client formatting.
+src/generated/prisma/
+dist/
+coverage/

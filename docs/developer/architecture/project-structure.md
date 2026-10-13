@@ -3,7 +3,7 @@
 Nove API 按领域组织 NestJS 模块；控制器、服务、仓储、DTO 和测试尽量在同一领域目录内聚。
 
 ```text
-nove_api/
+apps/api/
 ├── src/
 │   ├── admin/                 # 管理后台命名空间（组织、部门、成员、角色、API Key、OAuth Client、服务集成）
 │   ├── auth/                  # 用户注册、登录、会话与统一认证守卫
@@ -35,13 +35,11 @@ nove_api/
 │   └── seeds/                 # 数据初始化脚本
 ├── prisma.config.ts           # Prisma 7 根配置文件 (schema, migrations, seed, datasource)
 ├── test/                      # 单元、集成、系统与 E2E 测试用例
-├── docs/                      # VitePress 文档站
-│   ├── developer/             # 开发者文档（架构、指南、模块、集成、参考、路线图）
-│   ├── user/                  # 用户与 API 使用者文档
-│   └── public/                # 文档站静态静态资源
 ├── scripts/                   # 运维、迁移与回填脚本 (TS/Shell)
 └── dist/                      # TypeScript 编译构建产物 (dist/src/main.js)
 ```
+
+工作区根目录保留 `docs/` 文档站、部署文件、统一锁文件和 Turbo 调度配置。`pnpm-workspace.yaml` 纳管 `apps/*`、`packages/*`、`docs`；当前仅 API 与文档站已落地。下列领域路径均相对于 `apps/api`。
 
 ## 领域模块约定
 
@@ -65,7 +63,7 @@ Controller 负责协议、校验和权限声明；Service 编排业务规则；R
 Prisma 采用 **Prisma 7 原生 Schema Folder**：
 - 根 `schema.prisma` 仅声明 generator 与 datasource。
 - 领域模型文件位于 `prisma/models/*.prisma`（如 `user.prisma`, `meet.prisma`, `order.prisma` 等）。
-- 运行时与 CLI 行为统一由根目录 `prisma.config.ts` 管理。
+- 运行时与 CLI 行为统一由应用目录 `apps/api/prisma.config.ts` 管理。
 - 修改模型后运行 `pnpm db:generate` 与 `pnpm db:migrate`，无需手动合并模型文件。
 
 源码使用别名 `@/*` 指向 `src/*`，`@common/*` 指向 `src/common/*`。

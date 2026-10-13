@@ -6,7 +6,7 @@ services:
     ports:
       - '${NOVE_PORT:-3000}:3000'
     env_file:
-      - .env
+      - ./apps/api/.env
     depends_on:
       - redis
       - postgres

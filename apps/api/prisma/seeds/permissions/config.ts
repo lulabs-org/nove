@@ -1194,4 +1194,5 @@ export const REAL_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
   ...OAUTH_CLIENT_PERMISSION_CONFIGS,
 ] as const satisfies readonly Prisma.PermissionCreateInput[];
 
-export const PERMISSION_CONFIGS: readonly PermissionConfig[] = REAL_PERMISSION_CONFIGS;
+export const PERMISSION_CONFIGS: readonly PermissionConfig[] =
+  REAL_PERMISSION_CONFIGS;

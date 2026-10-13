@@ -138,3 +138,17 @@ prisma/seed.ts
 # Temporary files
 tmp/
 temp/
+# App-local files in the workspace
+**/node_modules
+**/dist
+**/coverage
+**/.turbo
+**/.env*
+**/test
+**/tests
+**/logs
+**/daily-log
+**/temp-data
+apps/api/src/generated/prisma
+apps/api/prisma/migrations
+apps/api/prisma/seed.ts

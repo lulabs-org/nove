@@ -1,11 +1,11 @@
 # 部署指南
 
-本文以仓库当前 `Dockerfile`、`docker-compose.yml`、`.env.example` 和 GitHub Actions 为准。容器部署是推荐路径；手工部署适用于受控主机。
+本文以仓库当前 `Dockerfile`、`docker-compose.yml`、`apps/api/.env.example` 和 GitHub Actions 为准。容器部署是推荐路径；手工部署适用于受控主机。
 
 ## 准备配置
 
 ```bash
-cp .env.example .env
+cp apps/api/.env.example apps/api/.env
 ```
 
 生产环境至少检查：
@@ -19,7 +19,7 @@ cp .env.example .env
 - 使用阿里云文件扫描时，额外提供服务端阿里云凭证链（如 RAM 角色或 `ALIBABA_CLOUD_ACCESS_KEY_ID` / `ALIBABA_CLOUD_ACCESS_KEY_SECRET`）
 - `SYSTEM_ENCRYPTION_KEY`（用于服务集成机密字段加密，必须长期保留且不能直接轮换）
 
-不要直接使用 `.env.example` 中的占位密钥。生产凭据应由部署平台的 Secret 管理能力注入，并限制 `.env` 文件权限。
+不要直接使用 `apps/api/.env.example` 中的占位密钥。生产凭据应由部署平台的 Secret 管理能力注入，并限制 `.env` 文件权限。
 
 首次部署新版服务配置时，先保留原有五组服务环境变量。确认 `SYSTEM_CONFIG_ENV_IMPORT_V1` 已写入、后台字段已掩码并完成连接测试后，再从部署平台移除这些服务密钥。后续配置统一通过后台管理；修改环境变量或删除后台配置都不会触发再次导入。
 
@@ -27,7 +27,7 @@ cp .env.example .env
 
 ## 本地开发
 
-CI 使用 Node 20 + pnpm 9；Docker 使用 Node 22。开发机应选择其中一个已验证组合。
+CI 与 Docker 使用 Node 22.23.1 + pnpm 9.15.9，开发机使用 Node 22.12+。后端的工作目录和私有环境文件位于 `apps/api`。
 
 ```bash
 pnpm install --frozen-lockfile
@@ -51,12 +51,12 @@ pnpm start:dev
 
 ```bash
 docker build -t noveapi:local .
-docker compose up -d
-docker compose ps
-docker compose logs -f nove
+docker compose --env-file apps/api/.env up -d
+docker compose --env-file apps/api/.env ps
+docker compose --env-file apps/api/.env logs -f nove
 ```
 
-可通过 `.env` 覆盖 `NOVE_IMAGE`、`NOVE_PORT`、`POSTGRES_PORT`、`REDIS_PORT` 等变量。PostgreSQL 和 Redis 默认映射到宿主机；生产环境若不需要外部访问，应删除端口映射并只保留内部网络。
+可通过 `apps/api/.env` 覆盖 `NOVE_IMAGE`、`NOVE_PORT`、`POSTGRES_PORT`、`REDIS_PORT` 等变量。PostgreSQL 和 Redis 默认映射到宿主机；生产环境若不需要外部访问，应删除端口映射并只保留内部网络。
 
 部署新镜像前执行迁移：
 
@@ -72,12 +72,12 @@ pnpm db:migrate:prod
 corepack enable
 pnpm install --frozen-lockfile
 pnpm db:generate
-pnpm build
+pnpm build:api
 pnpm db:migrate:prod
-NODE_ENV=production node dist/src/main.js
+NODE_ENV=production pnpm start:prod
 ```
 
-当前编译产物入口是 `dist/src/main.js`，与 `Dockerfile` 一致。根 `package.json` 的 `start:prod` 仍指向 `dist/main`，在修正脚本前不要把它作为生产启动命令。
+当前编译产物入口是 `apps/api/dist/src/main.js`。根 `start:prod` 转发至 API 包，并在 `apps/api` 工作目录启动，与 Docker 的应用目录一致。
 
 使用 systemd、容器编排器或其他进程管理器时，应以非 root 用户运行，向进程发送可转发的终止信号，并将结构化日志输出到平台日志系统。
 
@@ -95,7 +95,7 @@ NODE_ENV=production node dist/src/main.js
 pnpm lint
 pnpm lint:prisma
 pnpm prisma validate
-pnpm build
+pnpm build:api
 pnpm test:unit
 pnpm docs:build
 ```

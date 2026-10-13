@@ -68,7 +68,7 @@ jobs:
         run: pnpm lint:prisma
 
       - name: Format check
-        run: pnpm format --check
+        run: pnpm format:check
 
       - name: Prisma validate
         run: pnpm prisma validate
@@ -77,10 +77,10 @@ jobs:
         run: pnpm prisma migrate deploy
 
       - name: Build
-        run: pnpm build
+        run: pnpm build:api
 
       - name: Run unit tests
         run: pnpm test:unit
 
       - name: Prisma PostgreSQL compatibility tests
-        run: pnpm exec jest --selectProjects integration --runInBand test/integration/prisma/prisma7.int-spec.ts
+        run: pnpm --filter @nove/api exec jest --selectProjects integration --runInBand test/integration/prisma/prisma7.int-spec.ts
