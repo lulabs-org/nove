@@ -18,6 +18,18 @@
       "cache": false,
       "persistent": true,
       "passThroughEnv": ["*"]
+    },
+    "@nove/admin#build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.local",
+        ".env.production",
+        ".env.production.local"
+      ],
+      "env": ["VITE_*", "NODE_ENV"],
+      "outputs": ["dist/**", "src/shared/lib/api/orval/**"]
     }
   }
 }

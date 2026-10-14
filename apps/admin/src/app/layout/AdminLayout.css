@@ -1,0 +1,18 @@
+.admin-sidebar {
+  transition:
+    width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    flex-basis 220ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.admin-main-layout {
+  transition: margin-left 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-sidebar,
+  .admin-main-layout {
+    transition: none !important;
+  }
+}

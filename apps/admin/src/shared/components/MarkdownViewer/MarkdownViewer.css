@@ -1,0 +1,148 @@
+.markdown-viewer {
+  color: #1f2329;
+  font-size: 14px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.markdown-viewer-empty {
+  display: block;
+  padding: 16px 0;
+  color: #8c939d;
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+}
+
+.markdown-viewer > :first-child {
+  margin-top: 0;
+}
+
+.markdown-viewer > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-viewer h1,
+.markdown-viewer h2,
+.markdown-viewer h3,
+.markdown-viewer h4,
+.markdown-viewer h5,
+.markdown-viewer h6 {
+  margin: 16px 0 8px;
+  color: #1f2329;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.markdown-viewer h1 {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e6eb;
+  font-size: 20px;
+}
+
+.markdown-viewer h2 {
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f2f3f5;
+  font-size: 17px;
+}
+
+.markdown-viewer h3 {
+  font-size: 15px;
+}
+
+.markdown-viewer h4,
+.markdown-viewer h5,
+.markdown-viewer h6 {
+  font-size: 14px;
+}
+
+.markdown-viewer p,
+.markdown-viewer ul,
+.markdown-viewer ol,
+.markdown-viewer blockquote,
+.markdown-viewer pre,
+.markdown-viewer table {
+  margin: 0 0 10px;
+}
+
+.markdown-viewer ul,
+.markdown-viewer ol {
+  padding-left: 22px;
+}
+
+.markdown-viewer li + li {
+  margin-top: 4px;
+}
+
+.markdown-viewer blockquote {
+  margin: 10px 0;
+  padding: 8px 14px;
+  border-left: 3px solid #1677ff;
+  border-radius: 0 4px 4px 0;
+  background: #f4f8ff;
+  color: #4e5969;
+}
+
+.markdown-viewer code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f2f3f5;
+  color: #eb2f96;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.markdown-viewer pre {
+  overflow-x: auto;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: #1e1e24;
+  color: #f6f7f9;
+}
+
+.markdown-viewer pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.markdown-viewer table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.markdown-viewer th,
+.markdown-viewer td {
+  padding: 6px 10px;
+  border: 1px solid #e5e6eb;
+  text-align: left;
+}
+
+.markdown-viewer th {
+  background: #f8f9fb;
+  font-weight: 600;
+}
+
+.markdown-viewer a {
+  color: #1677ff;
+  text-decoration: none;
+}
+
+.markdown-viewer a:hover {
+  text-decoration: underline;
+}
+
+.markdown-viewer img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.markdown-viewer hr {
+  margin: 16px 0;
+  border: 0;
+  border-top: 1px solid #e5e6eb;
+}

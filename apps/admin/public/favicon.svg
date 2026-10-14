@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nove Admin">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#667eea" />
+      <stop offset="1" stop-color="#764ba2" />
+    </linearGradient>
+    <linearGradient id="accent" x1="44" y1="16" x2="58" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5eead4" />
+      <stop offset="1" stop-color="#38bdf8" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)" />
+  <path d="M10 20h44M10 32h44M10 44h44M20 10v44M32 10v44M44 10v44" stroke="#fff" stroke-opacity=".11" stroke-width="2" />
+  <path d="M18 46V18h7l16 28h5V18" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M18 46V18h7l16 28h5V18" fill="none" stroke="#eef2ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="49" cy="47" r="7" fill="#111827" fill-opacity=".32" />
+  <circle cx="49" cy="47" r="4" fill="url(#accent)" />
+</svg>

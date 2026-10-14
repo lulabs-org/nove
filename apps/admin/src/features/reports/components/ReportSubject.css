@@ -1,0 +1,102 @@
+.report-subject-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.report-subject-summary > .ant-avatar {
+  flex: 0 0 auto;
+  background: #e6f4ff;
+  color: #0958d9;
+  font-weight: 600;
+}
+
+.report-subject-summary[data-target-type='PLATFORM_USER'] > .ant-avatar {
+  background: #fff1e6;
+  color: #ad4e00;
+}
+
+.report-subject-summary[data-target-type='PROJECT'] > .ant-avatar {
+  background: linear-gradient(135deg, #ede9fe, #dbeafe);
+  color: #6d28d9;
+}
+
+.report-subject-summary[data-target-type='ORGANIZATION'] > .ant-avatar {
+  background: #e8f5e9;
+  color: #237804;
+}
+
+.report-subject-main {
+  display: grid;
+  flex: 1;
+  gap: 4px;
+  min-width: 0;
+}
+
+.report-subject-name.ant-typography {
+  min-width: 0;
+  margin: 0;
+  color: #1f2329;
+  font-weight: 600;
+}
+
+.report-subject-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  color: #8f959e;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.report-subject-meta > .ant-tag {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.report-subject-identity-action.ant-btn {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  color: #8f959e;
+  font-size: 13px;
+}
+
+.report-subject-identity-action.ant-btn:hover {
+  color: #1677ff;
+}
+
+.report-subject-identity-state {
+  display: flex;
+  width: 240px;
+  min-height: 72px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.report-subject-summary.is-large {
+  align-items: flex-start;
+}
+
+.report-subject-summary.is-large .report-subject-name {
+  font-size: 18px;
+}
+
+.report-subject-identities {
+  width: 420px;
+}
+
+.report-subject-identities .ant-descriptions-item-label {
+  width: 112px;
+  color: #8f959e;
+}
+
+.report-subject-identities .ant-typography {
+  font-size: 12px;
+}

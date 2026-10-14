@@ -1,0 +1,660 @@
+.nove-login {
+  --nove-ink: #0b1220;
+  --nove-muted: #64748b;
+  --nove-blue: #2563eb;
+  --nove-blue-dark: #1d4ed8;
+  display: grid;
+  grid-template-columns: minmax(520px, 1.18fr) minmax(500px, 0.82fr);
+  width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--nove-ink);
+  background: #f8fafc;
+}
+
+.nove-login__brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 42px clamp(42px, 5vw, 76px) 34px;
+  overflow: hidden;
+  color: #fff;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 78% 16%, rgba(37, 99, 235, 0.33), transparent 31%),
+    radial-gradient(circle at 15% 83%, rgba(13, 148, 136, 0.2), transparent 29%),
+    linear-gradient(145deg, #07101e 0%, #0a1628 58%, #0b1d32 100%);
+}
+
+.nove-login__brand::before {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  content: '';
+  opacity: 0.35;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+}
+
+.nove-login__brand::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: '';
+  background: linear-gradient(90deg, transparent 65%, rgba(56, 189, 248, 0.03));
+}
+
+.nove-login__ambient {
+  position: absolute;
+  z-index: -1;
+  border: 1px solid rgba(96, 165, 250, 0.16);
+  border-radius: 50%;
+}
+
+.nove-login__ambient--one {
+  top: -230px;
+  right: -175px;
+  width: 520px;
+  height: 520px;
+  box-shadow: inset 0 0 80px rgba(37, 99, 235, 0.05);
+}
+
+.nove-login__ambient--two {
+  bottom: -290px;
+  left: -220px;
+  width: 560px;
+  height: 560px;
+  border-color: rgba(45, 212, 191, 0.1);
+}
+
+.nove-brand-header,
+.nove-mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.nove-mark {
+  position: relative;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 13px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  background: linear-gradient(145deg, rgba(59, 130, 246, 0.96), rgba(29, 78, 216, 0.88));
+  box-shadow:
+    0 10px 28px rgba(37, 99, 235, 0.27),
+    inset 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.nove-mark__dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border: 1px solid #0f2441;
+  border-radius: 50%;
+  background: #67e8f9;
+}
+
+.nove-mark__dot--one {
+  top: 7px;
+  right: 7px;
+}
+
+.nove-mark__dot--two {
+  bottom: 7px;
+  left: 7px;
+  background: #5eead4;
+}
+
+.nove-brand-header strong {
+  display: block;
+  color: #f8fafc;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.nove-brand-header > div:last-child span {
+  display: block;
+  margin-top: 2px;
+  color: #7dd3fc;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.nove-brand-copy {
+  max-width: 640px;
+  margin-top: clamp(78px, 12vh, 138px);
+}
+
+.nove-brand-copy__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.nove-brand-copy__eyebrow span {
+  width: 28px;
+  height: 1px;
+  background: #38bdf8;
+  box-shadow: 0 0 12px #38bdf8;
+}
+
+.nove-brand-copy h1 {
+  max-width: 620px;
+  margin: 22px 0 18px;
+  color: #f8fafc;
+  font-size: clamp(42px, 4.4vw, 68px);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+}
+
+.nove-brand-copy p {
+  max-width: 540px;
+  margin: 0;
+  color: #9fb1c8;
+  font-size: clamp(15px, 1.25vw, 18px);
+  line-height: 1.8;
+}
+
+.nove-capabilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 30px;
+}
+
+.nove-capabilities span {
+  padding: 7px 11px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 7px;
+  color: #aebed1;
+  font-size: 12px;
+  background: rgba(15, 35, 60, 0.46);
+}
+
+.nove-system-map {
+  position: relative;
+  width: min(680px, 100%);
+  height: clamp(180px, 26vh, 250px);
+  margin-top: auto;
+}
+
+.nove-system-map svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.nove-system-map path {
+  fill: none;
+  stroke: url('#connection-line');
+  stroke-width: 1.25;
+  stroke-dasharray: 5 7;
+}
+
+.system-node {
+  position: absolute;
+  display: grid;
+  min-width: 46px;
+  height: 28px;
+  padding: 0 9px;
+  place-items: center;
+  border: 1px solid rgba(125, 211, 252, 0.19);
+  border-radius: 20px;
+  color: #9fb4ca;
+  font-size: 10px;
+  background: rgba(7, 20, 38, 0.92);
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.05);
+}
+
+.system-node::before {
+  width: 4px;
+  height: 4px;
+  margin-right: 5px;
+  border-radius: 50%;
+  content: '';
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.system-node--users {
+  top: 59%;
+  left: 6%;
+}
+
+.system-node--products {
+  top: 24%;
+  left: 38%;
+}
+
+.system-node--orders {
+  top: 66%;
+  left: 54%;
+}
+
+.system-node--meetings {
+  top: 37%;
+  right: 4%;
+}
+
+.system-node--tasks {
+  top: 10%;
+  right: 17%;
+}
+
+.system-core {
+  position: absolute;
+  top: 46%;
+  left: 39%;
+  display: grid;
+  width: 104px;
+  height: 104px;
+  place-items: center;
+  border: 1px solid rgba(96, 165, 250, 0.28);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.22), rgba(8, 19, 35, 0.88) 68%);
+  box-shadow:
+    0 0 0 12px rgba(59, 130, 246, 0.025),
+    0 0 50px rgba(37, 99, 235, 0.13);
+}
+
+.system-core span {
+  margin-top: 16px;
+  color: #bfdbfe;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.system-core small {
+  align-self: start;
+  margin-top: -18px;
+  color: #4f83bd;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.nove-brand-footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 8px;
+  color: #627792;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nove-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2dd4bf;
+  box-shadow: 0 0 9px rgba(45, 212, 191, 0.8);
+}
+
+.nove-brand-footer__divider {
+  width: 1px;
+  height: 11px;
+  margin: 0 3px;
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.nove-login__access {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  padding: 88px clamp(42px, 6vw, 92px) 72px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(219, 234, 254, 0.52), transparent 28%), #f8fafc;
+}
+
+.nove-access-status {
+  position: absolute;
+  top: 34px;
+  right: 38px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 550;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.nove-access-status .anticon {
+  color: #0f766e;
+}
+
+.nove-login-panel {
+  width: min(100%, 430px);
+}
+
+.nove-mobile-brand {
+  display: none;
+  margin-bottom: 44px;
+}
+
+.nove-mobile-brand strong {
+  font-size: 16px;
+}
+
+.nove-login-heading > span {
+  display: block;
+  margin-bottom: 13px;
+  color: var(--nove-blue);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+}
+
+.nove-login-heading h2 {
+  margin: 0;
+  color: var(--nove-ink);
+  font-size: 35px;
+  font-weight: 670;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.nove-login-heading p {
+  margin: 11px 0 0;
+  color: var(--nove-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.nove-login-form {
+  margin-top: 36px;
+}
+
+.nove-login-tabs .ant-tabs-nav {
+  margin: 0 0 28px;
+  padding: 4px;
+  border: 1px solid #e7edf4;
+  border-radius: 12px;
+  background: #f1f5f9;
+}
+
+.nove-login-tabs .ant-tabs-nav::before,
+.nove-login-tabs .ant-tabs-ink-bar {
+  display: none;
+}
+
+.nove-login-tabs .ant-tabs-nav-list {
+  width: 100%;
+}
+
+.nove-login-tabs .ant-tabs-tab {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  margin: 0 !important;
+  padding: 9px 14px;
+  border-radius: 8px;
+  color: #64748b;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.nove-login-tabs .ant-tabs-tab-active {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07);
+}
+
+.nove-login-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #0f172a !important;
+  font-weight: 600;
+}
+
+.nove-login-tabs .ant-tabs-content-holder {
+  display: none;
+}
+
+.nove-login-form .ant-form-item {
+  margin-bottom: 21px;
+}
+
+.nove-login-form .ant-form-item-label {
+  padding-bottom: 7px;
+}
+
+.nove-login-form .ant-form-item-label > label {
+  height: auto;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nove-login-form .ant-input-affix-wrapper {
+  min-height: 51px;
+  padding: 0 15px;
+  border-color: #dce4ee;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.nove-login-form .ant-input-affix-wrapper:hover {
+  border-color: #93b4ec;
+}
+
+.nove-login-form .ant-input-affix-wrapper-focused {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.nove-login-form .ant-input-prefix {
+  margin-right: 10px;
+  color: #94a3b8;
+}
+
+.nove-login-form .ant-input {
+  color: #0f172a;
+  font-size: 14px;
+  background: transparent;
+}
+
+.nove-login-form .ant-input::placeholder {
+  color: #a3afbf;
+}
+
+.nove-code-button {
+  height: auto !important;
+  padding: 0 2px !important;
+  border: 0 !important;
+  color: var(--nove-blue) !important;
+  font-size: 12px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.nove-login-submit {
+  margin-top: 8px;
+  margin-bottom: 0 !important;
+}
+
+.nove-login-submit .ant-btn {
+  display: flex;
+  height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px 0 20px;
+  border: 0;
+  border-radius: 11px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 620;
+  background: linear-gradient(110deg, var(--nove-blue-dark), var(--nove-blue));
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+}
+
+.nove-login-submit .ant-btn:hover,
+.nove-login-submit .ant-btn:focus {
+  color: #fff !important;
+  background: linear-gradient(110deg, #1e40af, var(--nove-blue-dark)) !important;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.26);
+}
+
+.nove-security-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: 26px;
+  padding: 14px 15px;
+  border: 1px solid #e5ebf2;
+  border-radius: 10px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.55;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.nove-security-note > .anticon {
+  margin-top: 2px;
+  color: #0f766e;
+  font-size: 15px;
+}
+
+.nove-security-note span {
+  display: flex;
+  flex-direction: column;
+}
+
+.nove-security-note strong {
+  margin-bottom: 1px;
+  color: #334155;
+  font-size: 12px;
+}
+
+.nove-access-footer {
+  position: absolute;
+  right: clamp(42px, 6vw, 92px);
+  bottom: 30px;
+  left: clamp(42px, 6vw, 92px);
+  display: flex;
+  justify-content: space-between;
+  color: #94a3b8;
+  font-size: 10px;
+}
+
+@media (max-width: 1100px) {
+  .nove-login {
+    grid-template-columns: minmax(430px, 0.9fr) minmax(470px, 1.1fr);
+  }
+
+  .nove-brand-copy h1 {
+    font-size: 46px;
+  }
+
+  .nove-system-map {
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 860px) {
+  .nove-login {
+    display: block;
+    background: #f8fafc;
+  }
+
+  .nove-login__brand {
+    display: none;
+  }
+
+  .nove-login__access {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 86px 34px 70px;
+  }
+
+  .nove-mobile-brand {
+    display: flex;
+  }
+
+  .nove-mobile-brand .nove-mark {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+}
+
+@media (max-width: 520px) {
+  .nove-login__access {
+    align-items: flex-start;
+    padding: 34px 22px 78px;
+  }
+
+  .nove-access-status {
+    display: none;
+  }
+
+  .nove-mobile-brand {
+    margin-bottom: 54px;
+  }
+
+  .nove-login-heading h2 {
+    font-size: 31px;
+  }
+
+  .nove-login-form {
+    margin-top: 30px;
+  }
+
+  .nove-access-footer {
+    right: 22px;
+    bottom: 24px;
+    left: 22px;
+  }
+
+  .nove-access-footer span:last-child {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nove-login *,
+  .nove-login *::before,
+  .nove-login *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}

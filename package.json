@@ -49,7 +49,11 @@
     "docs:dev": "pnpm --filter nove-api-docs run docs:dev",
     "docs:build": "pnpm --filter nove-api-docs run docs:build",
     "prisma": "pnpm --filter @nove/api exec prisma",
-    "compose": "docker compose --env-file apps/api/.env"
+    "compose": "docker compose --env-file apps/api/.env",
+    "test:admin": "pnpm --filter @nove/admin run test",
+    "lint:admin": "pnpm --filter @nove/admin run lint",
+    "docs:admin:dev": "pnpm --filter @nove/admin-docs run dev",
+    "docs:admin:build": "pnpm --filter @nove/admin-docs run build"
   },
   "devDependencies": {
     "prettier": "^3.4.2",

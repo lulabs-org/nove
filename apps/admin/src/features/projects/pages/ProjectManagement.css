@@ -1,0 +1,84 @@
+.project-management-page {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.project-management-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px;
+}
+
+.project-management-filters {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(230px, 1.45fr) repeat(3, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.project-management-search {
+  min-width: 0;
+}
+
+.project-management-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.project-management-table-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #edf0f5;
+  border-radius: 12px;
+}
+
+.project-management-table-card .ant-table-thead > tr > th {
+  color: #5c6678;
+  font-weight: 600;
+  background: #f8f9fb;
+}
+
+.project-management-table-card .ant-table-pagination {
+  margin-inline: 16px;
+}
+
+.project-primary-cell {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+@media (max-width: 1180px) {
+  .project-management-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .project-management-actions {
+    justify-content: flex-end;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .project-management-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .project-management-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .project-management-actions {
+    justify-content: stretch;
+  }
+
+  .project-management-actions .ant-btn {
+    flex: 1;
+  }
+}

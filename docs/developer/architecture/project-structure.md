@@ -39,7 +39,7 @@ apps/api/
 └── dist/                      # TypeScript 编译构建产物 (dist/src/main.js)
 ```
 
-工作区根目录保留 `docs/` 文档站、部署文件、统一锁文件和 Turbo 调度配置。`pnpm-workspace.yaml` 纳管 `apps/*`、`packages/*`、`docs`；当前仅 API 与文档站已落地。下列领域路径均相对于 `apps/api`。
+工作区根目录保留 `docs/` 文档站、部署文件、统一锁文件和 Turbo 调度配置。`pnpm-workspace.yaml` 纳管 `apps/*`、`packages/*`、`docs`；当前已纳入 API、`apps/admin` 管理后台及其 `apps/admin/docs` 文档站。下列领域路径均相对于 `apps/api`。
 
 ## 领域模块约定
 

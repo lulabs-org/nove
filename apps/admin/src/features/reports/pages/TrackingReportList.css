@@ -1,0 +1,30 @@
+.tracking-report-list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tracking-report-period,
+.tracking-report-version {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tracking-report-period {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.tracking-report-period__cadence {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.tracking-report-version .ant-tag {
+  margin-inline-end: 0;
+}

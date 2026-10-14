@@ -1,0 +1,304 @@
+.drive-perm-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 24px 28px;
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.18), 0 0 1px rgba(15, 23, 42, 0.12);
+}
+
+.drive-perm-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  padding-right: 36px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.drive-perm-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: linear-gradient(135deg, #eef3ff 0%, #e0ebff 100%);
+  color: #2563eb;
+  border: 1px solid #dbe5fe;
+}
+
+.drive-perm-icon.is-folder {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  color: #d97706;
+  border-color: #fde68a;
+}
+
+.drive-perm-title-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.drive-perm-node-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+
+.drive-perm-node-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drive-perm-help-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0 !important;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.drive-perm-help-btn:hover {
+  color: #2563eb !important;
+  background-color: #eff6ff !important;
+}
+
+.drive-perm-node-subtitle {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Sections */
+.drive-perm-section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+}
+
+.drive-perm-section:focus-within {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.drive-perm-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 14px;
+}
+
+.drive-perm-section-title .badge-count {
+  font-size: 11px;
+  font-weight: normal;
+  padding: 1px 7px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* Existing Grants List */
+.drive-perm-grants-list {
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.drive-perm-grant-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  margin-bottom: 8px;
+  transition: all 0.15s ease;
+}
+
+.drive-perm-grant-item:last-child {
+  margin-bottom: 0;
+}
+
+.drive-perm-grant-item:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.drive-perm-grant-principal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 140px;
+  max-width: 220px;
+}
+
+.drive-perm-grant-avatar {
+  flex-shrink: 0;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.drive-perm-grant-avatar.is-user {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.drive-perm-grant-avatar.is-role {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.drive-perm-grant-avatar.is-dept {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.drive-perm-grant-avatar.is-org {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.drive-perm-grant-info {
+  min-width: 0;
+}
+
+.drive-perm-grant-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drive-perm-grant-type {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.drive-perm-grant-rights {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.drive-perm-grant-actions-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.drive-perm-empty {
+  padding: 16px 0;
+}
+
+/* Form Styles */
+.drive-perm-form-item {
+  margin-bottom: 14px;
+}
+
+.drive-perm-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.drive-perm-form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drive-perm-form-label .toggle-btn {
+  font-size: 11px;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.drive-perm-presets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.drive-perm-preset-btn {
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 3px 10px;
+  height: auto;
+}
+
+.drive-perm-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 12px;
+  background: #f8fafc;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.drive-perm-action-category {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.drive-perm-action-category-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.drive-perm-submit-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .drive-perm-modal .ant-modal-content {
+    padding: 16px;
+  }
+  .drive-perm-actions-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .drive-perm-grant-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .drive-perm-grant-rights {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

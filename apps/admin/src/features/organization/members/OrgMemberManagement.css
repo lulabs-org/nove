@@ -1,0 +1,376 @@
+.org-members-page {
+  min-height: calc(100vh - 148px);
+  color: #1f2329;
+}
+
+.org-members-page .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.org-structure-shell {
+  display: grid;
+  grid-template-columns: var(--org-tree-pane-width, 276px) minmax(0, 1fr);
+  transition: grid-template-columns 180ms ease;
+  min-height: calc(100vh - 242px);
+  border-top: 1px solid #eff0f1;
+}
+
+.org-structure-shell--no-aside {
+  grid-template-columns: 1fr;
+}
+
+.org-structure-tree-pane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px 16px 0 0;
+  border-right: 1px solid #eff0f1;
+  overflow: visible;
+}
+
+.org-structure-tree-pane.is-collapsed {
+  padding: 0;
+}
+
+.org-tree-pane-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding-right: 28px;
+}
+
+.org-tree-pane-topbar .ant-input-search {
+  flex: 1;
+  min-width: 0;
+}
+
+.org-tree-collapse-button {
+  position: absolute;
+  top: 16px;
+  right: -1px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  min-width: 24px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #d9dce3;
+  border-radius: 6px 0 0 6px;
+  background: #fff;
+  color: #646a73;
+  box-shadow: none;
+}
+
+.org-tree-collapse-button:hover,
+.org-tree-collapse-button:focus-visible {
+  border-color: #c9cdd4;
+  background: #fff !important;
+  color: #3370ff !important;
+}
+
+.org-structure-tree-pane.is-collapsed .org-tree-collapse-button {
+  right: -24px;
+  border-radius: 0 6px 6px 0;
+}
+
+.org-tree-list {
+  flex: 1;
+  min-height: 220px;
+  overflow: auto;
+}
+
+.org-dept-node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  color: #1f2329;
+}
+
+.org-dept-node:hover,
+.org-dept-node.is-active {
+  background: #f0f5ff;
+}
+
+.org-dept-node-main,
+.org-member-name-cell {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.org-dept-node-main {
+  flex: 1;
+  gap: 8px;
+  height: 100%;
+  font-size: 14px;
+  text-align: left;
+}
+
+.org-dept-node-main span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.org-new-dept-button {
+  margin-bottom: 16px;
+}
+
+.org-tree-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -7px;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8f959e;
+  cursor: col-resize;
+}
+
+.org-tree-resize-handle::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 6px;
+  width: 1px;
+  background: transparent;
+  content: '';
+}
+
+.org-tree-resize-handle .anticon {
+  position: relative;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  opacity: 0.65;
+}
+
+.org-tree-resize-handle:hover,
+.org-tree-resize-handle:focus-visible {
+  color: #3370ff;
+  outline: none;
+}
+
+.org-tree-resize-handle:hover::before,
+.org-tree-resize-handle:focus-visible::before {
+  background: #3370ff;
+}
+
+.org-tree-resize-handle:hover .anticon,
+.org-tree-resize-handle:focus-visible .anticon {
+  opacity: 1;
+}
+
+.org-structure-content {
+  min-width: 0;
+  padding: 18px 0 0 20px;
+}
+
+@media (min-width: 981px) {
+  .org-structure-tree-pane.is-collapsed + .org-structure-content {
+    padding-left: 32px;
+  }
+}
+
+.org-scope-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 34px;
+  margin-bottom: 12px;
+}
+
+.org-scope-header .ant-typography {
+  margin: 0;
+}
+
+.org-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.org-toolbar-filters {
+  flex: none;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.org-toolbar-filters .ant-checkbox-wrapper {
+  white-space: nowrap;
+}
+
+.org-toolbar-actions {
+  flex: none;
+  max-width: 100%;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.org-member-name-cell {
+  gap: 10px;
+  max-width: 100%;
+  font-weight: 600;
+}
+
+.org-member-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.org-member-contact-cell {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.org-member-detail-drawer .ant-drawer-body {
+  padding: 0;
+}
+
+.org-member-detail {
+  min-height: 100%;
+  padding: 24px 24px 80px;
+}
+
+.org-member-detail-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.org-member-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.org-member-detail-title .ant-typography {
+  margin: 0;
+}
+
+.org-detail-fields {
+  display: grid;
+  gap: 18px;
+  padding-top: 10px;
+}
+
+.org-detail-field {
+  display: grid;
+  gap: 6px;
+}
+
+.org-detail-footer {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+}
+
+.org-member-edit-form {
+  padding: 22px 24px 84px;
+}
+
+.org-department-form {
+  padding-top: 4px;
+}
+
+.org-form-section-title {
+  margin: 4px 0 18px;
+  padding-left: 10px;
+  border-left: 3px solid #3370ff;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2329;
+}
+
+.org-members-page .ant-table-thead > tr > th {
+  background: #f6f7f9;
+  color: #4e5969;
+  font-weight: 600;
+}
+
+.org-members-page .ant-table-cell {
+  white-space: nowrap;
+}
+
+.org-dept-row-no-children .ant-table-row-expand-icon {
+  visibility: hidden;
+}
+
+@media (max-width: 980px) {
+  .org-toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .org-toolbar-filters,
+  .org-toolbar-actions {
+    flex-wrap: wrap;
+  }
+
+  .org-structure-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .org-structure-tree-pane {
+    border-right: 0;
+    border-bottom: 1px solid #eff0f1;
+    padding-right: 0;
+  }
+
+  .org-structure-tree-pane.is-collapsed {
+    min-height: 40px;
+    padding: 0;
+  }
+
+  .org-tree-collapse-button,
+  .org-structure-tree-pane.is-collapsed .org-tree-collapse-button {
+    top: 8px;
+    right: 8px;
+    border-radius: 6px;
+  }
+
+  .org-tree-pane-topbar {
+    padding-right: 40px;
+  }
+
+  .org-tree-list {
+    max-height: 260px;
+  }
+
+  .org-tree-resize-handle {
+    display: none;
+  }
+
+  .org-structure-content {
+    padding-left: 0;
+  }
+}

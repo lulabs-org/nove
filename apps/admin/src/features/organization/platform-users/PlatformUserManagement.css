@@ -1,0 +1,202 @@
+.platform-users-page {
+  min-height: calc(100vh - 148px);
+  color: #1f2329;
+}
+
+.platform-users-breadcrumb {
+  margin: -4px 0 12px;
+  color: #646a73;
+  font-size: 13px;
+}
+
+/* ─── Toolbar ─────────────────────────────────────────────────────────────── */
+
+.platform-users-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.platform-users-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ─── Table ───────────────────────────────────────────────────────────────── */
+
+.platform-users-page .ant-table-thead > tr > th {
+  background: #f6f7f9;
+  color: #4e5969;
+  font-weight: 600;
+}
+
+.platform-users-page .ant-table-cell {
+  white-space: nowrap;
+}
+
+.platform-user-name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  padding: 0;
+}
+
+.platform-user-name-cell .ant-avatar {
+  flex: 0 0 auto;
+}
+
+.platform-user-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Detail Drawer ───────────────────────────────────────────────────────── */
+
+.platform-user-detail-drawer .ant-drawer-body {
+  padding: 0;
+}
+
+.platform-user-detail {
+  min-height: 100%;
+  padding: 24px 24px 80px;
+}
+
+.platform-user-detail-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.platform-user-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.platform-user-detail-title .ant-typography {
+  margin: 0;
+}
+
+.platform-user-detail-fields {
+  display: grid;
+  gap: 18px;
+  padding-top: 10px;
+}
+
+.platform-user-detail-field {
+  display: grid;
+  gap: 6px;
+}
+
+.platform-user-detail-footer {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+}
+
+.platform-user-section-title {
+  margin: 4px 0 18px;
+  padding-left: 10px;
+  border-left: 3px solid #3370ff;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2329;
+}
+
+/* ─── Linked user card ────────────────────────────────────────────────────── */
+
+.platform-user-linked-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f6f7f9;
+  border: 1px solid #eff0f1;
+}
+
+.platform-user-linked-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* ─── Edit Form ───────────────────────────────────────────────────────────── */
+
+.platform-user-edit-form {
+  padding: 24px;
+}
+
+.platform-user-phone-fields {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.platform-user-drawer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.platform-user-local-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-block: 6px;
+}
+
+.platform-user-local-option .ant-avatar {
+  flex: none;
+}
+
+.platform-user-local-option-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.platform-user-local-option-meta,
+.platform-user-local-option-id {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.platform-user-local-option-id {
+  color: #8f959e;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .platform-users-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .platform-users-filters {
+    width: 100%;
+  }
+
+  .platform-user-phone-fields {
+    grid-template-columns: 1fr;
+  }
+}

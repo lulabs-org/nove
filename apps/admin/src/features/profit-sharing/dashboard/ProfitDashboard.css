@@ -1,0 +1,307 @@
+/*
+ * Profit Dashboard Styles
+ * Enterprise Financial Grade Dashboard
+ */
+
+.profit-dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  background-color: #f8fafc;
+  min-height: calc(100vh - 64px);
+}
+
+/* Header Banner */
+.profit-dashboard-header {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 10px 18px;
+  border: 1px solid #edf2f7;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.profit-dashboard-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 精致轻量级现代 Segmented 胶囊导航 (Compact & Refined) */
+.profit-view-segmented {
+  background: #f1f5f9 !important;
+  padding: 3px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.profit-view-segmented .ant-segmented-group {
+  gap: 2px;
+}
+
+.profit-view-segmented .ant-segmented-item {
+  border-radius: 6px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: #64748b !important;
+  font-size: 13px !important;
+  padding: 4px 12px !important;
+}
+
+.profit-view-segmented .ant-segmented-item:hover:not(.ant-segmented-item-selected) {
+  color: #1e293b !important;
+}
+
+.profit-view-segmented .ant-segmented-item-selected {
+  background: #ffffff !important;
+  color: #2563eb !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 1px rgba(0, 0, 0, 0.03) !important;
+}
+
+.profit-view-segmented .ant-segmented-item-selected .anticon {
+  color: #2563eb !important;
+}
+
+.profit-view-segmented .anticon {
+  font-size: 13.5px !important;
+  margin-right: 6px !important;
+  vertical-align: -1px !important;
+}
+
+.profit-dashboard-refresh-btn {
+  height: 32px !important;
+  border-radius: 6px !important;
+  padding: 0 12px !important;
+  font-size: 12.5px !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  transition: all 0.2s ease !important;
+}
+
+.profit-dashboard-refresh-btn:hover {
+  border-color: #cbd5e1 !important;
+  color: #2563eb !important;
+  background: #f8fafc !important;
+}
+
+/* KPI Cards */
+.profit-kpi-card {
+  border-radius: 10px !important;
+  border: 1px solid #edf2f7 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  background: #ffffff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.profit-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+.profit-kpi-card-blue {
+  background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%) !important;
+  border-color: #dbeafe !important;
+}
+
+.profit-kpi-card-green {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important;
+  border-color: #dcfce7 !important;
+}
+
+.profit-kpi-card-amber {
+  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%) !important;
+  border-color: #fef3c7 !important;
+}
+
+.profit-kpi-card-purple {
+  background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%) !important;
+  border-color: #f3e8ff !important;
+}
+
+.profit-kpi-card-red {
+  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%) !important;
+  border-color: #fee2e2 !important;
+}
+
+.profit-kpi-subtext {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* Section Toolbar Cards */
+.profit-toolbar-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 16px 20px;
+  border: 1px solid #edf2f7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.profit-filter-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.profit-filter-pill {
+  cursor: pointer;
+  user-select: none;
+  border-radius: 9999px !important;
+  padding: 2px 10px !important;
+  font-size: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Chart Canvas & Legend */
+.profit-chart-container {
+  position: relative;
+  width: 100%;
+  background: #fafbfc;
+  border-radius: 8px;
+  padding: 16px 8px;
+}
+
+.profit-chart-svg {
+  width: 100%;
+  height: 280px;
+  overflow: visible;
+  display: block;
+}
+
+.profit-chart-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-top: 16px;
+  margin-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Tooltip Card */
+.profit-chart-tooltip {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-size: 12px;
+  z-index: 50;
+  min-width: 220px;
+  pointer-events: none;
+}
+
+.profit-tooltip-header {
+  font-weight: 700;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profit-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+  color: #475569;
+}
+
+/* Structure Card (Right Column) */
+.profit-structure-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profit-structure-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profit-structure-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.profit-structure-title {
+  font-weight: 600;
+}
+
+.profit-structure-amount {
+  color: #334155;
+  font-family: monospace;
+}
+
+.profit-structure-insight {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+/* Table Utilities */
+.profit-rank-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.profit-rank-1 {
+  background: #f59e0b;
+}
+
+.profit-rank-2 {
+  background: #94a3b8;
+}
+
+.profit-rank-3 {
+  background: #d97706;
+}
+
+.profit-rank-default {
+  background: #cbd5e1;
+}
+
+.profit-amount-bold {
+  font-weight: 700;
+  color: #2563eb;
+  font-family: monospace;
+}

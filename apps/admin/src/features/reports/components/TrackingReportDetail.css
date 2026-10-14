@@ -1,0 +1,154 @@
+.tracking-report-detail {
+  display: grid;
+  gap: 20px;
+}
+
+.tracking-report-subject-card .ant-card-body {
+  padding: 16px;
+}
+
+.tracking-report-subject-card .ant-divider {
+  margin: 16px 0 12px;
+}
+
+.tracking-report-subject-card .report-subject-identities {
+  width: 100%;
+}
+
+.tracking-report-info .ant-descriptions-header {
+  margin-bottom: 10px;
+}
+
+.tracking-report-info .ant-descriptions-title {
+  font-size: 15px;
+}
+
+.tracking-report-content > .ant-collapse-item > .ant-collapse-header {
+  font-weight: 600;
+}
+
+.tracking-report-markdown {
+  max-height: 480px;
+  overflow: auto;
+  color: #1f2329;
+  font-size: 14px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.tracking-report-markdown > :first-child {
+  margin-top: 0;
+}
+
+.tracking-report-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.tracking-report-markdown h1,
+.tracking-report-markdown h2,
+.tracking-report-markdown h3,
+.tracking-report-markdown h4 {
+  margin: 20px 0 10px;
+  color: #1f2329;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.tracking-report-markdown h1 {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e6eb;
+  font-size: 22px;
+}
+
+.tracking-report-markdown h2 {
+  font-size: 18px;
+}
+
+.tracking-report-markdown h3 {
+  font-size: 16px;
+}
+
+.tracking-report-markdown h4 {
+  font-size: 14px;
+}
+
+.tracking-report-markdown p,
+.tracking-report-markdown ul,
+.tracking-report-markdown ol,
+.tracking-report-markdown blockquote,
+.tracking-report-markdown pre,
+.tracking-report-markdown table {
+  margin: 0 0 12px;
+}
+
+.tracking-report-markdown ul,
+.tracking-report-markdown ol {
+  padding-left: 24px;
+}
+
+.tracking-report-markdown li + li {
+  margin-top: 4px;
+}
+
+.tracking-report-markdown blockquote {
+  padding: 10px 14px;
+  border-left: 3px solid #3370ff;
+  background: #f6f8ff;
+  color: #4e5969;
+}
+
+.tracking-report-markdown code {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #f2f3f5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.tracking-report-markdown pre {
+  overflow-x: auto;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: #1f2329;
+  color: #f6f7f9;
+}
+
+.tracking-report-markdown pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.tracking-report-markdown table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.tracking-report-markdown th,
+.tracking-report-markdown td {
+  padding: 8px 10px;
+  border: 1px solid #e5e6eb;
+  text-align: left;
+}
+
+.tracking-report-markdown th {
+  background: #f6f7f9;
+  font-weight: 600;
+}
+
+.tracking-report-markdown a {
+  color: #1677ff;
+}
+
+.tracking-report-markdown img {
+  max-width: 100%;
+  height: auto;
+}
+
+.tracking-report-markdown hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #e5e6eb;
+}

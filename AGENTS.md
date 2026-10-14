@@ -41,4 +41,4 @@ Copy `apps/api/.env.example` to `apps/api/.env` for local configuration; documen
 
 ## Workspace Boundaries
 
-Root dependencies are workspace tooling only. Keep API dependencies and Node-specific TypeScript settings in `apps/api`; keep generic compiler options in `tsconfig.base.json`. Run package-local tools with `pnpm --filter @nove/api exec`. Docs remain in `docs/`; Admin migration and shared business packages are later phases of #510.
+Root dependencies are workspace tooling only. Keep API dependencies and Node-specific TypeScript settings in `apps/api`; keep generic compiler options in `tsconfig.base.json`. Run package-local tools with `pnpm --filter @nove/api exec`. API docs remain in `docs/`; Admin lives in `apps/admin` and its docs in `apps/admin/docs`. Use `pnpm build:admin`, `pnpm lint:admin`, and `pnpm test:admin` for the React/Vite application. Keep Admin browser libraries, environment files, and TypeScript settings isolated from the API. All packages share the root lockfile; do not install nested Git hooks. Shared business packages and contract generation are later phases of #510.

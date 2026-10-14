@@ -1,0 +1,287 @@
+.permission-management-page {
+  min-height: calc(100vh - 148px);
+  color: #1f2329;
+}
+
+.permission-tab-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: #646a73;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.permission-content-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: calc(100vh - 258px);
+  border-top: 1px solid #eff0f1;
+}
+
+.permission-tree-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-self: start;
+  height: calc(100vh - 230px);
+  min-height: 420px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 18px 16px 16px 0;
+  border-right: 1px solid #eff0f1;
+}
+
+.permission-tree-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #1f2329;
+  font-weight: 600;
+}
+
+.permission-tree-list {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: rgba(31, 35, 41, 0.28) transparent;
+  scrollbar-width: thin;
+}
+
+.permission-tree-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.permission-tree-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.permission-tree-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(31, 35, 41, 0.24);
+}
+
+.permission-tree-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(31, 35, 41, 0.38);
+}
+
+.permission-tree-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 2px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: none;
+  color: #1f2329;
+  text-align: left;
+  cursor: pointer;
+}
+
+.permission-tree-node:hover,
+.permission-tree-node.is-active {
+  background: #f0f5ff;
+}
+
+.permission-tree-node:hover,
+.permission-tree-node:focus-visible {
+  border-color: transparent;
+  outline: none;
+}
+
+.permission-tree-node-name {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.permission-tree-node-name > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.permission-resource-meta {
+  overflow: hidden;
+  color: #8f959e;
+  font-size: 12px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.permission-tree-node .ant-tag {
+  flex: 0 0 auto;
+  margin-inline-end: 0;
+}
+
+.permission-table-pane {
+  min-width: 0;
+  padding: 18px 0 0 18px;
+}
+
+.permission-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.permission-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.permission-search {
+  width: 320px;
+}
+
+.permission-item-toolbar,
+.permission-item-filters {
+  flex-wrap: nowrap;
+}
+
+.permission-item-filters {
+  flex: 1;
+}
+
+.permission-item-filters .permission-search {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+.permission-item-filters .permission-type-filter {
+  flex: 0 0 104px;
+}
+
+.permission-item-filters .permission-status-filter {
+  flex: 0 0 88px;
+}
+
+.permission-item-toolbar > .ant-space {
+  flex: 0 0 auto;
+}
+
+.permission-code-input,
+.permission-resource-input {
+  width: 180px;
+}
+
+.permission-management-page .ant-table-thead > tr > th {
+  background: #f2f3f5;
+  color: #646a73;
+  font-weight: 600;
+}
+
+.permission-code {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 12px;
+}
+
+.permission-description {
+  display: block;
+  color: #3b3f45;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.permission-condition {
+  display: block;
+  max-width: 360px;
+  overflow: hidden;
+  color: #3b3f45;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.permission-form-section {
+  margin: 4px 0 18px;
+  padding-left: 10px;
+  border-left: 3px solid #3370ff;
+  color: #1f2329;
+  font-weight: 600;
+}
+
+.data-rule-info-row {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 3.5fr) minmax(0, 3fr);
+  gap: 16px;
+}
+
+.data-rule-name-field,
+.data-rule-resource-field,
+.data-rule-action-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.data-rule-resource-field .ant-select {
+  width: 100%;
+}
+
+@media (max-width: 1080px) {
+  .permission-content-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .permission-tree-pane {
+    height: auto;
+    min-height: 0;
+    max-height: 340px;
+    padding-right: 0;
+    border-right: 0;
+    border-bottom: 1px solid #eff0f1;
+  }
+
+  .permission-table-pane {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .data-rule-info-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .permission-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .permission-search,
+  .permission-code-input,
+  .permission-resource-input,
+  .permission-filters .ant-select {
+    width: 100% !important;
+  }
+
+  .permission-item-filters {
+    flex-wrap: wrap;
+  }
+
+  .permission-item-filters .permission-search,
+  .permission-item-filters .ant-select {
+    flex: 0 0 100%;
+  }
+}

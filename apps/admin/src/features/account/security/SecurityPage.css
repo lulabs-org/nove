@@ -1,0 +1,104 @@
+.security-page {
+  min-height: calc(100vh - 148px);
+}
+
+.security-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.security-header h3.ant-typography {
+  margin: 0 0 4px;
+}
+
+.security-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.security-overview-card,
+.security-sessions-card {
+  border-radius: 12px;
+}
+
+.security-overview-card .ant-list-item {
+  padding: 9px 0;
+}
+
+.security-section {
+  margin-top: 16px;
+  border-radius: 12px;
+}
+
+.security-session-note {
+  margin-bottom: 12px;
+}
+
+.security-device-icon {
+  padding: 10px;
+  border-radius: 10px;
+  background: #f0f5ff;
+  color: #3370ff;
+  font-size: 22px;
+}
+
+.security-login-failed > td {
+  background: #fff7f6 !important;
+}
+
+.security-pagination {
+  margin-top: 18px;
+  text-align: right;
+}
+
+.security-modal-steps {
+  margin-bottom: 24px;
+}
+
+.security-password-tip {
+  margin-bottom: 18px;
+}
+
+@media (min-width: 1440px) {
+  .security-dashboard {
+    grid-template-columns: minmax(360px, 2fr) minmax(640px, 3fr);
+    align-items: start;
+  }
+
+  .security-dashboard > .ant-card {
+    height: 380px;
+  }
+
+  .security-sessions-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .security-sessions-card > .ant-card-body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .security-session-list {
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+}
+
+@media (max-width: 760px) {
+  .security-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

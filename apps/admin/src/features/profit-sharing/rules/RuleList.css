@@ -1,0 +1,24 @@
+/* Action column button semantic styles */
+.rule-action-btn-calculate {
+  color: #fa8c16 !important;
+}
+
+.rule-action-btn-calculate:hover {
+  color: #ffa940 !important;
+}
+
+.rule-action-btn-disable {
+  color: #d46b08 !important;
+}
+
+.rule-action-btn-disable:hover {
+  color: #fa8c16 !important;
+}
+
+.rule-action-btn-enable {
+  color: #52c41a !important;
+}
+
+.rule-action-btn-enable:hover {
+  color: #73d13d !important;
+}

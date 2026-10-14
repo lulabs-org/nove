@@ -42,13 +42,13 @@ Nove API 的所有文档（包括架构设计、API 参考、开发指南、第�
 > pnpm install --frozen-lockfile
 > pnpm run docs:dev
 > ```
-> 随后访问 `http://localhost:5173` 即可获得最佳的阅读体验。
+> 随后访问 `http://localhost:5174` 即可获得最佳的阅读体验。
 
 ---
 
 ## 工作区结构
 
-本仓库已完成 Monorepo 的工作区初始化和后端迁移（Issue #510 阶段 1–2）：
+本仓库已完成 Monorepo 的工作区初始化、后端迁移和 Admin 导入（Issue #510 阶段 1–3）：
 
 ```text
 apps/api/           # @nove/api：NestJS 源码、Prisma、测试、脚本与独立依赖
@@ -56,7 +56,9 @@ apps/api/           # @nove/api：NestJS 源码、Prisma、测试、脚本与独
   .env.example      # 复制为同目录的 .env，勿放在根目录
   package.json
   tsconfig.json
-docs/               # VitePress 文档站，保持当前位置
+apps/admin/         # @nove/admin：React 管理后台
+  docs/             # @nove/admin-docs：Admin 文档站
+docs/               # API VitePress 文档站，保持当前位置
 packages/           # 工作区已预留匹配规则，尚无共享包
 package.json        # 根任务入口和公共开发工具
 pnpm-lock.yaml      # 工作区安装使用的锁文件
@@ -65,15 +67,15 @@ tsconfig.base.json  # 通用编译选项；Node/DOM 与路径配置由应用各�
 turbo.json          # 构建缓存及任务调度
 ```
 
-根目录运行 `pnpm dev` / `pnpm build` 会调度当前 API 与文档站；`pnpm dev:api` / `pnpm build:api` 只操作后端。`pnpm lint` / `pnpm test` 调度应用对应任务，测试仍包含原有各测试项目，需要隔离数据库等服务；仅运行单元测试请用 `pnpm test:unit --runInBand`。
+根目录运行 `pnpm dev` / `pnpm build` 会调度当前 API、Admin 与两个文档站；`pnpm dev:api` / `pnpm build:api` 只操作后端，`pnpm dev:admin` / `pnpm build:admin` 只操作前端。`pnpm lint` / `pnpm test` 调度应用对应任务，测试仍包含原有各测试项目，需要隔离数据库等服务；仅运行单元测试请用 `pnpm test:unit --runInBand`。
 
 根目录的 `start:*`、`db:*`、`test:*` 等原有命令继续转发给 API。需要直接调用应用工具时，使用 `pnpm --filter @nove/api exec <工具>`，例如 `pnpm --filter @nove/api exec jest --selectProjects unit --runInBand`。维护脚本从 `apps/api` 执行，Docker 构建脚本会自动定位仓库根目录。
 
 构建缓存包含 API 的 `dist`、生成的 Prisma Client 和文档站输出；修改公共 TS/格式配置会使缓存失效。带外部依赖的测试、lint 和开发进程不缓存，dev/test 保留注入的运行环境变量。
 
-从旧目录升级时，将本地 `.env`、`.env.test` 和其他 API 私有配置迁至 `apps/api/`，重新运行 `pnpm install --frozen-lockfile`。如使用相对路径的运行数据（例如 `temp-data`），也应迁至应用目录。Docker Compose 使用 `pnpm compose up -d`，统一读取 `apps/api/.env`。
+从旧目录升级时，将本地 `.env`、`.env.test` 和其他 API 私有配置迁至 `apps/api/`，重新运行 `pnpm install --frozen-lockfile`。如使用相对路径的运行数据（例如 `temp-data`），也应迁至应用目录。Docker Compose 使用 `pnpm compose up -d`，统一读取 `apps/api/.env`。Admin 配置独立保存在 `apps/admin/.env.local`（从同目录 `.env.example` 复制），通过 `VITE_API_BASE_URL` 指向后端。
 
-`apps/admin`、共享业务包与契约生成属于后续阶段；预留的 `dev:admin`、`build:admin`、`generate:api` 会在 Admin 尚未迁入时明确失败。CI/Docker 本次仅修正迁移必需的路径，受影响应用检测和 `turbo prune` 留待阶段 5。
+Admin 按 #511 方案 C 从 `lulabs-org/nove-admin` 的 `4a832f211290c40fc707818624b7444d52be9c2a` 单点导入，历史提交继续在原仓库查询。详见 [Admin 迁移记录](./docs/developer/guides/collaboration/admin-migration.md)。`pnpm generate:api` 转发到现有 Orval 配置，默认读取冻结快照（可用 `ORVAL_API_TARGET` 覆盖）；同仓契约生成属于阶段 4。CI/Docker 本次仅修正迁移必需的路径，受影响应用检测和 `turbo prune` 留待阶段 5。
 
 ---
 

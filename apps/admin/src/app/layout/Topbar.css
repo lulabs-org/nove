@@ -1,0 +1,46 @@
+.admin-brand-link {
+  column-gap: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    flex-basis 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    column-gap 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-brand-link.is-collapsed {
+  column-gap: 0;
+}
+
+.admin-brand-logo {
+  flex: 0 0 auto;
+}
+
+.admin-brand-title {
+  max-width: 120px;
+  overflow: hidden;
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    max-width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 140ms ease 60ms,
+    transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-brand-link.is-collapsed .admin-brand-title {
+  max-width: 0;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    max-width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 100ms ease,
+    transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-brand-link,
+  .admin-brand-title,
+  .admin-brand-link.is-collapsed .admin-brand-title {
+    transition: none;
+  }
+}
