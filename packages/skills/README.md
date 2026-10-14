@@ -10,7 +10,7 @@ Nove 的 Agent 技能工作区，原 `lulabs-org/nove-skills` 的内容统一在
 | `meeting-summarization` | [SKILL.md](./meeting-summarization/SKILL.md) | 会议转写整理与总结；需要 Nove CLI 和名为 `nove` 的 CLI 技能                           |
 | `speaker-summary-sweep` | [SKILL.md](./speaker-summary-sweep/SKILL.md) | 补齐参会者总结；需要 Nove CLI、`nove` 技能、`meeting-summarization`，写入前需用户授权 |
 
-Nove CLI 仍在 [lulabs-org/nove-cli](https://github.com/lulabs-org/nove-cli) 独立维护。此包不包含名为 `nove` 的 CLI 技能，也不自动安装 CLI、凭证或定时任务。使用两个会议技能前，应在自己的 Agent 环境中配置 CLI 技能并确认 `nove --help` 可用。
+Nove CLI 仍在 [lulabs-org/nove-cli](https://github.com/lulabs-org/nove-cli) 独立维护。名为 `nove` 的 CLI 技能来源于该仓库的 [skills/nove-cli](https://github.com/lulabs-org/nove-cli/tree/main/skills/nove-cli)，安装时应完整复制其 `SKILL.md` 与 `references/`，在目标技能目录中命名为 `nove`。此包不重复打包该技能，也不自动安装 CLI、凭证或定时任务。使用两个会议技能前，应在自己的 Agent 环境中配置 CLI 技能并确认 `nove --help` 可用。
 
 ## 安装技能文件
 
