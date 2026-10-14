@@ -1,12 +1,13 @@
 # 文档维护指南
 
-Nove API 文档采用“当前事实、操作指南、模块契约、集成实现、外部参考、未来规划”分层，避免把愿景或厂商资料误当成当前系统行为。
+Nove 文档采用“当前事实、操作指南、模块契约、集成实现、外部参考、未来规划”分层，避免把愿景或厂商资料误当成当前系统行为。
 
 ## 目录职责
 
 ```text
 docs/
 ├── developer/
+│   ├── admin/          # Admin 专属架构、开发指南、模块与参考
 │   ├── architecture/   # 当前系统的整体结构和数据流
 │   ├── guides/         # 开发、数据库、部署和文档操作指南
 │   ├── modules/        # Nove 自有模块与 API 契约
@@ -19,6 +20,7 @@ docs/
 
 ## 放置规则
 
+- Admin 专属开发与维护说明：放入 `admin/`；跨应用的契约生成和交付流程放入 `guides/collaboration/`，通过链接复用。
 - 描述当前跨模块结构：放入 `architecture/`。
 - 回答“如何开发、测试、部署”：放入 `guides/`。
 - 解释 Nove 领域模块、路由或权限：放入 `modules/`。
@@ -32,6 +34,8 @@ docs/
 每个一级目录必须有 `index.md`，说明目录边界并链接主要页面。新增、移动或删除页面后同步 `.vitepress/config.mts`。
 
 内部 Markdown 链接使用相对路径；运行时 localhost 地址用代码格式，避免被 VitePress 当作构建期死链。不要关闭 `ignoreDeadLinks`。
+
+文档站依赖统一放在 `docs/package.json`（`@nove/docs`），共享根锁文件，不进入 API 或 Admin 应用依赖。文档开发端口为 5174，构建产物位于 `docs/.vitepress/dist/`。
 
 ## 验证
 

@@ -26,7 +26,6 @@ function fixture() {
     '.prettierrc',
     'apps/api/package.json',
     'apps/admin/package.json',
-    'apps/admin/docs/package.json',
     'docs/package.json',
   ]) {
     mkdirSync(dirname(resolve(cwd, name)), { recursive: true });
@@ -61,7 +60,7 @@ for (const [file, api, admin, docs] of [
   ['apps/api/src/example.ts', true, true, false],
   ['apps/admin/src/example.tsx', false, true, false],
   ['docs/guide.md', false, false, true],
-  ['apps/admin/docs/guide.md', false, false, true],
+  ['docs/developer/admin/guide/getting-started.md', false, false, true],
   ['.github/workflows/ci.yml', true, true, true],
   ['Dockerfile', true, true, true],
 ]) {
@@ -76,10 +75,7 @@ for (const [file, api, admin, docs] of [
       assert.equal(scope.api, api);
       assert.equal(scope.admin, admin);
       assert.equal(scope.tasks.includes('@nove/admin#test'), admin);
-      assert.equal(
-        scope.tasks.some((id) => id.includes('docs#build')),
-        docs,
-      );
+      assert.equal(scope.tasks.includes('@nove/docs#build'), docs);
     } finally {
       f.cleanup();
     }

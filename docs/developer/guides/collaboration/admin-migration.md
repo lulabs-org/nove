@@ -11,9 +11,9 @@
 - 目标目录：`apps/admin`，工作区包名 `@nove/admin`
 - 导入方式：从该提交的 Git tree 导出跟踪文件；不引入旧提交、merge parent 或嵌套 `.git`，不改写已有 API 提交。
 
-源码、静态资源、测试、许可证、环境示例、Orval、Vite、Playwright 和应用级代码规范配置均保留。Admin 文档保留在 `apps/admin/docs`，作为 `@nove/admin-docs` 加入工作区。
+源码、静态资源、测试、许可证、环境示例、Orval、Vite、Playwright 和应用级代码规范配置均保留。迁入时保留了 Admin 的独立文档站；现已将内容合并到 `docs/developer/admin/`，由 `@nove/docs` 统一提供导航、搜索与构建。
 
-清理了独立仓库的 `.husky`、`.trae`、commitlint、lint-staged、`prepare` hook、`pnpm-workspace.yaml` 及嵌套锁文件。未导入私有 `.env`、未跟踪文件、node_modules、dist、缓存或部署凭据。API 和两套文档站也统一使用根 `pnpm-lock.yaml`。
+清理了独立仓库的 `.husky`、`.trae`、commitlint、lint-staged、`prepare` hook、`pnpm-workspace.yaml` 及嵌套锁文件。未导入私有 `.env`、未跟踪文件、node_modules、dist、缓存或部署凭据。API、Admin 和统一文档站使用根 `pnpm-lock.yaml`。
 
 ## 使用方式
 
@@ -26,10 +26,10 @@ pnpm dev:admin
 pnpm build:admin
 pnpm lint:admin
 pnpm test:admin
-pnpm docs:admin:build
+pnpm docs:build
 ```
 
-`pnpm dev` 调度 API（3000）、Admin（5173）、API 文档（5174）和 Admin 文档（5175）；需要单应用或固定端口时使用各自的根入口。Admin 的 `test` 为单次运行，监听模式使用 `pnpm --filter @nove/admin run test:watch`。
+`pnpm dev` 调度 API（3000）、Admin（5173）、统一文档站（5174）；需要单应用或固定端口时使用各自的根入口。Admin 的 `test` 为单次运行，监听模式使用 `pnpm --filter @nove/admin run test:watch`。
 
 Admin 的 `VITE_API_BASE_URL` 在构建时写入静态产物。Turbo 会把 `VITE_*` 环境变量和应用的生产环境文件纳入 Admin 构建缓存，避免不同 API 地址复用错误产物。前端的 DOM/ESM 设置独立保留，仅继承公共 TS 基础选项。
 

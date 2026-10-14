@@ -1,11 +1,13 @@
-# Nove API 开发者文档
+# Nove 开发者文档
 
-本文档面向后端开发、集成开发和运维人员。内容以当前 NestJS 模块、Prisma schema、根 `package.json`、Docker/CI 配置为基线；具体接口字段始终以运行中的 OpenAPI 文档为准。
+本文档面向前端开发、后端开发、集成开发和运维人员。内容以当前 NestJS 模块、Prisma schema、根 `package.json`、Docker/CI 配置为基线；具体接口字段始终以运行中的 OpenAPI 文档为准。
 
 ## 快速定位
 
 | 目标 | 核心文档 |
 |---|---|
+| 开发 Admin 管理后台 | [Admin 文档](admin/index.md) · [快速开始](admin/guide/getting-started.md) · [路由与权限](admin/reference/routes-and-permissions.md) |
+| 前后端协作与交付 | [契约与交付工作流](guides/collaboration/monorepo-delivery.md) |
 | 理解运行时、模块和目录 | [架构索引](architecture/index.md) · [模块地图](architecture/module-map.md) · [项目结构](architecture/project-structure.md) |
 | 搭建数据库与运行项目 | [Prisma 7 配置](guides/database/prisma-setup.md) · [Package 脚本](guides/collaboration/scripts.md) |
 | 团队协作与测试规范 | [Trunk-Based Git 协作](guides/collaboration/git.md) · [NestJS 测试规范](guides/collaboration/testing.md) |

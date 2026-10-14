@@ -34,11 +34,14 @@ Vite 默认提供本地开发地址。登录、刷新令牌和后续业务请求
 
 ## 启动文档站
 
+在 Monorepo 根目录执行：
+
 ```bash
-pnpm dev
+pnpm docs:dev
+pnpm docs:build # 提交前严格检查内部链接并生成静态站点
 ```
 
-以上命令在 `docs/` 目录执行。也可以从 Monorepo 根目录运行 `pnpm docs:admin:dev`。修改 Markdown 或 VitePress 配置后会热更新；提交前在 `docs/` 目录运行 `pnpm build`，严格检查内部链接并生成静态站点。
+访问 `http://localhost:5174/developer/admin/` 阅读 Admin 文档。修改 `docs/` 下的 Markdown 或 VitePress 配置后会热更新。
 
 ## 首次定位代码
 

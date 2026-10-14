@@ -34,14 +34,14 @@ Nove API 的所有文档（包括架构设计、API 参考、开发指南、第�
 
 - [**👨‍💻 开发者文档**](./docs/developer/index.md) - 面向开发团队成员，包含环境配置、技术实现细节、架构设计、开发与提交规范等。
 - [**👤 用户文档**](./docs/user/index.md) - 面向系统最终用户与 API 调用方，包含如何使用系统功能、API 接口指引、常见问题等。
+- [**🖥️ Admin 开发文档**](./docs/developer/admin/index.md) - 管理后台的架构、模块、开发与部署。
 - [**📖 完整文档目录**](./docs/index.md) - 浏览所有文档入口。
 
 > **提示**：您也可以在本地运行以下命令启动文档站点：
 >
 > ```bash
-> cd docs
 > pnpm install --frozen-lockfile
-> pnpm run docs:dev
+> pnpm docs:dev
 > ```
 >
 > 随后访问 `http://localhost:5174` 即可获得最佳的阅读体验。
@@ -59,8 +59,8 @@ apps/api/           # @nove/api：NestJS 源码、Prisma、测试、脚本与独
   package.json
   tsconfig.json
 apps/admin/         # @nove/admin：React 管理后台
-  docs/             # @nove/admin-docs：Admin 文档站
-docs/               # API VitePress 文档站，保持当前位置
+docs/               # @nove/docs：API 与 Admin 统一 VitePress 文档站
+  developer/admin/  # Admin 架构、模块、开发与部署文档
 packages/           # 工作区已预留匹配规则，尚无共享包
 package.json        # 根任务入口和公共开发工具
 pnpm-lock.yaml      # 工作区安装使用的锁文件
@@ -69,7 +69,7 @@ tsconfig.base.json  # 通用编译选项；Node/DOM 与路径配置由应用各�
 turbo.json          # 构建缓存及任务调度
 ```
 
-根目录运行 `pnpm dev` / `pnpm build` 会调度当前 API、Admin 与两个文档站；`pnpm dev:api` / `pnpm build:api` 只操作后端，`pnpm dev:admin` / `pnpm build:admin` 只操作前端。`pnpm lint` / `pnpm test` 调度应用对应任务，默认测试为 API 单元测试和 Admin 测试；API 集成/E2E 使用 `pnpm test:all` 并准备隔离数据库等服务。Admin 任务自动先生成最新契约。
+根目录运行 `pnpm dev` / `pnpm build` 会调度当前 API、Admin 与统一文档站；`pnpm dev:api` / `pnpm build:api` 只操作后端，`pnpm dev:admin` / `pnpm build:admin` 只操作前端。`pnpm lint` / `pnpm test` 调度应用对应任务，默认测试为 API 单元测试和 Admin 测试；API 集成/E2E 使用 `pnpm test:all` 并准备隔离数据库等服务。Admin 任务自动先生成最新契约。
 
 根目录的 `start:*`、`db:*`、`test:*` 等原有命令继续转发给 API。需要直接调用应用工具时，使用 `pnpm --filter @nove/api exec <工具>`，例如 `pnpm --filter @nove/api exec jest --selectProjects unit --runInBand`。维护脚本从 `apps/api` 执行，Docker 构建脚本会自动定位仓库根目录。
 

@@ -29,7 +29,7 @@ pnpm test:e2e:install  # 安装浏览器
 ```bash
 pnpm lint
 pnpm build
-pnpm --dir docs build
+pnpm --dir ../.. docs:build # 从 apps/admin 调用根目录文档构建
 ```
 
 ## 测试位置

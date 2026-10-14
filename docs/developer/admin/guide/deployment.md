@@ -20,10 +20,10 @@ pnpm build
 ## 文档构建
 
 ```bash
-pnpm --dir docs build
+pnpm --dir ../.. docs:build # 从 apps/admin 调用根目录文档构建
 ```
 
-VitePress 静态产物位于 `docs/.vitepress/dist/`。`docs/` 保留独立的 `package.json`，依赖由 Monorepo 根锁文件统一管理。它与管理后台是两个独立入口，部署平台应使用工作区根安装，并分别指定构建命令和输出目录。
+统一 VitePress 静态产物位于仓库根目录的 `docs/.vitepress/dist/`。根目录 `docs/` 保留独立的 `package.json`，依赖由 Monorepo 根锁文件统一管理。它与管理后台是两个独立入口，部署平台应使用工作区根安装，并分别指定构建命令和输出目录。
 
 ## 独立 Nginx 镜像
 

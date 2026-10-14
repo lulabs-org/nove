@@ -1,6 +1,5 @@
 packages:
   - 'apps/*'
-  - 'apps/admin/docs'
   - 'packages/*'
   - 'docs'
 

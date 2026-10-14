@@ -1,7 +1,7 @@
 {
-  "name": "nove-api-docs",
+  "name": "@nove/docs",
   "version": "1.0.0",
-  "description": "Nove API 项目文档",
+  "description": "Nove API 与 Admin 统一文档站",
   "scripts": {
     "docs:dev": "vitepress dev . --port 5174",
     "docs:build": "vitepress build .",

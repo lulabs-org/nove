@@ -5,8 +5,8 @@ export default withMermaid(
   defineConfig({
     ignoreDeadLinks: false,
     lang: 'zh-CN',
-    title: 'Nove API',
-    description: 'Nove API 项目文档 — 面向 AI 时代的企业级智能数据仓库与 Agent 基础设施',
+    title: 'Nove',
+    description: 'Nove 项目文档 — API、Admin 与协作开发指南',
 
     // 根目录是 docs/，所以不需要 srcDir
     // 根目录有 index.md 负责首页
@@ -19,12 +19,13 @@ export default withMermaid(
     lastUpdated: true,
 
     themeConfig: {
-      logo: { light: '/logo-light.svg', dark: '/logo-dark.svg', alt: 'Nove API' },
+      logo: { light: '/logo-light.svg', dark: '/logo-dark.svg', alt: 'Nove' },
 
-      siteTitle: 'Nove API',
+      siteTitle: 'Nove',
 
       nav: [
         { text: '首页', link: '/' },
+        { text: 'Admin', link: '/developer/admin/', activeMatch: '/developer/admin/' },
         { text: '🏗️ 架构设计', link: '/developer/architecture/', activeMatch: '/developer/architecture/' },
         { text: '📖 开发指南', link: '/developer/guides/', activeMatch: '/developer/guides/' },
         { text: '🧩 核心模块', link: '/developer/modules/', activeMatch: '/developer/modules/' },
@@ -34,6 +35,44 @@ export default withMermaid(
       ],
 
       sidebar: {
+        '/developer/admin/': [
+          {
+            text: '项目指南',
+            items: [
+              { text: '文档首页', link: '/developer/admin/' },
+              { text: '快速开始', link: '/developer/admin/guide/getting-started' },
+              { text: '开发工作流', link: '/developer/admin/guide/development-workflow' },
+              { text: '新增业务模块', link: '/developer/admin/guide/adding-a-feature' },
+              { text: '测试与质量', link: '/developer/admin/guide/testing' },
+              { text: '部署', link: '/developer/admin/guide/deployment' },
+            ],
+          },
+          {
+            text: '系统架构',
+            items: [
+              { text: '架构概览', link: '/developer/admin/architecture/overview' },
+              { text: '路由、认证与权限', link: '/developer/admin/architecture/routing-auth-permissions' },
+              { text: '数据访问与状态', link: '/developer/admin/architecture/data-access' },
+            ],
+          },
+          {
+            text: '业务模块',
+            items: [
+              { text: '模块地图', link: '/developer/admin/modules/' },
+              { text: '组织与交易', link: '/developer/admin/modules/organization-and-transactions' },
+              { text: '会议、报告与任务', link: '/developer/admin/modules/meetings-reports-tasks' },
+              { text: '治理与设置', link: '/developer/admin/modules/governance-and-settings' },
+            ],
+          },
+          {
+            text: '参考',
+            items: [
+              { text: '路由与权限表', link: '/developer/admin/reference/routes-and-permissions' },
+              { text: '脚本与环境变量', link: '/developer/admin/reference/scripts-and-environment' },
+            ],
+          },
+        ],
+
         '/developer/architecture/': [
           {
             text: '🏗️ 架构设计',
@@ -189,6 +228,7 @@ export default withMermaid(
             text: '📌 开发者文档',
             items: [
               { text: '文档概述与定位', link: '/developer/' },
+              { text: 'Admin 开发', link: '/developer/admin/' },
               { text: '🏗️ 架构设计', link: '/developer/architecture/' },
               { text: '📖 开发指南', link: '/developer/guides/' },
               { text: '🧩 核心模块', link: '/developer/modules/' },

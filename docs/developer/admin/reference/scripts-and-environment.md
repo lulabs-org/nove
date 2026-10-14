@@ -27,13 +27,13 @@
 
 ## 文档脚本
 
-以下命令在 `docs/` 目录执行；从 Monorepo 根目录调用时可使用 `pnpm --filter @nove/admin-docs run <命令>`。
+以下命令在 Monorepo 根目录执行，API 和 Admin 共用一个文档站（`@nove/docs`）。
 
 | 命令           | 用途                          |
 | -------------- | ----------------------------- |
-| `pnpm dev`     | 启动 VitePress 文档开发服务器 |
-| `pnpm build`   | 严格构建文档站                |
-| `pnpm preview` | 预览文档静态产物              |
+| `pnpm docs:dev` | 启动统一文档站，端口 5174 |
+| `pnpm docs:build` | 严格构建统一文档站 |
+| `pnpm --filter @nove/docs run docs:preview` | 预览文档静态产物 |
 
 ## 环境变量
 

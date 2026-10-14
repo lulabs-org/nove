@@ -24,7 +24,7 @@ pnpm generate:api
 pnpm lint
 pnpm test:run
 pnpm build
-pnpm --dir docs build
+pnpm --dir ../.. docs:build # 从 apps/admin 调用根目录文档构建
 git diff --check
 ```
 

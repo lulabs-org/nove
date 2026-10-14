@@ -36,4 +36,4 @@ refresh token 由浏览器 Cookie 承载，请求启用 `withCredentials`。前�
 前端权限只改善导航和交互，不能代替 API 服务端鉴权。任何写操作都必须由后端再次校验。
 :::
 
-完整页面映射见[路由与权限表](/reference/routes-and-permissions)。
+完整页面映射见[路由与权限表](/developer/admin/reference/routes-and-permissions)。

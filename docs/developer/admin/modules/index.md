@@ -16,5 +16,5 @@
 ## 维护原则
 
 - 页面细节留在源码和测试中，文档记录稳定的职责与跨模块规则。
-- 新增或移除菜单模块时，同步更新本页与[路由与权限表](/reference/routes-and-permissions)。
+- 新增或移除菜单模块时，同步更新本页与[路由与权限表](/developer/admin/reference/routes-and-permissions)。
 - 后端才是数据约束和权限执行的最终边界；本页不复制后端 DTO 全量字段。
