@@ -1,0 +1,171 @@
+import { AxiosError, AxiosHeaders, CanceledError, type InternalAxiosRequestConfig } from 'axios';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { authService } from '../../../features/auth/api/service';
+
+const { showError } = vi.hoisted(() => ({ showError: vi.fn() }));
+vi.mock('antd', () => ({ message: { error: showError } }));
+vi.mock('../../../features/auth/model/device', () => ({
+  getDeviceId: () => 'test-device',
+  getDeviceInfo: () => ({ browser: 'test' }),
+}));
+
+function response(config: InternalAxiosRequestConfig, data: unknown = {}, status = 200) {
+  return { config, data, status, statusText: String(status), headers: new AxiosHeaders() };
+}
+
+function unauthorized(config: InternalAxiosRequestConfig) {
+  return new AxiosError(
+    'Unauthorized',
+    'ERR_BAD_REQUEST',
+    config,
+    undefined,
+    response(config, {}, 401)
+  );
+}
+
+describe('HTTP authentication and request handling', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    localStorage.clear();
+    vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.test///');
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('normalizes the base URL and applies a timeout to refresh requests', async () => {
+    const { http, baseClient } = await import('./http');
+    expect(http.defaults.baseURL).toBe('https://api.example.test');
+    expect(baseClient.defaults.baseURL).toBe('https://api.example.test');
+    expect(baseClient.defaults.timeout).toBe(15000);
+    expect(baseClient.defaults.withCredentials).toBe(true);
+  });
+
+  it('injects a token only for protected requests and preserves the caller request ID', async () => {
+    const { http, AUTH_ENDPOINTS } = await import('./http');
+    authService.setToken('existing-token');
+    http.defaults.adapter = async (config) => response(config);
+
+    const protectedResponse = await http.get('/api/projects', {
+      headers: { 'X-Request-Id': 'caller-id' },
+    });
+    expect(protectedResponse.config.headers.get('Authorization')).toBe('Bearer existing-token');
+    expect(protectedResponse.config.headers.get('x-request-id')).toBe('caller-id');
+
+    for (const url of Object.values(AUTH_ENDPOINTS)) {
+      const result = await http.post(url);
+      expect(result.config.headers.get('Authorization')).toBeUndefined();
+      expect(result.config.headers.get('x-request-id')).toEqual(expect.any(String));
+    }
+  });
+
+  it('generates a request ID when randomUUID is unavailable', async () => {
+    vi.stubGlobal('crypto', {});
+    const { http } = await import('./http');
+    http.defaults.adapter = async (config) => response(config);
+    const result = await http.get('/api/projects');
+    expect(result.config.headers.get('x-request-id')).toMatch(/^\d+-[a-z0-9]+$/);
+  });
+
+  it('shares one refresh for concurrent 401s and retries with the new token', async () => {
+    const { http, baseClient } = await import('./http');
+    authService.setToken('expired-token');
+    let releaseRefresh!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      releaseRefresh = resolve;
+    });
+    const refresh = vi.fn(async (config: InternalAxiosRequestConfig) => {
+      await gate;
+      return response(config, { accessToken: 'new-token' });
+    });
+    baseClient.defaults.adapter = refresh;
+    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => {
+      if (config.headers.get('Authorization') !== 'Bearer new-token') throw unauthorized(config);
+      return response(config);
+    });
+    http.defaults.adapter = requests;
+
+    const pending = Promise.all([http.get('/api/projects'), http.get('/api/users')]);
+    await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+    releaseRefresh();
+    const results = await pending;
+    expect(results).toHaveLength(2);
+    expect(requests).toHaveBeenCalledTimes(4);
+    expect(authService.getToken()).toBe('new-token');
+    expect(refresh.mock.calls[0][0].url).toBe('/api/auth/refresh-token');
+    expect(JSON.parse(refresh.mock.calls[0][0].data)).toMatchObject({
+      clientType: 'web',
+      deviceId: 'test-device',
+    });
+  });
+
+  it('clears credentials and emits one event when concurrent refresh attempts fail', async () => {
+    const { http, baseClient } = await import('./http');
+    authService.setToken('expired-token');
+    const dispatch = vi.spyOn(window, 'dispatchEvent');
+    baseClient.defaults.adapter = async (config) => {
+      throw unauthorized(config);
+    };
+    http.defaults.adapter = async (config) => {
+      throw unauthorized(config);
+    };
+
+    const results = await Promise.allSettled([http.get('/api/projects'), http.get('/api/users')]);
+    expect(results.every((result) => result.status === 'rejected')).toBe(true);
+    expect(authService.getToken()).toBeNull();
+    expect(
+      dispatch.mock.calls.filter(([event]) => event.type === 'auth-unauthorized')
+    ).toHaveLength(1);
+  });
+
+  it('logs out after a retried request is still unauthorized without refreshing again', async () => {
+    const { http, baseClient } = await import('./http');
+    const dispatch = vi.spyOn(window, 'dispatchEvent');
+    const refresh = vi.fn(async (config: InternalAxiosRequestConfig) =>
+      response(config, { accessToken: 'invalid-token' })
+    );
+    baseClient.defaults.adapter = refresh;
+    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => {
+      throw unauthorized(config);
+    });
+    http.defaults.adapter = requests;
+
+    await expect(http.get('/api/projects')).rejects.toMatchObject({ response: { status: 401 } });
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(requests).toHaveBeenCalledTimes(2);
+    expect(authService.getToken()).toBeNull();
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'auth-unauthorized' }));
+  });
+
+  it('does not refresh or log out for a rejected public login', async () => {
+    const { http, baseClient } = await import('./http');
+    authService.setToken('existing-token');
+    const refresh = vi.fn();
+    const dispatch = vi.spyOn(window, 'dispatchEvent');
+    baseClient.defaults.adapter = refresh;
+    http.defaults.adapter = async (config) => {
+      throw unauthorized(config);
+    };
+    await expect(http.post('/api/auth/login')).rejects.toMatchObject({ response: { status: 401 } });
+    expect(refresh).not.toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(authService.getToken()).toBe('existing-token');
+  });
+
+  it('rejects canceled requests without displaying an error', async () => {
+    const { http } = await import('./http');
+    const canceled = new CanceledError('Canceled');
+    http.defaults.adapter = async () => {
+      throw canceled;
+    };
+    await expect(http.get('/api/projects')).rejects.toBe(canceled);
+    expect(showError).not.toHaveBeenCalled();
+  });
+});

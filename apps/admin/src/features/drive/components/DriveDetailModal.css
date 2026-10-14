@@ -2,7 +2,9 @@
   border-radius: 16px;
   overflow: hidden;
   padding: 24px 28px;
-  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.18), 0 0 1px rgba(15, 23, 42, 0.12);
+  box-shadow:
+    0 20px 40px -15px rgba(15, 23, 42, 0.18),
+    0 0 1px rgba(15, 23, 42, 0.12);
 }
 
 /* Header Area */
