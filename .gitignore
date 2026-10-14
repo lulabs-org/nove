@@ -1,27 +1,19 @@
-# compiled output
-dist
-node_modules
-build
+# Root workspace dependencies and tool logs
+/node_modules/
+/*.log
+/npm-debug.log*
+/pnpm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+/lerna-debug.log*
 
-# Logs
-logs
-*.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-# Daily log files (runtime Docker logs, not source files)
-/apps/api/daily-log
+# Root-local environment files
+/.env
+/.env.*
+!/.env.example
 
 # OS
 .DS_Store
-
-# Tests
-coverage
-.nyc_output
-/apps/api/test/wechat-shop-sandbox
 
 # IDEs and editors
 /.idea
@@ -40,43 +32,6 @@ coverage
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test
-.env.test.local
-.env.production.local
-.env.local
-.env.bak
-
-# temp directory
-.temp
-.tmp
-/apps/api/temp-data
-
-# Database (if using local files)
-*.db
-*.db-journal
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Diagnostic reports (https://nodejs.org/api/report.html)
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-/apps/api/generated/prisma
-/apps/api/src/generated/prisma
-
-# Backup files
-/apps/api/scripts/backups
-/apps/api/scripts/csv_data
-
-# Documentation (auto-generated)
-/apps/api/documentation
-
 .codex/
 .specify/
 
@@ -84,12 +39,9 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .claude
 .kiro
 .trae
-# File Tree: nove_api.md
 
-# Workspace task cache
+# Turbo caches across workspace packages
 .turbo/
-*.tsbuildinfo
 
-# Generated API contract and pruned Docker workspaces
-/apps/api/openapi/
+# Pruned Docker workspaces
 /out/
