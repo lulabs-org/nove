@@ -19,3 +19,5 @@
 [Admin 工作区迁移记录](./migrations/admin.md)保留导入来源、迁移过程与旧仓库交接信息。日常开发以当前[契约与交付流程](./monorepo-delivery.md)及仓库配置为准。
 
 [项目文档迁移记录](./migrations/nove-doc.md)记录原 `nove-doc` 的固定来源、完整清单、目录映射和归档交接。
+
+[Skills 工作区迁移记录](./migrations/nove-skills.md)记录 Agent 技能的来源清单、工作区校验、安装依赖与旧仓库归档交接。

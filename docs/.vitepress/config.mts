@@ -256,6 +256,10 @@ export default withMermaid(
                 text: '项目文档迁移',
                 link: '/engineering/migrations/nove-doc',
               },
+              {
+                text: 'Skills 工作区迁移',
+                link: '/engineering/migrations/nove-skills',
+              },
             ],
           },
         ],

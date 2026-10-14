@@ -2,21 +2,22 @@
 
 面向组织数据与 Agent 接入的应用平台：连接会议、协作与交易数据，提供组织与权限管理、会议纪要与追踪报告、项目与文件管理、订单及分润等业务能力，通过 API 和 MCP 向管理后台、CLI 与 Agent 提供访问入口。
 
-本仓库使用 **pnpm Workspace + Turborepo**，统一维护后端 API、Admin 管理后台和项目文档。前后端通过同仓 OpenAPI 生成客户端，共用锁文件与 CI，应用依赖和环境配置分别管理。
+本仓库使用 **pnpm Workspace + Turborepo**，统一维护后端 API、Admin 管理后台、Agent 技能和项目文档。前后端通过同仓 OpenAPI 生成客户端，共用锁文件与 CI，应用依赖和环境配置分别管理。
 
 [项目文档](./docs/project/index.md) · [工程指南](./docs/engineering/index.md) · [API 开发](./docs/developer/api/architecture/index.md) · [Admin 开发](./docs/developer/admin/guides/getting-started.md) · [用户指南](./docs/user/index.md)
 
-> 原 [nove-admin](https://github.com/lulabs-org/nove-admin) 和 [nove-doc](https://github.com/lulabs-org/nove-doc) 已迁入本仓库并归档。新的开发、文档修改、Issues 和 PR 请提交到 **nove-api**；旧仓库保留历史代码与讨论。
+> 原 [nove-admin](https://github.com/lulabs-org/nove-admin)、[nove-doc](https://github.com/lulabs-org/nove-doc) 和 [nove-skills](https://github.com/lulabs-org/nove-skills) 的内容统一迁入本仓库维护。新的开发、文档修改、Issues 和 PR 请提交到 **nove**；旧仓库保留历史代码与讨论。
 
 ## 仓库组成
 
-| 工作区        | 位置                         | 职责与技术栈                                                                    |
-| ------------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| `@nove/api`   | [`apps/api`](./apps/api)     | NestJS 11、Prisma 7、PostgreSQL、Redis / BullMQ；业务 API、后台任务与第三方集成 |
-| `@nove/admin` | [`apps/admin`](./apps/admin) | React 19、Vite、Ant Design、TanStack Query；组织、业务与系统管理界面            |
-| `@nove/docs`  | [`docs`](./docs)             | VitePress；项目级文档、API/Admin 开发指南、工程协作和路线图                     |
+| 工作区         | 位置                                   | 职责与技术栈                                                                            |
+| -------------- | -------------------------------------- | --------------------------------------------------------------------------------------- |
+| `@nove/api`    | [`apps/api`](./apps/api)               | NestJS 11、Prisma 7、PostgreSQL、Redis / BullMQ；业务 API、后台任务与第三方集成         |
+| `@nove/admin`  | [`apps/admin`](./apps/admin)           | React 19、Vite、Ant Design、TanStack Query；组织、业务与系统管理界面                    |
+| `@nove/docs`   | [`docs`](./docs)                       | VitePress；项目级文档、API/Admin 开发指南、工程协作和路线图                             |
+| `@nove/skills` | [`packages/skills`](./packages/skills) | Agent 技能、API 参考与技能校验；安装方式见 [Skills README](./packages/skills/README.md) |
 
-[Nove CLI](https://github.com/lulabs-org/nove-cli) 和 [Nove Skills](https://github.com/lulabs-org/nove-skills) 继续在各自仓库维护。
+[Nove CLI](https://github.com/lulabs-org/nove-cli) 继续在独立仓库维护。技能校验运行 `pnpm skills:check`，校验器测试运行 `pnpm skills:test`。
 
 ## 业务模块
 
@@ -37,8 +38,8 @@
 使用 Node.js 22.12+（建议与 CI 一致使用 **22.23.1**）和 **pnpm 9.15.9**。
 
 ```bash
-git clone https://github.com/lulabs-org/nove-api.git
-cd nove-api
+git clone https://github.com/lulabs-org/nove.git
+cd nove
 pnpm install --frozen-lockfile
 ```
 

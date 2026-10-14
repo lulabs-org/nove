@@ -1,0 +1,15 @@
+{
+  "name": "@nove/skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Nove Agent skills and API references",
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "lint": "pnpm check",
+    "test": "node --test scripts/*.test.mjs"
+  },
+  "devDependencies": {
+    "yaml": "2.8.2"
+  }
+}

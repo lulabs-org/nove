@@ -1,0 +1,32 @@
+{
+  "sourceRepository": "https://github.com/lulabs-org/nove-skills",
+  "sourceBranch": "develop",
+  "sourceCommit": "513103fbe559c488697b03a7896123b4d78fb5f2",
+  "files": [
+    {
+      "source": "meeting-summarization/SKILL.md",
+      "destination": "packages/skills/meeting-summarization/SKILL.md",
+      "sha256": "57528486bb5dd92ae50e683381504062873679a71135f37c848446ebb645e319"
+    },
+    {
+      "source": "nove-api/SKILL.md",
+      "destination": "packages/skills/nove-api/SKILL.md",
+      "sha256": "8b0d3111273a3c197582b45ef63efa8a9ce25da76d4a81bcddd694320250c2bf"
+    },
+    {
+      "source": "nove-api/references/meeting-api.md",
+      "destination": "packages/skills/nove-api/references/meeting-api.md",
+      "sha256": "39c6fa18b89d3c2470318a13bcf699515c58111f80fb75bea93cd0b1e4b5d7eb"
+    },
+    {
+      "source": "nove-api/references/user-api.md",
+      "destination": "packages/skills/nove-api/references/user-api.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "speaker-summary-sweep/SKILL.md",
+      "destination": "packages/skills/speaker-summary-sweep/SKILL.md",
+      "sha256": "f31bb33a3d015b435085c5d1fb35733f4aee14e9fb4fdca8a241eacca0b479fb"
+    }
+  ]
+}

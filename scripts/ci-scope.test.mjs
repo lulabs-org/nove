@@ -27,6 +27,7 @@ function fixture() {
     'apps/api/package.json',
     'apps/admin/package.json',
     'docs/package.json',
+    'packages/skills/package.json',
   ]) {
     mkdirSync(dirname(resolve(cwd, name)), { recursive: true });
     copyFileSync(resolve(root, name), resolve(cwd, name));
@@ -56,13 +57,15 @@ function fixture() {
   };
 }
 
-for (const [file, api, admin, docs] of [
+for (const [file, api, admin, docs, skills = false] of [
   ['apps/api/src/example.ts', true, true, false],
   ['apps/admin/src/example.tsx', false, true, false],
   ['docs/guide.md', false, false, true],
   ['docs/developer/admin/guides/getting-started.md', false, false, true],
-  ['.github/workflows/ci.yml', true, true, true],
-  ['Dockerfile', true, true, true],
+  ['packages/skills/meeting-summarization/SKILL.md', false, false, false, true],
+  ['packages/skills/scripts/check.mjs', false, false, false, true],
+  ['.github/workflows/ci.yml', true, true, true, true],
+  ['Dockerfile', true, true, true, true],
 ]) {
   test(`affected scope: ${file}`, () => {
     const f = fixture();
@@ -76,6 +79,8 @@ for (const [file, api, admin, docs] of [
       assert.equal(scope.admin, admin);
       assert.equal(scope.tasks.includes('@nove/admin#test'), admin);
       assert.equal(scope.tasks.includes('@nove/docs#build'), docs);
+      assert.equal(scope.tasks.includes('@nove/skills#lint'), skills);
+      assert.equal(scope.tasks.includes('@nove/skills#test'), skills);
     } finally {
       f.cleanup();
     }
@@ -101,6 +106,8 @@ test('missing push history falls back to a full run', () => {
     assert.equal(scope.filter, '');
     assert.equal(scope.api, true);
     assert.equal(scope.admin, true);
+    assert.equal(scope.tasks.includes('@nove/skills#lint'), true);
+    assert.equal(scope.tasks.includes('@nove/skills#test'), true);
   } finally {
     f.cleanup();
   }

@@ -54,7 +54,9 @@
     "lint:admin": "turbo run lint --filter=@nove/admin",
     "generate:openapi": "turbo run generate:openapi --filter=@nove/api",
     "ci:scope": "node scripts/ci-scope.mjs",
-    "test:workspace": "node --test scripts/*.test.mjs"
+    "test:workspace": "node --test scripts/*.test.mjs",
+    "skills:check": "pnpm --filter @nove/skills run check",
+    "skills:test": "pnpm --filter @nove/skills run test"
   },
   "devDependencies": {
     "prettier": "^3.4.2",

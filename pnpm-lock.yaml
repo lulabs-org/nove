@@ -497,6 +497,12 @@ importers:
         specifier: ^3.5.31
         version: 3.5.38(typescript@5.9.3)
 
+  packages/skills:
+    devDependencies:
+      yaml:
+        specifier: 2.8.2
+        version: 2.8.2
+
 packages:
 
   '@acemir/cssom@0.9.30':
