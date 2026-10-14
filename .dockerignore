@@ -152,3 +152,10 @@ temp/
 apps/api/src/generated/prisma
 apps/api/prisma/migrations
 apps/api/prisma/seed.ts
+
+# Generated contracts and local prune output
+apps/api/openapi
+apps/admin/src/shared/lib/api/orval
+out
+**/*.test.tsx
+**/*.spec.tsx

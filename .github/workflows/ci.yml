@@ -6,6 +6,13 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -43,6 +50,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -58,35 +67,66 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma Client
-        run: pnpm db:generate
+      - name: Determine affected tasks
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: pnpm ci:scope
 
-      - name: Lint
-        run: pnpm lint
+      - name: Verify workspace task selection
+        run: pnpm test:workspace
 
-      - name: Lint_prisma
-        run: pnpm lint:prisma
+      - name: Restore Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-turbo-
 
-      - name: Format check
-        run: pnpm format:check
+      - name: Prepare test database
+        if: steps.scope.outputs.api == 'true'
+        run: |
+          pnpm db:generate
+          pnpm prisma validate
+          pnpm prisma migrate deploy
 
-      - name: Prisma validate
-        run: pnpm prisma validate
-
-      - name: Prisma migrate
-        run: pnpm prisma migrate deploy
-
-      - name: Build
-        run: pnpm build:api
-
-      - name: Run unit tests
-        run: pnpm test:unit
+      - name: Validate affected workspaces
+        if: steps.scope.outputs.work == 'true'
+        env:
+          SCOPE_FILTER: ${{ steps.scope.outputs.filter }}
+          INCLUDE_ADMIN: ${{ steps.scope.outputs.includeAdmin }}
+        run: |
+          args=()
+          if [[ -n "$SCOPE_FILTER" ]]; then args+=("$SCOPE_FILTER"); fi
+          if [[ "$INCLUDE_ADMIN" == "true" ]]; then args+=("--filter=@nove/admin"); fi
+          pnpm exec turbo run lint lint:prisma format:check test build "${args[@]}" --concurrency=2
 
       - name: Prisma PostgreSQL compatibility tests
+        if: steps.scope.outputs.api == 'true'
         run: pnpm --filter @nove/api exec jest --selectProjects integration --runInBand test/integration/prisma/prisma7.int-spec.ts
 
-      - name: Build Admin
-        run: pnpm build:admin
+      - name: Set up Docker Buildx
+        if: steps.scope.outputs.api == 'true' || steps.scope.outputs.admin == 'true'
+        uses: docker/setup-buildx-action@v3
 
-      - name: Run Admin unit tests
-        run: pnpm test:admin
+      - name: Verify API image
+        if: steps.scope.outputs.api == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
+
+      - name: Verify Admin image
+        if: steps.scope.outputs.admin == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.admin
+          push: false
+          build-args: VITE_API_BASE_URL=https://api.example.invalid
+          cache-from: type=gha,scope=admin
+          cache-to: type=gha,scope=admin,mode=max

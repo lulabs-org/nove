@@ -42,22 +42,25 @@
     "format:check": "pnpm --filter @nove/api run format:check",
     "dev": "turbo run dev",
     "dev:api": "pnpm --filter @nove/api run start:dev",
-    "dev:admin": "pnpm --filter @nove/admin --fail-if-no-match run dev",
+    "dev:admin": "turbo run dev --filter=@nove/admin",
     "build:api": "pnpm --filter @nove/api run build",
-    "build:admin": "pnpm --filter @nove/admin --fail-if-no-match run build",
-    "generate:api": "pnpm --filter @nove/admin --fail-if-no-match run generate:api",
+    "build:admin": "turbo run build --filter=@nove/admin",
+    "generate:api": "turbo run generate:client --filter=@nove/admin",
     "docs:dev": "pnpm --filter nove-api-docs run docs:dev",
     "docs:build": "pnpm --filter nove-api-docs run docs:build",
     "prisma": "pnpm --filter @nove/api exec prisma",
     "compose": "docker compose --env-file apps/api/.env",
-    "test:admin": "pnpm --filter @nove/admin run test",
-    "lint:admin": "pnpm --filter @nove/admin run lint",
+    "test:admin": "turbo run test --filter=@nove/admin",
+    "lint:admin": "turbo run lint --filter=@nove/admin",
     "docs:admin:dev": "pnpm --filter @nove/admin-docs run dev",
-    "docs:admin:build": "pnpm --filter @nove/admin-docs run build"
+    "docs:admin:build": "pnpm --filter @nove/admin-docs run build",
+    "generate:openapi": "turbo run generate:openapi --filter=@nove/api",
+    "ci:scope": "node scripts/ci-scope.mjs",
+    "test:workspace": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
     "prettier": "^3.4.2",
-    "turbo": "^2.4.0",
+    "turbo": "2.11.7",
     "typescript": "^5.7.3"
   },
   "engines": {

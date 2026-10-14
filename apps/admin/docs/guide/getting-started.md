@@ -26,6 +26,7 @@ VITE_API_BASE_URL=http://localhost:3000
 启动应用：
 
 ```bash
+pnpm generate:api
 pnpm dev
 ```
 
@@ -48,4 +49,4 @@ pnpm dev
 - 业务实现：`src/features/`
 - HTTP 与生成客户端：`src/shared/lib/api/`
 
-工作区安装会自动从冻结 OpenAPI 快照生成客户端。使用 `--ignore-scripts` 时，须手动运行 `pnpm generate:api:snapshot`；这一步不需要在线 API。
+根目录 `pnpm dev:admin` 会自动生成契约。直接使用应用级命令前先执行 `pnpm generate:api`；它从同仓 API 离线导出规范，无需在线 API 或私有配置。

@@ -10,8 +10,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
-    "api:generate": "orval",
-    "gen:api": "orval --config orval.config.ts",
+    "api:generate": "pnpm generate:api",
+    "gen:api": "pnpm generate:api",
     "gen:api:watch": "orval --config orval.config.ts --watch",
     "test": "vitest run",
     "test:ui": "vitest --ui",
@@ -22,9 +22,8 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:install": "playwright install",
     "test:watch": "vitest",
-    "generate:api": "orval --config orval.config.ts",
-    "postinstall": "pnpm generate:api:snapshot",
-    "generate:api:snapshot": "orval --config orval.snapshot.config.ts"
+    "generate:api": "pnpm --dir ../.. generate:api",
+    "generate:client": "orval --config orval.config.ts"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",

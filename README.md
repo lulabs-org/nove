@@ -37,18 +37,20 @@ Nove API 的所有文档（包括架构设计、API 参考、开发指南、第�
 - [**📖 完整文档目录**](./docs/index.md) - 浏览所有文档入口。
 
 > **提示**：您也可以在本地运行以下命令启动文档站点：
+>
 > ```bash
 > cd docs
 > pnpm install --frozen-lockfile
 > pnpm run docs:dev
 > ```
+>
 > 随后访问 `http://localhost:5174` 即可获得最佳的阅读体验。
 
 ---
 
 ## 工作区结构
 
-本仓库已完成 Monorepo 的工作区初始化、后端迁移和 Admin 导入（Issue #510 阶段 1–3）：
+本仓库已完成 Monorepo 的工作区初始化、后端迁移和 Admin 导入，并接入同仓契约生成、按变更验证和独立容器构建（Issue #510 阶段 1–5 的代码实现）：
 
 ```text
 apps/api/           # @nove/api：NestJS 源码、Prisma、测试、脚本与独立依赖
@@ -67,7 +69,7 @@ tsconfig.base.json  # 通用编译选项；Node/DOM 与路径配置由应用各�
 turbo.json          # 构建缓存及任务调度
 ```
 
-根目录运行 `pnpm dev` / `pnpm build` 会调度当前 API、Admin 与两个文档站；`pnpm dev:api` / `pnpm build:api` 只操作后端，`pnpm dev:admin` / `pnpm build:admin` 只操作前端。`pnpm lint` / `pnpm test` 调度应用对应任务，测试仍包含原有各测试项目，需要隔离数据库等服务；仅运行单元测试请用 `pnpm test:unit --runInBand`。
+根目录运行 `pnpm dev` / `pnpm build` 会调度当前 API、Admin 与两个文档站；`pnpm dev:api` / `pnpm build:api` 只操作后端，`pnpm dev:admin` / `pnpm build:admin` 只操作前端。`pnpm lint` / `pnpm test` 调度应用对应任务，默认测试为 API 单元测试和 Admin 测试；API 集成/E2E 使用 `pnpm test:all` 并准备隔离数据库等服务。Admin 任务自动先生成最新契约。
 
 根目录的 `start:*`、`db:*`、`test:*` 等原有命令继续转发给 API。需要直接调用应用工具时，使用 `pnpm --filter @nove/api exec <工具>`，例如 `pnpm --filter @nove/api exec jest --selectProjects unit --runInBand`。维护脚本从 `apps/api` 执行，Docker 构建脚本会自动定位仓库根目录。
 
@@ -75,7 +77,7 @@ turbo.json          # 构建缓存及任务调度
 
 从旧目录升级时，将本地 `.env`、`.env.test` 和其他 API 私有配置迁至 `apps/api/`，重新运行 `pnpm install --frozen-lockfile`。如使用相对路径的运行数据（例如 `temp-data`），也应迁至应用目录。Docker Compose 使用 `pnpm compose up -d`，统一读取 `apps/api/.env`。Admin 配置独立保存在 `apps/admin/.env.local`（从同目录 `.env.example` 复制），通过 `VITE_API_BASE_URL` 指向后端。
 
-Admin 按 #511 方案 C 从 `lulabs-org/nove-admin` 的 `4a832f211290c40fc707818624b7444d52be9c2a` 单点导入，历史提交继续在原仓库查询。详见 [Admin 迁移记录](./docs/developer/guides/collaboration/admin-migration.md)。`pnpm generate:api` 转发到现有 Orval 配置，默认读取冻结快照（可用 `ORVAL_API_TARGET` 覆盖）；同仓契约生成属于阶段 4。CI/Docker 本次仅修正迁移必需的路径，受影响应用检测和 `turbo prune` 留待阶段 5。
+Admin 按 #511 方案 C 从 `lulabs-org/nove-admin` 的 `4a832f211290c40fc707818624b7444d52be9c2a` 单点导入，历史提交继续在原仓库查询。详见 [Admin 迁移记录](./docs/developer/guides/collaboration/admin-migration.md)。`pnpm generate:api` 会编译 API、离线导出 OpenAPI，再生成 Admin 客户端；无需启动服务或提供私有配置。CI 使用 PR 完整差异或 push 前后差异选择任务，API 改动也验证 Admin。API 和 Admin 分别通过 `Dockerfile`、`Dockerfile.admin` 构建。详见 [契约与交付工作流](./docs/developer/guides/collaboration/monorepo-delivery.md)。
 
 ---
 
@@ -113,6 +115,7 @@ pnpm start:dev
 ```
 
 启动成功后可访问以下本地服务：
+
 - **Swagger API 接口文档**: `http://localhost:3000/api`
 - **GraphQL 调试面板 (Playground)**: `http://localhost:3000/graphql`
 

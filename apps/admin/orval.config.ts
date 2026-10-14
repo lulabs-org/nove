@@ -10,14 +10,11 @@
  */
 
 import { defineConfig } from 'orval';
-import { config } from 'dotenv';
-
-config({ quiet: true });
 
 export const clientConfig = {
   noveApi: {
     input: {
-      target: process.env.ORVAL_API_TARGET || './openapi.snapshot.json',
+      target: '../api/openapi/openapi.json',
     },
     output: {
       mode: 'tags' as const,
@@ -25,6 +22,7 @@ export const clientConfig = {
       schemas: 'src/shared/lib/api/orval/business/schemas',
       client: 'react-query' as const,
       prettier: true,
+      clean: true,
       override: {
         mutator: {
           path: 'src/shared/lib/api/mutator.ts',

@@ -1,7 +1,15 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "agentGuidance": false,
-  "globalDependencies": ["tsconfig.base.json", ".prettierrc"],
+  "globalDependencies": [
+    "tsconfig.base.json",
+    ".prettierrc",
+    ".github/workflows/**",
+    "Dockerfile",
+    "Dockerfile.admin",
+    "scripts/*.mjs",
+    "deploy/**"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -20,7 +28,7 @@
       "passThroughEnv": ["*"]
     },
     "@nove/admin#build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["generate:client"],
       "inputs": [
         "$TURBO_DEFAULT$",
         ".env",
@@ -29,7 +37,50 @@
         ".env.production.local"
       ],
       "env": ["VITE_*", "NODE_ENV"],
-      "outputs": ["dist/**", "src/shared/lib/api/orval/**"]
+      "outputs": ["dist/**"]
+    },
+    "@nove/api#generate:openapi": {
+      "dependsOn": ["build"],
+      "outputs": ["openapi/openapi.json"]
+    },
+    "@nove/api#lint": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "@nove/api#lint:prisma": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "@nove/api#format:check": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "@nove/api#test": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "passThroughEnv": ["*"]
+    },
+    "@nove/admin#generate:client": {
+      "dependsOn": ["@nove/api#generate:openapi"],
+      "outputs": ["src/shared/lib/api/orval/**"],
+      "inputs": ["$TURBO_DEFAULT$"]
+    },
+    "@nove/admin#lint": {
+      "dependsOn": ["generate:client"],
+      "cache": false,
+      "inputs": ["$TURBO_DEFAULT$"]
+    },
+    "@nove/admin#test": {
+      "dependsOn": ["build", "lint"],
+      "cache": false,
+      "passThroughEnv": ["*"],
+      "inputs": ["$TURBO_DEFAULT$"]
+    },
+    "@nove/admin#dev": {
+      "dependsOn": ["generate:client"],
+      "cache": false,
+      "passThroughEnv": ["*"],
+      "persistent": true
     }
   }
 }

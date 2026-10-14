@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule, OpenAPIObject } from '@nestjs/swagger';
 import { RedocModule, RedocOptions } from 'nestjs-redoc';
 import { OAUTH_SCOPES } from '@/oauth/constants/oauth.constants';
 
 /**
  * 初始化 Swagger 及 Redoc API 文档服务
  */
-export async function setupSwagger(app: INestApplication): Promise<void> {
+export function createSwaggerDocument(app: INestApplication): OpenAPIObject {
   // 1. Swagger / OpenAPI 规范配置
   const config = new DocumentBuilder()
     .setTitle('Nove API')
@@ -47,7 +47,11 @@ export async function setupSwagger(app: INestApplication): Promise<void> {
     )
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  return SwaggerModule.createDocument(app, config);
+}
+
+export async function setupSwagger(app: INestApplication): Promise<void> {
+  const document = createSwaggerDocument(app);
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       persistAuthorization: true,

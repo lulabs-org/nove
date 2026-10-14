@@ -23,9 +23,7 @@
 | `pnpm gen:api:watch` | 监听 OpenAPI 并持续生成         |
 | `pnpm api:generate`  | `pnpm gen:api` 的等价入口       |
 
-默认使用随迁移冻结的 `openapi.snapshot.json`。可以设置 `ORVAL_API_TARGET` 来覆盖输入，值为 OpenAPI JSON 的可访问地址或兼容输入。
-
-工作区安装的 `postinstall` 固定执行 `pnpm generate:api:snapshot`，不依赖在线 API，也不受 `ORVAL_API_TARGET` 影响。禁用安装脚本时，请手动执行该命令。
+`pnpm generate:api`、`pnpm gen:api` 和 `pnpm api:generate` 都通过根 Turbo 链路编译 API、离线导出 `apps/api/openapi/openapi.json`，再生成客户端。输入固定为同仓契约，移除了 `ORVAL_API_TARGET` 远程覆盖和安装时快照生成。`gen:api:watch` 仅监听已导出的 JSON；后端修改后需重新导出。
 
 ## 文档脚本
 
@@ -39,9 +37,8 @@
 
 ## 环境变量
 
-| 变量                | 使用阶段       | 说明                               |
-| ------------------- | -------------- | ---------------------------------- |
-| `VITE_API_BASE_URL` | 开发与应用构建 | Nove API 根地址；会进入浏览器产物  |
-| `ORVAL_API_TARGET`  | API 生成       | OpenAPI 输入地址，不进入应用运行时 |
+| 变量                | 使用阶段       | 说明                              |
+| ------------------- | -------------- | --------------------------------- |
+| `VITE_API_BASE_URL` | 开发与应用构建 | Nove API 根地址；会进入浏览器产物 |
 
 不要在 `VITE_` 变量中保存密钥。所有 `VITE_` 值都应被视为对浏览器用户可见。

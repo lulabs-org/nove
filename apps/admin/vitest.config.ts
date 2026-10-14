@@ -5,7 +5,8 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    maxWorkers: 2,
+    // Turbo can run API tests concurrently; keep one frontend worker in CI.
+    maxWorkers: process.env.CI ? 1 : 2,
     // Full Ant Design interactions take longer on shared CI runners.
     testTimeout: process.env.CI ? 15_000 : 5_000,
     environment: 'jsdom',

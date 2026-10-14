@@ -2,7 +2,18 @@ name: build-and-push-docker
 
 on:
   push:
-    branches: ["main", "release"]
+    branches: ['main', 'release']
+    paths:
+      - apps/api/**
+      - packages/**
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - turbo.json
+      - tsconfig.base.json
+      - Dockerfile
+      - .dockerignore
+      - .github/workflows/docker.yml
     tags: |
       v*.*.*
       v*.*.*-alpha.*
@@ -12,8 +23,8 @@ on:
 
 permissions:
   contents: read
-  packages: write        # 推 GHCR 必须
-  id-token: write        # 可选（未来用 OIDC）
+  packages: write # 推 GHCR 必须
+  id-token: write # 可选（未来用 OIDC）
 
 jobs:
   docker:
@@ -52,7 +63,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64  # 明确指定平台
+          platforms: linux/amd64,linux/arm64 # 明确指定平台
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

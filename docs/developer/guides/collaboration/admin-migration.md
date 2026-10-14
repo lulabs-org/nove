@@ -33,9 +33,7 @@ pnpm docs:admin:build
 
 Admin 的 `VITE_API_BASE_URL` 在构建时写入静态产物。Turbo 会把 `VITE_*` 环境变量和应用的生产环境文件纳入 Admin 构建缓存，避免不同 API 地址复用错误产物。前端的 DOM/ESM 设置独立保留，仅继承公共 TS 基础选项。
 
-`pnpm generate:api` 已转发到现有 Orval 入口，默认使用冻结快照，也可通过 `ORVAL_API_TARGET` 指定输入。为修复原仓库忽略生成客户端导致干净构建失败的问题，新增 `openapi.snapshot.json`。该快照来自 2026-10-13 阶段 1–2 验证实例的 `/api-json`（API 提交 `6ed4a204b4d8aa9a9c2f567e88fe4b44ca674975`），已确认当前 API 基线 `20d0c09b68ec12e37f1fe6856f0b6443af5e9b00` 的源码与 Prisma Schema 完全一致。
-
-安装时 `postinstall` 固定使用快照生成客户端，不读取远程规范。若安装时禁用了脚本，手动运行 `pnpm --filter @nove/admin run generate:api:snapshot`。生成目录继续忽略，不提交手改文件。该快照只是迁移构建基线，同仓 OpenAPI 自动导出与更新链路属于阶段 4。
+阶段 3 曾使用冻结 OpenAPI 快照保证迁入后能够构建。阶段 4 已将其替换为同仓 API 的离线导出，删除快照与安装时生成脚本。现在根目录 Admin 任务通过 Turbo 自动编译 API、导出规范并生成客户端，生成产物继续忽略。具体流程见 [契约与交付工作流](./monorepo-delivery.md)。
 
 ## 构建兼容修正
 
@@ -54,4 +52,4 @@ Admin 的 `VITE_API_BASE_URL` 在构建时写入静态产物。Turbo 会把 `VIT
 
 这些 PR 的未合并改动不属于本次主干快照，不能视为已迁入。按第三阶段要求，集成验证完成后将旧仓库归档为只读；未合并工作保留在原 PR 中，后续需在 Monorepo 重新提交。归档不会关闭或合并这些 PR，也不会自动切换 Vercel 项目、域名或环境变量。归档的实际执行状态以本次集成 PR 的交付说明为准。
 
-归档后，旧 commit、PR 和 Issue 继续保留用于历史查询；新开发应提交至 Monorepo。#510 的阶段 4–5 尚待实施，因此本次 PR 仅使用引用，不自动关闭整体 Issue。
+归档后，旧 commit、PR 和 Issue 继续保留用于历史查询；新开发应提交至 Monorepo。阶段 4–5 的代码实现已接入；旧仓库归档此前被自动审批拦截，仍需明确授权。完成归档前，#510 保持打开。

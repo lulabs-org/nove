@@ -13,6 +13,8 @@
 
 ## 命令
 
+首次安装或后端契约修改后，先执行 `pnpm generate:api`。从工作区根运行 `pnpm test:admin` 会自动准备契约。
+
 ```bash
 pnpm test:watch        # 监听模式
 pnpm test:run          # 单次运行

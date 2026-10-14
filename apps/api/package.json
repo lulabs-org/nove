@@ -15,7 +15,7 @@
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "lint:prisma": "eslint \"prisma/**/*.ts\"",
     "compodoc": "compodoc -p tsconfig.json -s -o",
-    "test": "jest",
+    "test": "jest --selectProjects unit --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -44,7 +44,8 @@
     "mcp:inspect:sse": "npx @modelcontextprotocol/inspector --transport sse --server-url http://localhost:3000/sse",
     "mcp:inspect:http": "npx @modelcontextprotocol/inspector --transport http --server-url http://localhost:3000/mcp",
     "dev": "pnpm start:dev",
-    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"prisma/**/*.ts\""
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"prisma/**/*.ts\"",
+    "generate:openapi": "node dist/src/openapi/export-openapi.js"
   },
   "dependencies": {
     "@alicloud/credentials": "^2.4.5",

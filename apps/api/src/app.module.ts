@@ -69,6 +69,7 @@ import { SkillModule } from './skill/skill.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: process.env.OPENAPI_EXPORT === 'true',
       expandVariables: true,
       load: [redisConfig],
     }),

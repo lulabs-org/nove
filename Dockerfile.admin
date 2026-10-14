@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1
+FROM node:22.23.1-alpine AS base
+RUN corepack enable
+WORKDIR /usr/src/app
+
+FROM base AS pruner
+RUN npm install --global turbo@2.11.7
+COPY . .
+# The API is a build-time contract dependency; no API files enter the Nginx image.
+RUN turbo prune @nove/admin @nove/api --docker
+
+FROM base AS build
+COPY --from=pruner /usr/src/app/out/json/ ./
+RUN pnpm install --frozen-lockfile
+COPY --from=pruner /usr/src/app/out/full/ ./
+COPY tsconfig.base.json .prettierrc ./
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+RUN test -n "$VITE_API_BASE_URL" && pnpm build:admin
+
+FROM nginxinc/nginx-unprivileged:1.28-alpine AS production
+COPY deploy/admin.nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /usr/src/app/apps/admin/dist /usr/share/nginx/html
+EXPOSE 8080

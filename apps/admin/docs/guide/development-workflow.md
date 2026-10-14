@@ -20,6 +20,7 @@
 ## 提交前检查
 
 ```bash
+pnpm generate:api
 pnpm lint
 pnpm test:run
 pnpm build
@@ -34,7 +35,7 @@ git diff --check
 当后端 OpenAPI 发生变化时：
 
 ```bash
-ORVAL_API_TARGET=<openapi-json-url> pnpm gen:api
+pnpm generate:api
 ```
 
 审查生成差异后，再调整 feature API 包装和调用方。不要把生成文件中的临时手改作为修复方案。
