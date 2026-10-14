@@ -38,7 +38,7 @@ export default withMermaid(
         },
         {
           text: 'Admin 开发',
-          link: '/developer/admin/',
+          link: '/developer/admin/guide/getting-started',
           activeMatch: '^/developer/admin/',
         },
         { text: '用户指南', link: '/user/', activeMatch: '^/user/' },
@@ -54,7 +54,6 @@ export default withMermaid(
           {
             text: 'Admin 开发指南',
             items: [
-              { text: 'Admin 文档首页', link: '/developer/admin/' },
               {
                 text: '快速开始',
                 link: '/developer/admin/guide/getting-started',

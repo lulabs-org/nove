@@ -30,7 +30,7 @@ pnpm docs:build
 
 ## 项目文档
 
-完整的架构、模块、开发与部署说明位于 [`docs/developer/admin/`](../../docs/developer/admin/index.md)。本地启动：
+完整的架构、模块、开发与部署说明位于 [`docs/developer/admin/`](../../docs/developer/admin/guide/getting-started.md)。本地启动：
 
 ```bash
 pnpm docs:dev

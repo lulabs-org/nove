@@ -7,7 +7,7 @@
 - [同仓契约与交付流程](./collaboration/monorepo-delivery.md)：API 编译、OpenAPI 导出、Admin 客户端生成、按变更验证与独立镜像。
 - [Admin 工作区迁移记录](./collaboration/admin-migration.md)：Admin 导入来源、工作区边界和旧仓库交接。
 
-前后端实现细节分别见 [API 后端架构](../architecture/index.md)和 [Admin 开发文档](../admin/index.md)。
+前后端实现细节分别见 [API 后端架构](../architecture/index.md)和 [Admin 开发文档](../admin/guide/getting-started.md)。
 
 ## 团队协作与工程规范
 

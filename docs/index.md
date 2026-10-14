@@ -14,7 +14,7 @@ hero:
       link: /developer/architecture/
     - theme: alt
       text: Admin 开发
-      link: /developer/admin/
+      link: /developer/admin/guide/getting-started
     - theme: alt
       text: 用户指南
       link: /user/

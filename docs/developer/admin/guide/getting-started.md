@@ -41,7 +41,7 @@ pnpm docs:dev
 pnpm docs:build # 提交前严格检查内部链接并生成静态站点
 ```
 
-访问 `http://localhost:5174/developer/admin/` 阅读 Admin 文档。修改 `docs/` 下的 Markdown 或 VitePress 配置后会热更新。
+访问 `http://localhost:5174/developer/admin/guide/getting-started.html` 阅读 Admin 文档。修改 `docs/` 下的 Markdown 或 VitePress 配置后会热更新。
 
 ## 首次定位代码
 

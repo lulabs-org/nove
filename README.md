@@ -35,7 +35,7 @@ Nove API 的所有文档（包括架构设计、API 参考、开发指南、第�
 - [**👨‍💻 工程指南**](./docs/developer/guides/index.md) - 同仓契约生成、协作、测试和部署流程。
 - [**API 开发文档**](./docs/developer/architecture/index.md) - 后端架构、业务模块与第三方集成。
 - [**👤 用户文档**](./docs/user/index.md) - 面向系统最终用户与 API 调用方，包含如何使用系统功能、API 接口指引、常见问题等。
-- [**🖥️ Admin 开发文档**](./docs/developer/admin/index.md) - 管理后台的架构、模块、开发与部署。
+- [**🖥️ Admin 开发文档**](./docs/developer/admin/guide/getting-started.md) - 管理后台的架构、模块、开发与部署。
 - [**📖 完整文档目录**](./docs/index.md) - 浏览所有文档入口。
 
 > **提示**：您也可以在本地运行以下命令启动文档站点：
