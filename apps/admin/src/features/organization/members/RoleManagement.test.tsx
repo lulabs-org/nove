@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import message from 'antd/es/message';
 import type { ReactNode } from 'react';
 import { RoleManagement } from './RoleManagement';
 
@@ -44,7 +45,10 @@ vi.mock('../../governance/permissions/api/permissionManagementApi', () => ({
 }));
 
 describe('RoleManagement', () => {
+  let queryClient: QueryClient;
+
   beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     vi.clearAllMocks();
     vi.stubGlobal(
       'ResizeObserver',
@@ -110,11 +114,24 @@ describe('RoleManagement', () => {
     apiMocks.permissionTree.mockResolvedValue([]);
   });
 
+  afterEach(async () => {
+    // Static messages live outside the render root and outlast RTL's automatic cleanup.
+    await act(async () => {
+      cleanup();
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      message.destroy();
+    });
+    await waitFor(() => {
+      expect(document.querySelector('.ant-message-notice')).not.toBeInTheDocument();
+    });
+    vi.unstubAllGlobals();
+  });
+
   it.each(['single', 'batch'])(
     'removes only the selected role binding after confirmation (%s)',
     async (mode) => {
       apiMocks.unbindMember.mockResolvedValue(undefined);
-      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
       render(
         <QueryClientProvider client={queryClient}>
           <RoleManagement />
@@ -132,13 +149,13 @@ describe('RoleManagement', () => {
       fireEvent.click(screen.getByRole('button', { name: '确认移除' }));
       await waitFor(() => expect(apiMocks.unbindMember).toHaveBeenCalledWith('org-1', 'binding-1'));
       expect(apiMocks.unbindMember).toHaveBeenCalledTimes(1);
+      expect(await screen.findByText('已从角色中移除成员')).toBeInTheDocument();
       await waitFor(() => expect(apiMocks.roleOptions.mock.calls.length).toBeGreaterThan(1));
     }
   );
 
   it('refreshes members and reports failures when unbinding fails', async () => {
     apiMocks.unbindMember.mockRejectedValue(new Error('Forbidden'));
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={queryClient}>
         <RoleManagement />
@@ -156,7 +173,6 @@ describe('RoleManagement', () => {
     roles.data[0].code = 'SUPER_ADMIN';
     roles.data[0].name = '超级管理员';
     apiMocks.listRoles.mockResolvedValue(roles);
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={queryClient}>
         <RoleManagement />
@@ -170,10 +186,6 @@ describe('RoleManagement', () => {
   });
 
   it('applies ellipsis only to the member name and not the avatar text', async () => {
-    const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    });
-
     render(
       <QueryClientProvider client={queryClient}>
         <RoleManagement />
@@ -236,10 +248,6 @@ describe('RoleManagement', () => {
         children: [],
       },
     ]);
-
-    const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    });
 
     render(
       <QueryClientProvider client={queryClient}>
