@@ -14,7 +14,7 @@ Use Node.js 22.12+ (CI uses 22.23.1) and pnpm 9.15.9 to match CI.
 - `pnpm start:dev`: start the API with watch mode.
 - `pnpm build:api`: generate Prisma Client and compile the API into `apps/api/dist/`.
 - `pnpm build` / `pnpm dev`: run workspace tasks through Turbo, including docs.
-- `pnpm lint` / `pnpm lint:prisma`: lint application/test or Prisma TypeScript.
+- `pnpm lint` / `pnpm --filter @nove/api run lint:prisma`: lint application/test or Prisma TypeScript.
 - `pnpm format`: format source, tests, and Prisma TypeScript with Prettier.
 - `pnpm db:generate`: regenerate the Prisma client.
 - `pnpm db:migrate`: create/apply development migrations.
@@ -29,7 +29,7 @@ Use two-space indentation, single quotes, and trailing commas. Follow Prettier a
 
 Tests use Jest, ts-jest, and Supertest. Place unit tests in `apps/api/src/**/*.spec.ts` or `apps/api/test/unit/**/*.spec.ts`; integration tests in `apps/api/test/integration/**/*.int-spec.ts`; end-to-end tests in `apps/api/test/e2e/**/*.e2e-spec.ts`.
 
-Run `pnpm --filter @nove/api exec jest --selectProjects unit --runInBand` for serial unit tests. Use `pnpm test:integration` or `pnpm test:e2e` for broader checks and `pnpm test:ci` for all configured projects with coverage. Unit coverage thresholds are configured at 80% for branches, functions, lines, and statements. Current CI runs unit tests. Add focused regression tests for behavior changes; use isolated test databases.
+Run `pnpm --filter @nove/api exec jest --selectProjects unit --runInBand` for serial unit tests. Use `pnpm --filter @nove/api run test:integration` or `pnpm --filter @nove/api run test:e2e` for broader checks and `pnpm --filter @nove/api run test:ci` for all configured projects with coverage. Unit coverage thresholds are configured at 80% for branches, functions, lines, and statements. Current CI runs unit tests. Add focused regression tests for behavior changes; use isolated test databases.
 
 ## Commit & Pull Request Guidelines
 
@@ -41,7 +41,7 @@ Copy `apps/api/.env.example` to `apps/api/.env` for local configuration; documen
 
 ## Workspace Boundaries
 
-Root dependencies are workspace tooling only. Keep API dependencies and Node-specific TypeScript settings in `apps/api`; keep generic compiler options in `tsconfig.base.json`. Run package-local tools with `pnpm --filter @nove/api exec`. Project-level documentation from nove-doc lives in `docs/project/`, with its roadmaps in `docs/roadmap/project/`; preserve source context when describing historical capabilities. API and Admin share the VitePress site and documentation dependencies in `docs/` (`@nove/docs`); API-specific documentation lives in `docs/developer/api/`, Admin documentation in `docs/developer/admin/`, shared workflows in `docs/engineering/`, and proposals in `docs/roadmap/`. Both applications use `guides/` for how-to documentation. Admin code lives in `apps/admin`. Use `pnpm docs:dev` and `pnpm docs:build` for the unified site. Use `pnpm build:admin`, `pnpm lint:admin`, and `pnpm test:admin` for the React/Vite application. Keep Admin browser libraries, environment files, and TypeScript settings isolated from the API. All packages share the root lockfile; do not install nested Git hooks. Run `pnpm generate:api` to compile the API, export OpenAPI in Nest preview mode, and generate the Admin client. Root Admin tasks prepare the contract automatically; direct package-local tools require generation first. `pnpm test` runs API unit and Admin tests; use `pnpm test:all` for API integration/E2E. Keep `scripts/ci-scope.test.mjs` passing when changing task selection. API image builds use `turbo prune`; Admin images include the API only during contract generation.
+Root dependencies are workspace tooling only. Keep API dependencies and Node-specific TypeScript settings in `apps/api`; keep generic compiler options in `tsconfig.base.json`. Run package-local tools with `pnpm --filter @nove/api exec`. Project-level documentation from nove-doc lives in `docs/project/`, with its roadmaps in `docs/roadmap/project/`; preserve source context when describing historical capabilities. API and Admin share the VitePress site and documentation dependencies in `docs/` (`@nove/docs`); API-specific documentation lives in `docs/developer/api/`, Admin documentation in `docs/developer/admin/`, shared workflows in `docs/engineering/`, and proposals in `docs/roadmap/`. Both applications use `guides/` for how-to documentation. Admin code lives in `apps/admin`. Use `pnpm docs:dev` and `pnpm docs:build` for the unified site. Use `pnpm build:admin`, `pnpm lint:admin`, and `pnpm test:admin` for the React/Vite application. Keep Admin browser libraries, environment files, and TypeScript settings isolated from the API. All packages share the root lockfile; do not install nested Git hooks. Run `pnpm generate:api` to compile the API, export OpenAPI in Nest preview mode, and generate the Admin client. Root Admin tasks prepare the contract automatically; direct package-local tools require generation first. `pnpm test` runs API unit and Admin tests; use `pnpm --filter @nove/api run test:all` for API integration/E2E. Keep `scripts/ci-scope.test.mjs` passing when changing task selection. API image builds use `turbo prune`; Admin images include the API only during contract generation.
 
 ## Skills Workspace
 

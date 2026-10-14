@@ -116,19 +116,19 @@ pnpm generate:api
 
 Turbo 按顺序执行 **API 编译 → OpenAPI 离线导出 → Orval 客户端生成**。规范位于 `apps/api/openapi/openapi.json`，客户端位于 `apps/admin/src/shared/lib/api/orval/`；两者均为生成产物，不手工修改或提交。开发进程运行期间修改接口后，需再次执行生成命令。
 
-| 命令                                     | 用途                                                             |
-| ---------------------------------------- | ---------------------------------------------------------------- |
-| `pnpm build`                             | 构建 API、Admin 和文档站                                         |
-| `pnpm build:api` / `pnpm build:admin`    | 构建指定应用；Admin 自动准备契约                                 |
-| `pnpm generate:openapi`                  | 只编译 API 并导出 OpenAPI 规范                                   |
-| `pnpm docs:build`                        | 构建统一文档站并检查站内链接                                     |
-| `pnpm lint`                              | 检查 API 与 Admin 代码                                           |
-| `pnpm lint:prisma` / `pnpm format:check` | 检查 API Prisma TypeScript 与 API 格式                           |
-| `pnpm test`                              | 运行 API 单元测试和 Admin Vitest 测试                            |
-| `pnpm test:admin`                        | 运行 Admin 测试及其构建、lint 前置任务                           |
-| `pnpm test:workspace`                    | 验证 CI 按 Git 变更范围选择任务的逻辑                            |
-| `pnpm test:all`                          | 运行 API 单元、集成、系统和 E2E 测试，需准备隔离测试数据库等服务 |
-| `pnpm db:migrate`                        | 在开发数据库创建并应用新的 Prisma 迁移                           |
+| 命令                                      | 用途                                                             |
+| ----------------------------------------- | ---------------------------------------------------------------- |
+| `pnpm build`                              | 构建 API、Admin 和文档站                                         |
+| `pnpm build:api` / `pnpm build:admin`     | 构建指定应用；Admin 自动准备契约                                 |
+| `pnpm generate:openapi`                   | 只编译 API 并导出 OpenAPI 规范                                   |
+| `pnpm docs:build`                         | 构建统一文档站并检查站内链接                                     |
+| `pnpm lint`                               | 检查 API 与 Admin 代码                                           |
+| `pnpm --filter @nove/api run lint:prisma` | 检查 API Prisma TypeScript                                       |
+| `pnpm test`                               | 运行 API 单元测试和 Admin Vitest 测试                            |
+| `pnpm test:admin`                         | 运行 Admin 测试及其构建、lint 前置任务                           |
+| `pnpm test:workspace`                     | 验证 CI 按 Git 变更范围选择任务的逻辑                            |
+| `pnpm --filter @nove/api run test:all`    | 运行 API 单元、集成、系统和 E2E 测试，需准备隔离测试数据库等服务 |
+| `pnpm db:migrate`                         | 在开发数据库创建并应用新的 Prisma 迁移                           |
 
 应用级工具使用 `pnpm --filter @nove/api exec <工具>` 或 `pnpm --filter @nove/admin exec <工具>`。直接运行 Admin 包内工具前，先从根目录执行 `pnpm generate:api`。完整说明见[工作区脚本](./docs/engineering/scripts.md)与[契约和交付流程](./docs/engineering/monorepo-delivery.md)。
 

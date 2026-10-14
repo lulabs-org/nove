@@ -17,7 +17,7 @@ Turbo 顺序执行 `@nove/api#build` → `@nove/api#generate:openapi` → `@nove
 
 规范写入 `apps/api/openapi/openapi.json`，客户端写入 `apps/admin/src/shared/lib/api/orval`；两者都是忽略的生成产物，禁止手改。阶段 3 的冻结快照及其 postinstall 已删除。Orval 输入固定为同仓文件，避免远程服务状态或开发者配置影响缓存结果。
 
-根目录的 Admin build、dev、lint、test 都会先准备契约；直接调用应用内工具前需先运行 `pnpm generate:api`。开发进程启动后修改后端 DTO，应再次运行生成命令，再检查调用方。`pnpm test` 默认跑 API 单元测试和 Admin Vitest；API 全量集成/E2E 使用 `pnpm test:all`。
+根目录的 Admin build、dev、lint、test 都会先准备契约；直接调用应用内工具前需先运行 `pnpm generate:api`。开发进程启动后修改后端 DTO，应再次运行生成命令，再检查调用方。`pnpm test` 默认跑 API 单元测试和 Admin Vitest；API 全量集成/E2E 使用 `pnpm --filter @nove/api run test:all`。
 
 ## 按变更选择 CI
 

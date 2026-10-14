@@ -104,7 +104,7 @@ chore/guard-test-database
 ```mermaid
 flowchart TD
     M1[1. 更新本地 main\ngit checkout main && git pull] --> B[2. 切出短周期分支\ngit checkout -b feat/xxx]
-    B --> Dev[3. 本地小步开发与测试\npnpm test:unit / pnpm build]
+    B --> Dev[3. 本地小步开发与测试\npnpm --filter @nove/api run test:unit / pnpm build]
     Dev --> Rebase[4. 变基同步主干\ngit fetch origin main\ngit rebase origin/main]
     Rebase --> Push[5. 推送分支并提 PR\ngit push -u origin feat/xxx]
     Push --> CI{6. GitHub Actions CI 门禁}
@@ -244,7 +244,7 @@ temp work                # 严禁将临时调试提交推送到远程
 - [ ] 🔧 构建或配置 (chore/ci)
 
 ## 🧪 验证方式
-- [ ] 本地单元测试通过 (`pnpm test:unit`)
+- [ ] 本地单元测试通过 (`pnpm --filter @nove/api run test:unit`)
 - [ ] 本地构建通过 (`pnpm build`)
 - [ ] 文档死链检查通过 (`pnpm docs:build`)
 
@@ -332,7 +332,7 @@ git pull origin main
 
 # 2. 本地执行全量门禁预检
 pnpm build
-pnpm test:unit
+pnpm --filter @nove/api run test:unit
 pnpm docs:build
 
 # 3. 创建语义化 Tag 并推送到远程
