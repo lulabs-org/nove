@@ -124,6 +124,7 @@ export default withMermaid(
                 link: '/engineering/migrations/nove-doc',
               },
               { text: '原仓库 README', link: '/project/source-readme' },
+              { text: '原 MIT 许可证', link: '/project/license' },
             ],
           },
         ],

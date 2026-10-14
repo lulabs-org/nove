@@ -1,10 +1,10 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # 组织与运营
 
-> 本文档承接 [项目概述](./overview)，汇总 nove 项目的组织与分工、风险应对、预算与资源。
+> 本文档承接 [项目概述](./overview.md)，汇总 nove 项目的组织与分工、风险应对、预算与资源。
 
 ## 组织与分工
 
@@ -34,4 +34,4 @@
 
 ---
 
-> 相关：里程碑与交付物见 [实施路线图](/roadmap/project/implementation)；成功指标见 [目标与成功指标](./goals)。
+> 相关：里程碑与交付物见 [实施路线图](../../roadmap/project/implementation.md)；成功指标见 [目标与成功指标](./goals.md)。

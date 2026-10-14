@@ -1,10 +1,10 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # 数据源接入矩阵
 
-> 本文档以**实际代码现状**为准，列出 nove 已接入 / 规划中的数据源、接入方式与承载模块。与 [需求与范围](./requirements) 配合阅读；能力整体状态见 [能力状态总览](./capabilities)。
+> 本文档以**实际代码现状**为准，列出 nove 已接入 / 规划中的数据源、接入方式与承载模块。与 [需求与范围](./requirements.md) 配合阅读；能力整体状态见 [能力状态总览](./capabilities.md)。
 
 ## 一、接入方式说明
 
@@ -39,7 +39,7 @@
 | **客户对接 / 合同** | 待定 | — | — | ⏳ 规划中 |
 | **用户画像 / 语义关联 / 知识图谱** | 生成类（重量 AI，归属 nove-ai） | `nove-ai`（仓库为空） | — | ⏳ 规划中 |
 
-> 说明：`nove-ai`（FastAPI）尚未实现，当前 AI 能力由 nove-api 内嵌 LlmService 承担轻量调用（详见 [能力状态总览](./capabilities)）。
+> 说明：`nove-ai`（FastAPI）尚未实现，当前 AI 能力由 nove-api 内嵌 LlmService 承担轻量调用（详见 [能力状态总览](./capabilities.md)）。
 
 ## 三、入库链路约定
 
@@ -52,4 +52,4 @@
 
 ---
 
-> 相关：[需求与范围](./requirements) · [能力状态总览](./capabilities) · [技术方案总览](/project/architecture/overview)
+> 相关：[需求与范围](./requirements.md) · [能力状态总览](./capabilities.md) · [技术方案总览](../architecture/overview.md)

@@ -1,11 +1,11 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 ## 实施路线图
 
 > 定位：组织级 Agent 数据基础设施（数据网关）。首个落地场景：陆向谦实验室（教育：会议 / 订单 / 用户数据）。
-> 本文档融合项目书中"里程碑与计划 / 交付物 / 迭代策略"的内容，与 [三年技术与 AI 演进路线图](./evolution) 配合阅读。
+> 本文档融合项目书中"里程碑与计划 / 交付物 / 迭代策略"的内容，与 [三年技术与 AI 演进路线图](./evolution.md) 配合阅读。
 
 ---
 

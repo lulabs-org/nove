@@ -1,5 +1,5 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # 能力状态总览
@@ -60,7 +60,7 @@
 |---|---|---|
 | 内置数据仓库格式（统一约定） | 🟡 部分可用 | 各业务域强类型表（44 个模块化模型）+ JsonB 扩展字段，元数据与溯源规范逐步收敛 |
 | 云盘与业务资产绑定机制 | ✅ 已可用 | 网盘资源与项目封面、商品媒体档案直接建立关联归档 |
-| 数据形态注册表 / 插件化接入 | ⏳ 规划中 | 方案探讨见 [数据格式与扩展机制（方案探讨）](/project/architecture/data-format)；当前未实现 |
+| 数据形态注册表 / 插件化接入 | ⏳ 规划中 | 方案探讨见 [数据格式与扩展机制（方案探讨）](../architecture/data-format.md)；当前未实现 |
 
 ## 六、状态约定
 
@@ -72,4 +72,4 @@
 
 ---
 
-> 相关：[数据源接入矩阵](./data-sources) · [需求与范围](./requirements) · [技术方案总览](/project/architecture/overview)
+> 相关：[数据源接入矩阵](./data-sources.md) · [需求与范围](./requirements.md) · [技术方案总览](../architecture/overview.md)

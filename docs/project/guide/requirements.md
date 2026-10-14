@@ -1,10 +1,10 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # 需求与范围
 
-> 本文档承接 [项目概述](./overview)，阐述 nove 数据基础设施的核心用户、典型场景与 v1.0 范围边界。
+> 本文档承接 [项目概述](./overview.md)，阐述 nove 数据基础设施的核心用户、典型场景与 v1.0 范围边界。
 
 ## 核心用户
 
@@ -25,7 +25,7 @@
 ## 范围边界（v1.0）
 
 - **包含**：
-  - 核心生态接入（腾讯会议、飞书、企业微信、Stripe、微信小店、云盘存储等，详见 [数据源接入矩阵](./data-sources)）；
+  - 核心生态接入（腾讯会议、飞书、企业微信、Stripe、微信小店、云盘存储等，详见 [数据源接入矩阵](./data-sources.md)）；
   - 组织级多租户所有权隔离（Org Scoping）与人机统一权限治理；
   - 业务数据闭环（项目与课程、订单与退款、分润追回、工资条、实名证件）；
   - 轻量 AI 预处理与异步任务引擎（BullMQ）；
@@ -34,9 +34,9 @@
 - **暂不包含**：
   - 个人消费级市场（个人 AI 数据/记忆产品，另行立项）；
   - 原生移动端 App / 桌面客户端；
-  - 独立自研的重量级 `nove-ai` 服务（当前阶段由外部成熟 Agent 代办重型关联任务，见 [能力状态总览](./capabilities)）；
+  - 独立自研的重量级 `nove-ai` 服务（当前阶段由外部成熟 Agent 代办重型关联任务，见 [能力状态总览](./capabilities.md)）；
   - 跨公网数据联邦与公有云商业化多租户自助计费平台。
 
 ---
 
-> 相关：目标与成功指标见 [目标与成功指标](./goals)；里程碑与交付物见 [实施路线图](/roadmap/project/implementation)；数据源与能力现状见 [数据源接入矩阵](./data-sources) 与 [能力状态总览](./capabilities)。
+> 相关：目标与成功指标见 [目标与成功指标](./goals.md)；里程碑与交付物见 [实施路线图](../../roadmap/project/implementation.md)；数据源与能力现状见 [数据源接入矩阵](./data-sources.md) 与 [能力状态总览](./capabilities.md)。

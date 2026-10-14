@@ -1,7 +1,7 @@
 # 项目文档
 
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../developer/api/architecture/index.md)与 [Admin 开发文档](../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../engineering/migrations/nove-doc.md)。
 :::
 
 ## 组织级 Agent 数据基础设施
@@ -23,37 +23,37 @@
 
 ### 🎓 项目总览
 
-- [项目概述](/project/guide/overview) — 定位、三大数据资产飞轮、对外交互方式、权限控制、首个落地场景 · 愿景理念 · 系统定位 · 核心特点 · AI 归属决策 · 历史沿革 · 术语
-- [需求与范围](/project/guide/requirements) — 核心用户 · 典型场景 · 范围边界
-- [目标与成功指标](/project/guide/goals) — 项目目标 · 建设原则 · KPI
-- [组织与运营](/project/guide/organization) — 组织分工 · 风险应对 · 预算资源
-- [项目名称](/project/guide/naming) — nove 命名理念（New / Organized / Versatile / Empowered）
+- [项目概述](guide/overview.md) — 定位、三大数据资产飞轮、对外交互方式、权限控制、首个落地场景 · 愿景理念 · 系统定位 · 核心特点 · AI 归属决策 · 历史沿革 · 术语
+- [需求与范围](guide/requirements.md) — 核心用户 · 典型场景 · 范围边界
+- [目标与成功指标](guide/goals.md) — 项目目标 · 建设原则 · KPI
+- [组织与运营](guide/organization.md) — 组织分工 · 风险应对 · 预算资源
+- [项目名称](guide/naming.md) — nove 命名理念（New / Organized / Versatile / Empowered）
 
 ### 📡 产品现状（文档与代码对齐）
 
-- [数据源接入矩阵](/project/guide/data-sources) — 已接入 / 规划中数据源 · 接入方式 · 承载模块（含 Stripe、企微、云盘等）
-- [能力状态总览](/project/guide/capabilities) — 组件 / 接口协议 / AI 能力状态（对齐 nove-cli v1.3.0、Prisma 7、分润冲销等现状）
+- [数据源接入矩阵](guide/data-sources.md) — 已接入 / 规划中数据源 · 接入方式 · 承载模块（含 Stripe、企微、云盘等）
+- [能力状态总览](guide/capabilities.md) — 组件 / 接口协议 / AI 能力状态（对齐 nove-cli v1.3.0、Prisma 7、分润冲销等现状）
 
 ### 🤝 合作方与落地场景
 
-- [陆向谦实验室介绍](/project/partners/lulabs) — 首个落地客户与合作方（教育场景）
+- [陆向谦实验室介绍](partners/lulabs.md) — 首个落地客户与合作方（教育场景）
 
 ### 🏗️ 架构与技术
 
-- [技术方案总览](/project/architecture/overview) — 整体架构 · 系统四层架构 · 核心模块详解 · AI 轻/重分层 · Job 模型 · 技术选型
-- [系统架构图集](/project/architecture/system-overview) — ASCII / Mermaid 彩色分层架构图
-- [技术白皮书](/project/architecture/whitepaper) — 数据基础设施 + 智能平面独立化的技术论证
-- [数据格式与扩展机制（方案探讨）](/project/architecture/data-format) — 内置数据仓库格式现状 · 三种设计取向 · 落地路径
+- [技术方案总览](architecture/overview.md) — 整体架构 · 系统四层架构 · 核心模块详解 · AI 轻/重分层 · Job 模型 · 技术选型
+- [系统架构图集](architecture/system-overview.md) — ASCII / Mermaid 彩色分层架构图
+- [技术白皮书](architecture/whitepaper.md) — 数据基础设施 + 智能平面独立化的技术论证
+- [数据格式与扩展机制（方案探讨）](architecture/data-format.md) — 内置数据仓库格式现状 · 三种设计取向 · 落地路径
 
 ### 🗺️ 路线图
 
-- [实施路线图](/roadmap/project/implementation) — 迭代策略 · 三阶段规划 · 达成现状与交付物清单
-- [三年技术与 AI 演进路线图](/roadmap/project/evolution) — 2026-2028 系统 / AI / 数据治理 / 工程成熟度演进
+- [实施路线图](../roadmap/project/implementation.md) — 迭代策略 · 三阶段规划 · 达成现状与交付物清单
+- [三年技术与 AI 演进路线图](../roadmap/project/evolution.md) — 2026-2028 系统 / AI / 数据治理 / 工程成熟度演进
 
 ### 🔒 权限安全与合规
 
-- [人机统一权限体系](/project/security/permission-system) — 组织级多租户隔离 · 双主体模型 · RBAC/ABAC · AI Scope 白名单 · JWT 批量吊销 · 实名证件合规
-- [数据与隐私保护白皮书](/project/security/privacy-whitepaper) — 数据治理原则 · 生命周期 · AI 访问审计 · 合规对齐
+- [人机统一权限体系](security/permission-system.md) — 组织级多租户隔离 · 双主体模型 · RBAC/ABAC · AI Scope 白名单 · JWT 批量吊销 · 实名证件合规
+- [数据与隐私保护白皮书](security/privacy-whitepaper.md) — 数据治理原则 · 生命周期 · AI 访问审计 · 合规对齐
 
 ---
 

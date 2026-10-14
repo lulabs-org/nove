@@ -1,10 +1,10 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # 目标与成功指标
 
-> 本文档承接 [项目概述](./overview)，明确 nove 数据仓库的项目目标、建设原则与可量化的成功指标（KPI）。
+> 本文档承接 [项目概述](./overview.md)，明确 nove 数据仓库的项目目标、建设原则与可量化的成功指标（KPI）。
 
 ## 项目目标
 
@@ -55,4 +55,4 @@
 
 ---
 
-> 相关：需求与场景见 [需求与范围](./requirements)；组织与资源见 [组织与运营](./organization)。
+> 相关：需求与场景见 [需求与范围](./requirements.md)；组织与资源见 [组织与运营](./organization.md)。

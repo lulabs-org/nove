@@ -1,5 +1,5 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 <!--
@@ -12,7 +12,7 @@
 
 # nove 技术方案总览（NestJS + FastAPI）
 
-> 本文档是 nove 的**架构与技术**总览，融合了项目书中"总体架构 / 关键功能 / 技术方案"的内容。系统级架构图见 [系统架构图集](./system-overview)，完整技术论证见 [技术白皮书](./whitepaper)。
+> 本文档是 nove 的**架构与技术**总览，融合了项目书中"总体架构 / 关键功能 / 技术方案"的内容。系统级架构图见 [系统架构图集](./system-overview.md)，完整技术论证见 [技术白皮书](./whitepaper.md)。
 
 ## 一、整体架构
 
@@ -127,7 +127,7 @@ AI/Agent (API / MCP / Skill / CLI) ──► nove-api ──► 外部 Agent / n
 
 ## 五、nove-ai（FastAPI）职责
 
-> ⚠️ **落地策略与现状说明**：独立服务 `nove-ai` 目前为**中长期规划**（仓库尚未实现），本节为最终的既定职责设计。**在独立投入开发 `nove-ai` 之前，我们将优先使用 OpenClaw、Hermes 等成熟的 Agent 软件或平台，通过让其代为执行来完成复杂的预处理与数据关联等核心能力**。当前极少量的轻量 AI 调用则暂由 `nove-api` 内嵌的 `LlmService` 承担。整体能力状态见 [能力状态总览](/project/guide/capabilities)。
+> ⚠️ **落地策略与现状说明**：独立服务 `nove-ai` 目前为**中长期规划**（仓库尚未实现），本节为最终的既定职责设计。**在独立投入开发 `nove-ai` 之前，我们将优先使用 OpenClaw、Hermes 等成熟的 Agent 软件或平台，通过让其代为执行来完成复杂的预处理与数据关联等核心能力**。当前极少量的轻量 AI 调用则暂由 `nove-api` 内嵌的 `LlmService` 承担。整体能力状态见 [能力状态总览](../guide/capabilities.md)。
 
 ### 核心能力
 

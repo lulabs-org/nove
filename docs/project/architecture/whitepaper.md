@@ -1,11 +1,11 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # nove 技术白皮书
 **组织级 Agent 数据基础设施（数据网关）**
 
-> ⚠️ **落地策略说明**：本文描述的目标架构中，自研的 `nove-ai` 独立服务目前处于**中后期规划**阶段（仓库尚未实现）。**在独立投入自研前，我们将优先采用 OpenClaw、Hermes 等成熟 Agent 软件作为外部智能计算引擎，由其代办关联发现、图谱构建等复杂的预处理任务**。当前极少量轻量级 AI 调用则暂由 `nove-api` 内嵌的 `LlmService` 承担。组件与能力实际状态见 [能力状态总览](/project/guide/capabilities)。
+> ⚠️ **落地策略说明**：本文描述的目标架构中，自研的 `nove-ai` 独立服务目前处于**中后期规划**阶段（仓库尚未实现）。**在独立投入自研前，我们将优先采用 OpenClaw、Hermes 等成熟 Agent 软件作为外部智能计算引擎，由其代办关联发现、图谱构建等复杂的预处理任务**。当前极少量轻量级 AI 调用则暂由 `nove-api` 内嵌的 `LlmService` 承担。组件与能力实际状态见 [能力状态总览](../guide/capabilities.md)。
 
 ---
 

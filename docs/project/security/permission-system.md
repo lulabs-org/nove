@@ -1,5 +1,5 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # 人机统一权限体系
@@ -78,6 +78,6 @@ AI / Agent 的每次访问受细粒度 Scope 严格约束：
 
 ## 七、相关文档
 
-- [数据与隐私保护白皮书](./privacy-whitepaper) — 数据治理原则、生命周期、合规对齐
-- [技术方案总览](/project/architecture/overview) — 人机权限在架构中的实现位置
-- [技术白皮书](/project/architecture/whitepaper) — 安全机制与访问控制
+- [数据与隐私保护白皮书](./privacy-whitepaper.md) — 数据治理原则、生命周期、合规对齐
+- [技术方案总览](../architecture/overview.md) — 人机权限在架构中的实现位置
+- [技术白皮书](../architecture/whitepaper.md) — 安全机制与访问控制

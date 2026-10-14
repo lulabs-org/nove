@@ -1,5 +1,5 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # 可拓展的数据格式：方案探讨
@@ -10,7 +10,7 @@
 
 ## 一、现状盘点：文档承诺 vs 代码现实
 
-**文档宣称**（[项目概述 · 核心特点](/project/guide/overview)）：
+**文档宣称**（[项目概述 · 核心特点](../guide/overview.md)）：
 
 > 内置数据仓库格式，支持通过自定义方式（插件或其他形式）接入新的数据形式。
 
@@ -96,4 +96,4 @@
 
 ---
 
-> 相关：[项目概述 · 核心特点](/project/guide/overview) · [能力状态总览](/project/guide/capabilities) · [技术方案总览](./overview) · [三年技术与 AI 演进路线图](/roadmap/project/evolution)
+> 相关：[项目概述 · 核心特点](../guide/overview.md) · [能力状态总览](../guide/capabilities.md) · [技术方案总览](./overview.md) · [三年技术与 AI 演进路线图](../../roadmap/project/evolution.md)

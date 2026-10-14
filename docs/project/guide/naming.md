@@ -1,5 +1,5 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # 项目名称：nove
@@ -17,12 +17,12 @@
 
 ## 品牌定位
 
-nove 的品牌定位是 **组织级 Agent 数据基础设施（数据网关）** —— 让组织数据成为 AI 与 Agent 可以安全调用的资产。定位详解见 [项目概述 · 系统定位](/project/guide/overview)。
+nove 的品牌定位是 **组织级 Agent 数据基础设施（数据网关）** —— 让组织数据成为 AI 与 Agent 可以安全调用的资产。定位详解见 [项目概述 · 系统定位](overview.md)。
 
 ## 相关章节
 
-- [项目概述](/project/guide/overview) — 愿景理念 · 系统定位 · 核心特点 · 扩展路径
-- [陆向谦实验室介绍](/project/partners/lulabs) — 首个落地客户与市场拓展路径
+- [项目概述](overview.md) — 愿景理念 · 系统定位 · 核心特点 · 扩展路径
+- [陆向谦实验室介绍](../partners/lulabs.md) — 首个落地客户与市场拓展路径
 
 ---
 

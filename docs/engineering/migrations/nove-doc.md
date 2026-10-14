@@ -12,7 +12,7 @@
 
 [清单文件](./nove-doc-manifest.json)记录源提交、逐页源文件与初始迁入文件的 SHA-256，便于复核本次导入；后续正常维护允许正文改变，不要求永远匹配初始哈希。旧首页的 Hero 和功能卡片已转换为正文，保留介绍和能力摘要；其他页面只增加来源提示、改写站内链接，并将尾随空格形式的 Markdown 硬换行规范为反斜杠形式。历史 README 单独保留，旧开发命令不作为当前操作说明。
 
-许可证原文保留在[原 MIT 许可证](/licenses/nove-doc.txt)。迁入文档中的版本与能力说明保持来源时间语境，不将设计方案或旧版状态自动视为当前能力。日常开发以 API、Admin 当前源码和开发文档为准。
+许可证原文保留在[原 MIT 许可证](../../project/license.md)。迁入文档中的版本与能力说明保持来源时间语境，不将设计方案或旧版状态自动视为当前能力。日常开发以 API、Admin 当前源码和开发文档为准。
 
 ## 目录映射
 
@@ -59,7 +59,7 @@
 
 旧仓库的 `.vitepress/config.mts` 中导航与侧边栏合并到统一站点，保留本地搜索和 Mermaid 支持；主题使用统一站点现有主题，不覆盖其 API/Admin 样式。旧 `.vitepress/theme/` 两个文件、`.gitignore`、`package.json`、`pnpm-lock.yaml`、`vercel.json` 不重复导入。依赖已全部存在于 `@nove/docs`，不增加嵌套锁文件或安装流程。
 
-从工作区根目录运行 `pnpm docs:dev` / `pnpm docs:build`；构建目录为 `docs/.vitepress/dist/`。站内根路径已改写为 `/project/…` 或 `/roadmap/project/…`，同目录相对链接保持可用。旧站的部署配置不能直接照搬为 Monorepo 根配置；若继续使用原 Vercel 项目，需将 Git 仓库切换至 `nove-api`，从仓库根执行 `pnpm docs:build`，输出目录设置为 `docs/.vitepress/dist`。
+从工作区根目录运行 `pnpm docs:dev` / `pnpm docs:build`；构建目录为 `docs/.vitepress/dist/`。正文链接已改为指向迁入位置的相对 Markdown 链接，同时兼容 GitHub 文件浏览与 VitePress；站点导航使用 `/project/…` 和 `/roadmap/project/…`。旧站的部署配置不能直接照搬为 Monorepo 根配置；若继续使用原 Vercel 项目，需将 Git 仓库切换至 `nove-api`，从仓库根执行 `pnpm docs:build`，输出目录设置为 `docs/.vitepress/dist`。
 
 ## 归档交接
 

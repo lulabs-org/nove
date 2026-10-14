@@ -1,11 +1,11 @@
 ::: info 文档来源
-本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](/developer/api/architecture/)与 [Admin 开发文档](/developer/admin/guides/getting-started)核对。参见[迁移记录](/engineering/migrations/nove-doc)。
+本页迁移自 `nove-doc` 的 2026-09-17 版本，保留原有项目描述与方案。能力状态和版本号反映当时记录；当前实现请结合 [API 开发文档](../../developer/api/architecture/index.md)与 [Admin 开发文档](../../developer/admin/guides/getting-started.md)核对。参见[迁移记录](../../engineering/migrations/nove-doc.md)。
 :::
 
 # nove 项目概述
 
 > **本文档是项目概述。** 需求与场景、目标与指标、组织与运营已拆分到独立文档：
-> [需求与范围](./requirements) · [目标与成功指标](./goals) · [组织与运营](./organization)
+> [需求与范围](./requirements.md) · [目标与成功指标](./goals.md) · [组织与运营](./organization.md)
 
 ## 一、项目概述
 
@@ -76,7 +76,7 @@ nove 的系统定位是：
   - **交易与激励**：Stripe 国际化支付与结算、微信小店（`wechat-shop`）、商业订单/退款、自动分润与退款冲销追回、月度工资条；
   - **组织与项目**：组织成员与实名证件、跨平台用户映射、项目与课程规划；
   - **数字资产**：统一云盘存储中心（`drive`），支持与商品媒体、项目封面资产强绑定归档；
-  - 聊天记录、客户对接、合同等为规划中数据源（详见 [数据源接入矩阵](./data-sources)）。
+  - 聊天记录、客户对接、合同等为规划中数据源（详见 [数据源接入矩阵](./data-sources.md)）。
 - 数据接入能力通过中心化集成管理持续扩展，内置连通性健康自测。
 
 ### 4. 三大业务数据资产飞轮
@@ -95,13 +95,13 @@ nove 在组织内部驱动三大相互交织的数据资产飞轮：
 
 - 内置标准化数据仓库格式（Prisma 7 模块化架构定义 44 个核心模型）
 - 支持通过自定义方式（插件或其他形式）接入新的数据形式
-- 现状与设计取向探讨见 [数据格式与扩展机制（方案探讨）](/project/architecture/data-format)
+- 现状与设计取向探讨见 [数据格式与扩展机制（方案探讨）](../architecture/data-format.md)
 
 ---
 
 ## 五、AI 能力归属（架构决策）
 
-> ⚠️ **现状说明**：nove-ai（FastAPI）目前处于**规划中（仓库尚未实现）**。当前实际可用的 AI 能力由 nove-api 内嵌 LlmService（OpenAI 兼容接口）承担轻量调用（会议摘要、跟踪报告汇总等）；下表为既定架构方向，重量能力（关联发现、图谱、画像）随 nove-ai 落地。整体能力状态见 [能力状态总览](./capabilities)。
+> ⚠️ **现状说明**：nove-ai（FastAPI）目前处于**规划中（仓库尚未实现）**。当前实际可用的 AI 能力由 nove-api 内嵌 LlmService（OpenAI 兼容接口）承担轻量调用（会议摘要、跟踪报告汇总等）；下表为既定架构方向，重量能力（关联发现、图谱、画像）随 nove-ai 落地。整体能力状态见 [能力状态总览](./capabilities.md)。
 
 nove 的 AI 能力采用**轻/重分层**，实体归属 **nove-ai（FastAPI + Python）**：
 
@@ -111,7 +111,7 @@ nove 的 AI 能力采用**轻/重分层**，实体归属 **nove-ai（FastAPI + P
 | 重量异步 | Embedding 入库、语义关联发现、知识图谱构建、批量转写总结、用户画像 | 现阶段优先由外部 Agent 代办；远期归属 nove-ai（Python），Job 化 |
 
 - nove-api 永不直接依赖具体模型，只通过 AiClient（超时/重试/熔断/降级）调用
-- 服务间用 HMAC 签名鉴权（方案详见 [技术方案总览](/project/architecture/overview) 第七节）
+- 服务间用 HMAC 签名鉴权（方案详见 [技术方案总览](../architecture/overview.md) 第七节）
 - 慢任务一律异步 Job（queued → running → succeeded / failed），结果回写数据库
 
 ---
