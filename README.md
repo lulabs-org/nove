@@ -30,8 +30,9 @@
 
 ## 📚 项目文档
 
-Nove API 的所有文档（包括架构设计、API 参考、开发指南、第三方集成说明等）已迁移并整合为 [完整的文档站点](./docs)。
+项目级业务文档以及 API、Admin 开发文档已整合为 [完整的文档站点](./docs)。
 
+- [**项目文档**](./docs/project/index.md) - 项目定位、整体架构、安全方案、合作方与项目路线图（由 `nove-doc` 迁入）。
 - [**👨‍💻 工程指南**](./docs/engineering/index.md) - 同仓契约生成、协作、测试和部署流程。
 - [**API 开发文档**](./docs/developer/api/architecture/index.md) - 后端架构、业务模块与第三方集成。
 - [**👤 用户文档**](./docs/user/index.md) - 面向系统最终用户与 API 调用方，包含如何使用系统功能、API 接口指引、常见问题等。
@@ -60,7 +61,9 @@ apps/api/           # @nove/api：NestJS 源码、Prisma、测试、脚本与独
   package.json
   tsconfig.json
 apps/admin/         # @nove/admin：React 管理后台
-docs/               # @nove/docs：API 与 Admin 统一 VitePress 文档站
+docs/               # @nove/docs：项目、API 与 Admin 统一 VitePress 文档站
+  project/          # 原 nove-doc 项目级文档
+  roadmap/project/  # 原 nove-doc 项目路线图
   developer/admin/  # Admin 架构、模块、开发与部署文档
 packages/           # 工作区已预留匹配规则，尚无共享包
 package.json        # 根任务入口和公共开发工具

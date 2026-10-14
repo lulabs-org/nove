@@ -6,7 +6,7 @@ export default withMermaid(
     ignoreDeadLinks: false,
     lang: 'zh-CN',
     title: 'Nove',
-    description: 'Nove 项目文档 — API、Admin 与协作开发指南',
+    description: 'Nove 统一文档 — 项目、API、Admin 与协作开发指南',
 
     head: [
       ['link', { rel: 'icon', href: '/logo-light.svg', type: 'image/svg+xml' }],
@@ -22,6 +22,11 @@ export default withMermaid(
 
       nav: [
         { text: '首页', link: '/' },
+        {
+          text: '项目文档',
+          link: '/project/',
+          activeMatch: '^/project/',
+        },
         {
           text: '工程指南',
           link: '/engineering/',
@@ -59,6 +64,69 @@ export default withMermaid(
       ],
 
       sidebar: {
+        '/project/': [
+          {
+            text: '项目总览',
+            items: [
+              { text: '项目文档', link: '/project/' },
+              { text: '总览索引', link: '/project/guide/' },
+              { text: '项目概述', link: '/project/guide/overview' },
+              { text: '项目名称', link: '/project/guide/naming' },
+              { text: '需求与范围', link: '/project/guide/requirements' },
+              { text: '目标与成功指标', link: '/project/guide/goals' },
+              { text: '组织与运营', link: '/project/guide/organization' },
+              {
+                text: '产品设计理念',
+                link: '/project/guide/product-philosophy',
+              },
+              { text: '数据源接入矩阵', link: '/project/guide/data-sources' },
+              { text: '能力状态总览', link: '/project/guide/capabilities' },
+            ],
+          },
+          {
+            text: '整体架构与方案',
+            items: [
+              { text: '架构索引', link: '/project/architecture/' },
+              { text: '技术方案总览', link: '/project/architecture/overview' },
+              {
+                text: '系统架构图集',
+                link: '/project/architecture/system-overview',
+              },
+              { text: '技术白皮书', link: '/project/architecture/whitepaper' },
+              {
+                text: '数据格式与扩展机制',
+                link: '/project/architecture/data-format',
+              },
+            ],
+          },
+          {
+            text: '权限安全与合作',
+            items: [
+              { text: '权限安全索引', link: '/project/security/' },
+              {
+                text: '人机统一权限体系',
+                link: '/project/security/permission-system',
+              },
+              {
+                text: '数据与隐私保护白皮书',
+                link: '/project/security/privacy-whitepaper',
+              },
+              { text: '合作方索引', link: '/project/partners/' },
+              { text: '陆向谦实验室', link: '/project/partners/lulabs' },
+            ],
+          },
+          {
+            text: '路线图与来源',
+            items: [
+              { text: '项目路线图', link: '/roadmap/project/' },
+              {
+                text: '文档迁移记录',
+                link: '/engineering/migrations/nove-doc',
+              },
+              { text: '原仓库 README', link: '/project/source-readme' },
+            ],
+          },
+        ],
         '/developer/admin/': [
           {
             text: 'Admin 开发指南',
@@ -182,6 +250,10 @@ export default withMermaid(
               {
                 text: 'Admin 工作区迁移',
                 link: '/engineering/migrations/admin',
+              },
+              {
+                text: '项目文档迁移',
+                link: '/engineering/migrations/nove-doc',
               },
             ],
           },
@@ -395,6 +467,17 @@ export default withMermaid(
         ],
 
         '/roadmap/': [
+          {
+            text: '项目路线图（迁入方案）',
+            items: [
+              { text: '项目路线图索引', link: '/roadmap/project/' },
+              { text: '实施路线图', link: '/roadmap/project/implementation' },
+              {
+                text: '三年技术与 AI 演进',
+                link: '/roadmap/project/evolution',
+              },
+            ],
+          },
           {
             text: '规划与提案（非当前能力）',
             items: [

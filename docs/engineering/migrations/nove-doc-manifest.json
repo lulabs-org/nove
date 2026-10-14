@@ -1,0 +1,151 @@
+{
+  "repository": "lulabs-org/nove-doc",
+  "commit": "3a9ba3fc4bf92471263bb8037c8995480f7a6532",
+  "pages": [
+    {
+      "source": "README.md",
+      "target": "docs/project/source-readme.md",
+      "sourceSha256": "1934870b478869def51a3bebdeed8370dd56cdac1d1b0257da9b6f44001ea5cf",
+      "importedSha256": "8c64ba32cf403a52c8c8ce42cf7a2fc5c3a468c3890fab1f2251d5b980bc5a8d"
+    },
+    {
+      "source": "architecture/data-format.md",
+      "target": "docs/project/architecture/data-format.md",
+      "sourceSha256": "b123015c2723dfce9fba69d76e5814f7e99d04ad47a85b7a0af50cd4711823f5",
+      "importedSha256": "69469d75f068b05773c6c24b0dcb214cb8bf855ba333afbd466b10f5c5e95897"
+    },
+    {
+      "source": "architecture/index.md",
+      "target": "docs/project/architecture/index.md",
+      "sourceSha256": "6dbca84f5591a0ff4a61055e020c9537887083efd1ccdaa86c47f4a20dccd1a8",
+      "importedSha256": "02b2b1ae53deae51559f21612ae01003ef3540a030b091dac42cbad02daa3d18"
+    },
+    {
+      "source": "architecture/overview.md",
+      "target": "docs/project/architecture/overview.md",
+      "sourceSha256": "31eaaec3d77383e046652540dd42bdf02df1149bd1bec3205f0546e1311c8bbf",
+      "importedSha256": "9eee284e7bbcd48f7943169640915449b3feb783c2a6ce2b00e5d1d248d6e882"
+    },
+    {
+      "source": "architecture/system-overview.md",
+      "target": "docs/project/architecture/system-overview.md",
+      "sourceSha256": "fa50e00d2c0c44ed93da3d2f0e17d116aaf8f315a74f94ac6d0345009e8a4bd4",
+      "importedSha256": "8813d519255b512a1a6c842819c0a605cbc6aa0ee429719416207df374594bb8"
+    },
+    {
+      "source": "architecture/whitepaper.md",
+      "target": "docs/project/architecture/whitepaper.md",
+      "sourceSha256": "f0bf8a0b6884691fd429c791799b744d7108419c1b763a8fedc3caacb2b36a29",
+      "importedSha256": "3e48928ced9112c935cd2be7fd0d302d56e34250eec88acf00c2aa69610f670f"
+    },
+    {
+      "source": "guide/capabilities.md",
+      "target": "docs/project/guide/capabilities.md",
+      "sourceSha256": "e209bfced29d96b684e0f3a73a6b20e984e07879506a01114ada7fe758ea7c46",
+      "importedSha256": "be5de0d75dab319c490c1c1cff5ed298b604b44559e21471e9f77dd241de5eda"
+    },
+    {
+      "source": "guide/data-sources.md",
+      "target": "docs/project/guide/data-sources.md",
+      "sourceSha256": "796322913d8a8df649b6ef98eba433292200545ebd8e3c697e64748865bcd2da",
+      "importedSha256": "c55734b8e249894c5ccffec1e92dcbc895746f17803ba04e0a749707bf9c197c"
+    },
+    {
+      "source": "guide/goals.md",
+      "target": "docs/project/guide/goals.md",
+      "sourceSha256": "4f40251e876ed97058e15558dc39600c3c19477b52faa77ff57658161ab42ba4",
+      "importedSha256": "92d86b4220ccf698f776d14747b92b1f537b63e688593215556eef6751fdd89e"
+    },
+    {
+      "source": "guide/index.md",
+      "target": "docs/project/guide/index.md",
+      "sourceSha256": "c3ab9ed30a7c435e4154c8f9782c77f70805e49b5f423c4350416b15e88b1729",
+      "importedSha256": "c1b80cf0342fb4dee4ddc312a69e9027c3c14119f7f5efe246cfc1f8e1b83988"
+    },
+    {
+      "source": "guide/naming.md",
+      "target": "docs/project/guide/naming.md",
+      "sourceSha256": "84125e1ded9f149445598cf6c29e725205b079f1eef4af8bd3624f4603474f20",
+      "importedSha256": "393943ce936911e6f1d556d33a27950fab2e231018cc15e88e02c99dddc6de6a"
+    },
+    {
+      "source": "guide/organization.md",
+      "target": "docs/project/guide/organization.md",
+      "sourceSha256": "6f23e9dad1e697e2c39c58a6b39c1d47e57eb7f36c48808fe49c4d58cdede826",
+      "importedSha256": "6a37449847e33fc72b4b42f4eecb9856553569af07478bf150d3fee160e6374c"
+    },
+    {
+      "source": "guide/overview.md",
+      "target": "docs/project/guide/overview.md",
+      "sourceSha256": "914595bfbf6ab36e345918b4e38c8115ad692e847cb237798b49c7c263a34cd6",
+      "importedSha256": "46e295591794fd21a97b4508e4afcc88e81f3663567cc6593350c155737667c1"
+    },
+    {
+      "source": "guide/product-philosophy.md",
+      "target": "docs/project/guide/product-philosophy.md",
+      "sourceSha256": "140f12663902ee24c857bf8b435030f6167b9f63df1e827bf042a9b0cbd42255",
+      "importedSha256": "5d1798c5104edd0896ee5fa2a96e20398fed08e40cacee02328ff89e44708449"
+    },
+    {
+      "source": "guide/requirements.md",
+      "target": "docs/project/guide/requirements.md",
+      "sourceSha256": "08dc9d77157b4979b8484d0a7731cd1496ba884f10385d701f498fe9c15fd168",
+      "importedSha256": "d919b208a3b0e2d1ee4ed728f14b95fc8354e52ea41a5c5f47ba30e648edacc1"
+    },
+    {
+      "source": "index.md",
+      "target": "docs/project/index.md",
+      "sourceSha256": "92d4ea4fece26c6af3040d474d0556c06dd1dc5c6897dfcad638da3956f27040",
+      "importedSha256": "2d8c0833d894e723ab63c9d196d2f25d2ad554d901148e211c9472a963c90bfe"
+    },
+    {
+      "source": "partners/index.md",
+      "target": "docs/project/partners/index.md",
+      "sourceSha256": "d0ff9247af97b279fb6d74d49c65d2bcc94b4c3890846fa84c5668099bd5b54e",
+      "importedSha256": "58e0fdd20c95fba7048553441f4f8d703a015c5aaae8cb04daa63c1bd268589e"
+    },
+    {
+      "source": "partners/lulabs.md",
+      "target": "docs/project/partners/lulabs.md",
+      "sourceSha256": "f17b2712196d45c8d5e168114b58d6bf1f76dc0241d0ab4e199b0cc4c51802ef",
+      "importedSha256": "b3f85991ac9bbabbed5eff97d4faf5bdab32a7e4725315e2e7bca54089ade31e"
+    },
+    {
+      "source": "roadmap/evolution.md",
+      "target": "docs/roadmap/project/evolution.md",
+      "sourceSha256": "ee526acb4298dc0a0f32c0aa04e274f8dc50d01d4ac24dd1b9f748ab8216b938",
+      "importedSha256": "985589cd5d240d91e73723de05b4d133ace9571dfc482ff4400f79955c5894b5"
+    },
+    {
+      "source": "roadmap/implementation.md",
+      "target": "docs/roadmap/project/implementation.md",
+      "sourceSha256": "a46a7a8043d3b9341593303a2b0ad6ece12caa8de055ecd9d461a6b3a9f4c9d4",
+      "importedSha256": "9db921871dec5754dcdb298bc608a2e9e663a3731ba12d5efe8a50c932a2d916"
+    },
+    {
+      "source": "roadmap/index.md",
+      "target": "docs/roadmap/project/index.md",
+      "sourceSha256": "73de692c484246cec6c6f720759d4e470ae0a5b89c7410d32280f074c8b1b382",
+      "importedSha256": "46e5b90354df80bf973e6f8b7e38da00b269bfc05a6f01774323156f6e63fc84"
+    },
+    {
+      "source": "security/index.md",
+      "target": "docs/project/security/index.md",
+      "sourceSha256": "abf1b39b188d3559eb340ae612ddbfe45843abcaa6dc8f02263c2b088de3cf86",
+      "importedSha256": "67b3e0e788ea299af2062e876277897d352f77c6a6ea2b66d9fb15c38ab87d05"
+    },
+    {
+      "source": "security/permission-system.md",
+      "target": "docs/project/security/permission-system.md",
+      "sourceSha256": "647c146a9840e94bdb53f880fc9272e95f4d5e92018798055fb9e77d7771db23",
+      "importedSha256": "c7e15d7860ee22009be311ba60c100de8b2d3ea909959ceb3937db5312f673a4"
+    },
+    {
+      "source": "security/privacy-whitepaper.md",
+      "target": "docs/project/security/privacy-whitepaper.md",
+      "sourceSha256": "da3340fa0565c5369324fd7c3da7e9bd069af860c7e8f635e533aad0d9dd5177",
+      "importedSha256": "b4c02490b2a0027d7d24479da26abf4de5b85fb656d3a833fc5347d6f6592aa0"
+    }
+  ],
+  "license": "docs/public/licenses/nove-doc.txt"
+}
