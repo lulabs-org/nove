@@ -27,10 +27,10 @@ CI 始终产生同名 `ci` 检查，不使用工作流级路径过滤，避免�
 
 - API 变化：运行 API 和 Admin 的契约兼容性检查。
 - Admin 变化：检查 Admin；API 编译/导出作为构建依赖，跳过 API 测试和数据库检查。
-- 文档变化：仅构建对应文档站。
+- 文档变化：仅构建统一文档站 `@nove/docs`。
 - 根依赖、公共配置、CI 脚本、Docker 或部署配置变化：完整验证。
 
-任务过滤额外包含 API 契约的 Admin 消费方，因为它们以任务依赖连接，而非浏览器的 package 依赖。8 个临时 Git 仓库回归用例覆盖前后端、两套文档、全局配置、多提交 PR、空差异和缺少历史。运行 `pnpm test:workspace` 验证。
+任务过滤额外包含 API 契约的 Admin 消费方，因为它们以任务依赖连接，而非浏览器的 package 依赖。8 个临时 Git 仓库回归用例覆盖前后端、API 与 Admin 文档路径、全局配置、多提交 PR、空差异和缺少历史。运行 `pnpm test:workspace` 验证。
 
 CI 通过 `turbo run lint lint:prisma format:check test build --concurrency=2` 调度任务。API lint/test 等待编译和 Prisma 生成结束，避免并行读写生成类型。Admin 测试等待自身构建和 lint 完成，CI 内限制一个 Vitest worker，控制并发资源占用。数据库迁移与 PostgreSQL 兼容性测试只在 API 受影响时运行。应用受影响时额外验证对应 Docker 镜像，PR 构建不推送镜像。
 

@@ -2,6 +2,13 @@
 
 本目录指导开发者与运维团队如何在项目中高效协作、开发、测试与交付，不重复描述具体领域业务 API。
 
+## Monorepo 协作
+
+- [同仓契约与交付流程](./collaboration/monorepo-delivery.md)：API 编译、OpenAPI 导出、Admin 客户端生成、按变更验证与独立镜像。
+- [Admin 工作区迁移记录](./collaboration/admin-migration.md)：Admin 导入来源、工作区边界和旧仓库交接。
+
+前后端实现细节分别见 [API 后端架构](../architecture/index.md)和 [Admin 开发文档](../admin/index.md)。
+
 ## 团队协作与工程规范
 
 - [Trunk-Based Git 协作](./collaboration/git.md)：基于主干开发（TBD）的工作流、短生命周期分支、PR 审查规范与发布门禁。
@@ -11,12 +18,12 @@
 - [安全开发规范](./collaboration/security.md)：参数校验、SQL 防注入、敏感凭据处理与安全基线。
 - [文档维护指南](./collaboration/documentation.md)：开发者与用户文档的维护准则与死链质量控制。
 
-## 数据存储与持久化
+## API 数据库
 
 - [Prisma 7 配置与迁移](./database/prisma-setup.md)：Prisma 7、`@prisma/adapter-pg` 与开发/生产数据库迁移指南。
 - [数据库设计规范](./database/style-guide.md)：表命名、字段约定、外键级联与索引设计准则。
 
-## 部署与运维
+## API 部署与运维
 
 - [部署概览](./deployment/overview.md)：环境架构、基础设施依赖与发布模型。
 - [生产部署指南](./deployment/guide.md)：Docker 容器化构建、环境变量注入与生产运行实战。

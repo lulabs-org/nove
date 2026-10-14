@@ -31,7 +31,7 @@ docs/
 
 ## 页面与导航
 
-每个一级目录必须有 `index.md`，说明目录边界并链接主要页面。新增、移动或删除页面后同步 `.vitepress/config.mts`。
+站点首页 `docs/index.md` 直接链接工程指南、API 开发、Admin 开发与用户指南，不设置 `developer/index.md` 总览页。各文档分类的 `index.md` 说明分类边界并链接主要页面；规划与提案单独列出，不作为已实现能力。新增、移动或删除页面后同步 `.vitepress/config.mts`，并检查首页、README 与其他页面的引用。
 
 内部 Markdown 链接使用相对路径；运行时 localhost 地址用代码格式，避免被 VitePress 当作构建期死链。不要关闭 `ignoreDeadLinks`。
 
