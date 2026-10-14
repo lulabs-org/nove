@@ -60,9 +60,9 @@
 
 ## 🔗 相关资源
 
-- [工程指南](../developer/guides/index.md) - 前后端协作、测试与交付
-- [API 后端架构](../developer/architecture/index.md) - 后端模块与集成实现
-- [Admin 开发文档](../developer/admin/guide/getting-started.md) - 管理后台开发与维护
+- [工程指南](../engineering/index.md) - 前后端协作、测试与交付
+- [API 后端架构](../developer/api/architecture/index.md) - 后端模块与集成实现
+- [Admin 开发文档](../developer/admin/guides/getting-started.md) - 管理后台开发与维护
 
 ## 📝 文档更新
 

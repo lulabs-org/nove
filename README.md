@@ -32,10 +32,10 @@
 
 Nove API 的所有文档（包括架构设计、API 参考、开发指南、第三方集成说明等）已迁移并整合为 [完整的文档站点](./docs)。
 
-- [**👨‍💻 工程指南**](./docs/developer/guides/index.md) - 同仓契约生成、协作、测试和部署流程。
-- [**API 开发文档**](./docs/developer/architecture/index.md) - 后端架构、业务模块与第三方集成。
+- [**👨‍💻 工程指南**](./docs/engineering/index.md) - 同仓契约生成、协作、测试和部署流程。
+- [**API 开发文档**](./docs/developer/api/architecture/index.md) - 后端架构、业务模块与第三方集成。
 - [**👤 用户文档**](./docs/user/index.md) - 面向系统最终用户与 API 调用方，包含如何使用系统功能、API 接口指引、常见问题等。
-- [**🖥️ Admin 开发文档**](./docs/developer/admin/guide/getting-started.md) - 管理后台的架构、模块、开发与部署。
+- [**🖥️ Admin 开发文档**](./docs/developer/admin/guides/getting-started.md) - 管理后台的架构、模块、开发与部署。
 - [**📖 完整文档目录**](./docs/index.md) - 浏览所有文档入口。
 
 > **提示**：您也可以在本地运行以下命令启动文档站点：
@@ -78,13 +78,13 @@ turbo.json          # 构建缓存及任务调度
 
 从旧目录升级时，将本地 `.env`、`.env.test` 和其他 API 私有配置迁至 `apps/api/`，重新运行 `pnpm install --frozen-lockfile`。如使用相对路径的运行数据（例如 `temp-data`），也应迁至应用目录。Docker Compose 使用 `pnpm compose up -d`，统一读取 `apps/api/.env`。Admin 配置独立保存在 `apps/admin/.env.local`（从同目录 `.env.example` 复制），通过 `VITE_API_BASE_URL` 指向后端。
 
-Admin 按 #511 方案 C 从 `lulabs-org/nove-admin` 的 `4a832f211290c40fc707818624b7444d52be9c2a` 单点导入，历史提交继续在原仓库查询。详见 [Admin 迁移记录](./docs/developer/guides/collaboration/admin-migration.md)。`pnpm generate:api` 会编译 API、离线导出 OpenAPI，再生成 Admin 客户端；无需启动服务或提供私有配置。CI 使用 PR 完整差异或 push 前后差异选择任务，API 改动也验证 Admin。API 和 Admin 分别通过 `Dockerfile`、`Dockerfile.admin` 构建。详见 [契约与交付工作流](./docs/developer/guides/collaboration/monorepo-delivery.md)。
+Admin 按 #511 方案 C 从 `lulabs-org/nove-admin` 的 `4a832f211290c40fc707818624b7444d52be9c2a` 单点导入，历史提交继续在原仓库查询。详见 [Admin 迁移记录](./docs/engineering/migrations/admin.md)。`pnpm generate:api` 会编译 API、离线导出 OpenAPI，再生成 Admin 客户端；无需启动服务或提供私有配置。CI 使用 PR 完整差异或 push 前后差异选择任务，API 改动也验证 Admin。API 和 Admin 分别通过 `Dockerfile`、`Dockerfile.admin` 构建。详见 [契约与交付工作流](./docs/engineering/monorepo-delivery.md)。
 
 ---
 
 ## 🚀 快速开始
 
-如果想马上启动后端服务，请参考以下精简步骤。详细步骤请参考 [环境配置与部署指南](./docs/developer/guides/deployment/guide.md)：
+如果想马上启动后端服务，请参考以下精简步骤。详细步骤请参考 [环境配置与部署指南](./docs/developer/api/guides/deployment/guide.md)：
 
 ### 1. 环境准备
 

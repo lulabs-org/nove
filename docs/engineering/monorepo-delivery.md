@@ -48,4 +48,4 @@ API 使用 [turbo prune --docker](https://turborepo.dev/docs/reference/prune) �
 
 Admin 同时裁剪 API 与 Admin，因为构建客户端需要后端元数据。最终 Nginx 镜像只含静态资源，以非 root 用户监听 8080，支持 SPA 深层路由，缺失资源返回 404。必须提供 `VITE_API_BASE_URL`，不在镜像中传入数据库凭据或私有配置。
 
-现有后端 GHCR 发布保留分支/tag规则，普通分支推送只在后端或构建依赖变化时触发。Admin 镜像提供独立构建入口；实际托管平台、域名、环境变量和上线切换仍由部署流程配置。旧 Admin 仓库归档的状态参见 [迁移记录](./admin-migration.md)。
+现有后端 GHCR 发布保留分支/tag规则，普通分支推送只在后端或构建依赖变化时触发。Admin 镜像提供独立构建入口；实际托管平台、域名、环境变量和上线切换仍由部署流程配置。旧 Admin 仓库归档的状态参见 [迁移记录](./migrations/admin.md)。

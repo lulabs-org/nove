@@ -60,7 +60,7 @@ for (const [file, api, admin, docs] of [
   ['apps/api/src/example.ts', true, true, false],
   ['apps/admin/src/example.tsx', false, true, false],
   ['docs/guide.md', false, false, true],
-  ['docs/developer/admin/guide/getting-started.md', false, false, true],
+  ['docs/developer/admin/guides/getting-started.md', false, false, true],
   ['.github/workflows/ci.yml', true, true, true],
   ['Dockerfile', true, true, true],
 ]) {

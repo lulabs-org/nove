@@ -68,4 +68,4 @@ API Key 适用于服务间或自动化访问，仍受 Scope 和权限限制。�
 - Redoc：`http://localhost:3000/docs`
 - GraphQL：`http://localhost:3000/graphql`（生产环境关闭 Playground/introspection）
 
-遇到问题先查看[常见问题](../faq/common-questions.md)；开发流程见[工程指南](../../developer/guides/index.md)，接口集成实现见[第三方集成](../../developer/integrations/index.md)。
+遇到问题先查看[常见问题](../faq/common-questions.md)；开发流程见[工程指南](../../engineering/index.md)，接口集成实现见[第三方集成](../../developer/api/integrations/index.md)。

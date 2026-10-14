@@ -388,5 +388,5 @@ git checkout feat/my-work
 
 - 📖 **[Trunk-Based Development 官方指南](https://trunkbaseddevelopment.com/)**
 - 规范 **[Conventional Commits 1.0.0](https://www.conventionalcommits.org/)**
-- 文档 **[版本号与 Tag 对照表](./version-control.md)**
+- 文档 **[版本号与 Tag 对照表](../developer/api/guides/version-control.md)**
 - 脚本 **[Package 脚本指南](./scripts.md)**

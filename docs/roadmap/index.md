@@ -1,6 +1,6 @@
 # 路线图
 
-本目录记录目标、探索和尚未完全实现的设计，不是当前运行时合同。判断系统现状时应优先查看[架构](../architecture/index.md)和源码。
+本目录记录目标、探索和尚未完全实现的设计，不是当前运行时合同。判断系统现状时应优先查看[架构](../developer/api/architecture/index.md)和源码。
 
 - [项目愿景与目标](./project-goals.md)：产品方向和长期目标。
 - [多租户架构](./multi-tenant-architecture.md)：多租户演进设计，部分能力已落地但全文不等于当前实现。

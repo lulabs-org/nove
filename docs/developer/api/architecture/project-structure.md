@@ -77,4 +77,4 @@ Prisma 采用 **Prisma 7 原生 Schema Folder**：
 
 ## 文档放置
 
-当前事实与未来方案必须分开：`architecture/`、`modules/`、`integrations/` 描述已实现能力，`roadmap/` 保存目标设计。详细规则见[文档维护指南](../guides/collaboration/documentation.md)。
+当前事实与未来方案必须分开：`architecture/`、`modules/`、`integrations/` 描述已实现能力，`roadmap/` 保存目标设计。详细规则见[文档维护指南](../../../engineering/documentation.md)。

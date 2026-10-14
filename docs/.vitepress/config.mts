@@ -24,28 +24,37 @@ export default withMermaid(
         { text: '首页', link: '/' },
         {
           text: '工程指南',
-          link: '/developer/guides/',
-          activeMatch: '^/developer/guides/',
+          link: '/engineering/',
+          activeMatch: '^/engineering/',
         },
         {
           text: 'API 开发',
-          activeMatch: '^/developer/(architecture|modules|integrations)/',
+          activeMatch: '^/developer/api/',
           items: [
-            { text: '后端架构', link: '/developer/architecture/' },
-            { text: '业务模块', link: '/developer/modules/' },
-            { text: '第三方集成', link: '/developer/integrations/' },
+            { text: '后端架构', link: '/developer/api/architecture/' },
+            { text: '业务模块', link: '/developer/api/modules/' },
+            { text: '第三方集成', link: '/developer/api/integrations/' },
+            { text: '测试与发布', link: '/developer/api/guides/testing' },
+            {
+              text: '数据库与迁移',
+              link: '/developer/api/guides/database/prisma-setup',
+            },
+            {
+              text: '部署与运维',
+              link: '/developer/api/guides/deployment/overview',
+            },
           ],
         },
         {
           text: 'Admin 开发',
-          link: '/developer/admin/guide/getting-started',
+          link: '/developer/admin/guides/getting-started',
           activeMatch: '^/developer/admin/',
         },
         { text: '用户指南', link: '/user/', activeMatch: '^/user/' },
         {
           text: '规划与提案',
-          link: '/developer/roadmap/',
-          activeMatch: '^/developer/roadmap/',
+          link: '/roadmap/',
+          activeMatch: '^/roadmap/',
         },
       ],
 
@@ -56,18 +65,18 @@ export default withMermaid(
             items: [
               {
                 text: '快速开始',
-                link: '/developer/admin/guide/getting-started',
+                link: '/developer/admin/guides/getting-started',
               },
               {
                 text: '开发工作流',
-                link: '/developer/admin/guide/development-workflow',
+                link: '/developer/admin/guides/development-workflow',
               },
               {
                 text: '新增业务模块',
-                link: '/developer/admin/guide/adding-a-feature',
+                link: '/developer/admin/guides/adding-a-feature',
               },
-              { text: '测试与质量', link: '/developer/admin/guide/testing' },
-              { text: '部署', link: '/developer/admin/guide/deployment' },
+              { text: '测试与质量', link: '/developer/admin/guides/testing' },
+              { text: '部署', link: '/developer/admin/guides/deployment' },
             ],
           },
           {
@@ -120,118 +129,109 @@ export default withMermaid(
           },
         ],
 
-        '/developer/architecture/': [
+        '/developer/api/architecture/': [
           {
             text: 'API 后端架构',
             items: [
-              { text: '架构索引', link: '/developer/architecture/' },
+              { text: '架构索引', link: '/developer/api/architecture/' },
+              {
+                text: '安全架构与设计参考',
+                link: '/developer/api/architecture/security',
+              },
               {
                 text: '后端运行时架构',
-                link: '/developer/architecture/overview',
+                link: '/developer/api/architecture/overview',
               },
               {
                 text: '技术栈与基础设施',
-                link: '/developer/architecture/tech-stack',
+                link: '/developer/api/architecture/tech-stack',
               },
               {
                 text: '核心数据流转',
-                link: '/developer/architecture/data-flow',
+                link: '/developer/api/architecture/data-flow',
               },
               {
                 text: '模块全景地图',
-                link: '/developer/architecture/module-map',
+                link: '/developer/api/architecture/module-map',
               },
               {
                 text: '工程目录结构',
-                link: '/developer/architecture/project-structure',
+                link: '/developer/api/architecture/project-structure',
               },
             ],
           },
         ],
 
-        '/developer/guides/': [
+        '/engineering/': [
           {
-            text: '工程指南',
-            items: [{ text: '指南索引', link: '/developer/guides/' }],
-          },
-          {
-            text: 'Monorepo 协作',
-            collapsed: false,
+            text: '工作区与协作',
             items: [
+              { text: '工程指南', link: '/engineering/' },
               {
                 text: '同仓契约与交付流程',
-                link: '/developer/guides/collaboration/monorepo-delivery',
+                link: '/engineering/monorepo-delivery',
               },
-              {
-                text: 'Admin 工作区迁移记录',
-                link: '/developer/guides/collaboration/admin-migration',
-              },
+              { text: '工作区脚本', link: '/engineering/scripts' },
+              { text: 'Git 协作规范', link: '/engineering/git' },
+              { text: '文档维护指南', link: '/engineering/documentation' },
             ],
           },
           {
-            text: '团队协作与工程规范',
-            collapsed: false,
+            text: '迁移记录',
             items: [
               {
-                text: 'Trunk-Based Git 协作',
-                link: '/developer/guides/collaboration/git',
+                text: 'Admin 工作区迁移',
+                link: '/engineering/migrations/admin',
               },
-              {
-                text: '版本控制与发布',
-                link: '/developer/guides/collaboration/version-control',
-              },
+            ],
+          },
+        ],
+        '/developer/api/guides/': [
+          {
+            text: 'API 测试与发布',
+            items: [
               {
                 text: 'NestJS 测试规范',
-                link: '/developer/guides/collaboration/testing',
+                link: '/developer/api/guides/testing',
               },
               {
-                text: '工程脚本说明',
-                link: '/developer/guides/collaboration/scripts',
-              },
-              {
-                text: '安全开发规范',
-                link: '/developer/guides/collaboration/security',
-              },
-              {
-                text: '文档维护指南',
-                link: '/developer/guides/collaboration/documentation',
+                text: 'API 版本与发布',
+                link: '/developer/api/guides/version-control',
               },
             ],
           },
           {
-            text: 'API 数据库',
-            collapsed: false,
+            text: '数据库',
             items: [
               {
-                text: 'Prisma 7 配置',
-                link: '/developer/guides/database/prisma-setup',
+                text: 'Prisma 配置与迁移',
+                link: '/developer/api/guides/database/prisma-setup',
               },
               {
                 text: '数据库开发规范',
-                link: '/developer/guides/database/style-guide',
+                link: '/developer/api/guides/database/style-guide',
               },
             ],
           },
           {
-            text: 'API 部署与运维',
-            collapsed: false,
+            text: '部署与运维',
             items: [
               {
                 text: '部署概览',
-                link: '/developer/guides/deployment/overview',
+                link: '/developer/api/guides/deployment/overview',
               },
               {
-                text: 'API 生产部署',
-                link: '/developer/guides/deployment/guide',
+                text: '生产部署',
+                link: '/developer/api/guides/deployment/guide',
               },
             ],
           },
         ],
 
-        '/developer/modules/': [
+        '/developer/api/modules/': [
           {
             text: 'API 业务模块',
-            items: [{ text: '模块全景索引', link: '/developer/modules/' }],
+            items: [{ text: '模块全景索引', link: '/developer/api/modules/' }],
           },
           {
             text: '会议与 AI 纪要',
@@ -239,19 +239,19 @@ export default withMermaid(
             items: [
               {
                 text: '会议核心 (Meeting)',
-                link: '/developer/modules/meeting/overview',
+                link: '/developer/api/modules/meeting/overview',
               },
               {
                 text: '会议组织归属基础',
-                link: '/developer/modules/meeting/organization-foundation',
+                link: '/developer/api/modules/meeting/organization-foundation',
               },
               {
                 text: '纪要与 AI 总结 (Minute)',
-                link: '/developer/modules/meeting/minute',
+                link: '/developer/api/modules/meeting/minute',
               },
               {
                 text: '追踪报告 (Tracking Report)',
-                link: '/developer/modules/meeting/tracking-report',
+                link: '/developer/api/modules/meeting/tracking-report',
               },
             ],
           },
@@ -259,30 +259,33 @@ export default withMermaid(
             text: '身份认证与权限 (IAM)',
             collapsed: false,
             items: [
-              { text: '认证模块概述', link: '/developer/modules/iam/overview' },
+              {
+                text: '认证模块概述',
+                link: '/developer/api/modules/iam/overview',
+              },
               {
                 text: '注册与邀请流程',
-                link: '/developer/modules/iam/registration-flow',
+                link: '/developer/api/modules/iam/registration-flow',
               },
               {
                 text: '登出实现机制',
-                link: '/developer/modules/iam/logout-implementation',
+                link: '/developer/api/modules/iam/logout-implementation',
               },
               {
                 text: '联系方式换绑审计',
-                link: '/developer/modules/iam/contact-change-audit',
+                link: '/developer/api/modules/iam/contact-change-audit',
               },
               {
                 text: 'API Key 鉴权体系',
-                link: '/developer/modules/iam/api-key',
+                link: '/developer/api/modules/iam/api-key',
               },
               {
                 text: 'OAuth 客户端管理',
-                link: '/developer/modules/iam/oauth',
+                link: '/developer/api/modules/iam/oauth',
               },
               {
                 text: '组织与成员管理',
-                link: '/developer/modules/iam/organization',
+                link: '/developer/api/modules/iam/organization',
               },
             ],
           },
@@ -292,19 +295,19 @@ export default withMermaid(
             items: [
               {
                 text: '系统技能 (Skill)',
-                link: '/developer/modules/agent/skill',
+                link: '/developer/api/modules/agent/skill',
               },
               {
                 text: '多项目管理 (Project)',
-                link: '/developer/modules/agent/project',
+                link: '/developer/api/modules/agent/project',
               },
               {
                 text: '云盘与 Minute 文件',
-                link: '/developer/modules/agent/drive',
+                link: '/developer/api/modules/agent/drive',
               },
               {
                 text: 'MCP 协议连接指南',
-                link: '/developer/modules/agent/mcp',
+                link: '/developer/api/modules/agent/mcp',
               },
             ],
           },
@@ -314,16 +317,18 @@ export default withMermaid(
             items: [
               {
                 text: '订单与支付结算',
-                link: '/developer/modules/commerce/overview',
+                link: '/developer/api/modules/commerce/overview',
               },
             ],
           },
         ],
 
-        '/developer/integrations/': [
+        '/developer/api/integrations/': [
           {
             text: 'API 集成与消息通道',
-            items: [{ text: '集成全景索引', link: '/developer/integrations/' }],
+            items: [
+              { text: '集成全景索引', link: '/developer/api/integrations/' },
+            ],
           },
           {
             text: '服务集成中心',
@@ -331,11 +336,11 @@ export default withMermaid(
             items: [
               {
                 text: '管理后台配置指南',
-                link: '/developer/integrations/service-integrations',
+                link: '/developer/api/integrations/service-integrations',
               },
               {
                 text: '服务集成后端架构',
-                link: '/developer/integrations/architecture',
+                link: '/developer/api/integrations/architecture',
               },
             ],
           },
@@ -345,27 +350,27 @@ export default withMermaid(
             items: [
               {
                 text: '腾讯会议总览',
-                link: '/developer/integrations/tencent-meeting/overview',
+                link: '/developer/api/integrations/tencent-meeting/overview',
               },
               {
                 text: '腾讯会议 Webhook',
-                link: '/developer/integrations/tencent-meeting/webhook',
+                link: '/developer/api/integrations/tencent-meeting/webhook',
               },
               {
                 text: '腾讯会议本地测试',
-                link: '/developer/integrations/tencent-meeting/webhook-testing',
+                link: '/developer/api/integrations/tencent-meeting/webhook-testing',
               },
               {
                 text: '企业微信与 Hermes',
-                link: '/developer/integrations/wecom/overview',
+                link: '/developer/api/integrations/wecom/overview',
               },
               {
                 text: '飞书集成总览',
-                link: '/developer/integrations/lark/overview',
+                link: '/developer/api/integrations/lark/overview',
               },
               {
                 text: '飞书 Webhook',
-                link: '/developer/integrations/lark/webhook',
+                link: '/developer/api/integrations/lark/webhook',
               },
             ],
           },
@@ -375,36 +380,36 @@ export default withMermaid(
             items: [
               {
                 text: '邮件通知服务 (Mail)',
-                link: '/developer/integrations/messaging/mail',
+                link: '/developer/api/integrations/messaging/mail',
               },
               {
                 text: '短信基础服务 (SMS)',
-                link: '/developer/integrations/messaging/sms',
+                link: '/developer/api/integrations/messaging/sms',
               },
               {
                 text: '阿里云短信接入',
-                link: '/developer/integrations/messaging/aliyun-sms',
+                link: '/developer/api/integrations/messaging/aliyun-sms',
               },
             ],
           },
         ],
 
-        '/developer/roadmap/': [
+        '/roadmap/': [
           {
             text: '规划与提案（非当前能力）',
             items: [
-              { text: '路线图索引', link: '/developer/roadmap/' },
+              { text: '路线图索引', link: '/roadmap/' },
               {
                 text: '项目愿景与里程碑',
-                link: '/developer/roadmap/project-goals',
+                link: '/roadmap/project-goals',
               },
               {
                 text: '多租户架构演进',
-                link: '/developer/roadmap/multi-tenant-architecture',
+                link: '/roadmap/multi-tenant-architecture',
               },
               {
                 text: '会议插件系统设计',
-                link: '/developer/roadmap/meeting-plugin-system',
+                link: '/roadmap/meeting-plugin-system',
               },
             ],
           },

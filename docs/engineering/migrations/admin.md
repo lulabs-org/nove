@@ -33,7 +33,7 @@ pnpm docs:build
 
 Admin 的 `VITE_API_BASE_URL` 在构建时写入静态产物。Turbo 会把 `VITE_*` 环境变量和应用的生产环境文件纳入 Admin 构建缓存，避免不同 API 地址复用错误产物。前端的 DOM/ESM 设置独立保留，仅继承公共 TS 基础选项。
 
-阶段 3 曾使用冻结 OpenAPI 快照保证迁入后能够构建。阶段 4 已将其替换为同仓 API 的离线导出，删除快照与安装时生成脚本。现在根目录 Admin 任务通过 Turbo 自动编译 API、导出规范并生成客户端，生成产物继续忽略。具体流程见 [契约与交付工作流](./monorepo-delivery.md)。
+阶段 3 曾使用冻结 OpenAPI 快照保证迁入后能够构建。阶段 4 已将其替换为同仓 API 的离线导出，删除快照与安装时生成脚本。现在根目录 Admin 任务通过 Turbo 自动编译 API、导出规范并生成客户端，生成产物继续忽略。具体流程见 [契约与交付工作流](../monorepo-delivery.md)。
 
 ## 构建兼容修正
 

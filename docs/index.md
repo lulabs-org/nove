@@ -8,13 +8,13 @@ hero:
   actions:
     - theme: brand
       text: 工程指南
-      link: /developer/guides/
+      link: /engineering/
     - theme: alt
       text: API 开发
-      link: /developer/architecture/
+      link: /developer/api/architecture/
     - theme: alt
       text: Admin 开发
-      link: /developer/admin/guide/getting-started
+      link: /developer/admin/guides/getting-started
     - theme: alt
       text: 用户指南
       link: /user/

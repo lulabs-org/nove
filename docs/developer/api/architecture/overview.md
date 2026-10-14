@@ -34,7 +34,7 @@ flowchart LR
 - **第三方集成 (Integrations)**：`tmeet`、`lark`、`wecom`、`wechat-shop`、`mail`、`sms`。
 - **系统基础设施 (Infrastructure)**：`prisma`、`redis`、`task`、`storage`、`file-scanning`、`webhook-log`、`admin/integrations`。
 
-模块详细清单见[模块地图](./module-map.md)，目录约定见[项目结构](./project-structure.md)，脚本命令见[命令说明](../guides/collaboration/scripts.md)。
+模块详细清单见[模块地图](./module-map.md)，目录约定见[项目结构](./project-structure.md)，脚本命令见[命令说明](../../../engineering/scripts.md)。
 
 ## 本地交互与调试入口
 
