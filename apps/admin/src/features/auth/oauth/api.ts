@@ -1,4 +1,4 @@
-import { http } from '../../../shared/lib/api/http';
+import { http } from '../../../shared/lib/api/mutator';
 
 export interface OAuthPermission {
   code: string;

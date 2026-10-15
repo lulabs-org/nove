@@ -1,5 +1,4 @@
-import { mutator } from '../../../../shared/lib/api/mutator';
-import { http } from '../../../../shared/lib/api/http';
+import { http, mutator } from '../../../../shared/lib/api/mutator';
 import type { PayslipListResponse, PayslipDetailResponse } from '../types';
 
 export const payslipApi = {

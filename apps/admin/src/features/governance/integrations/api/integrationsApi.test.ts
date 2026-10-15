@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
   delete: vi.fn(),
 }));
 
-vi.mock('../../../../shared/lib/api/http', () => ({
+vi.mock('../../../../shared/lib/api/mutator', () => ({
   http: mocks,
 }));
 
