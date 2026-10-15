@@ -6,8 +6,7 @@
     "docs:dev": "vitepress dev . --port 5174",
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview .",
-    "build": "pnpm docs:build",
-    "dev": "pnpm docs:dev"
+    "build": "pnpm docs:build"
   },
   "devDependencies": {
     "@braintree/sanitize-url": "^7.1.2",

@@ -9,7 +9,7 @@
 | 命令                              | 范围与作用                                  |
 | --------------------------------- | ------------------------------------------- |
 | `pnpm install --frozen-lockfile`  | 按根锁文件安装全部工作区依赖                |
-| `pnpm dev`                        | Turbo 调度 API、Admin 和统一文档站          |
+| `pnpm dev`                        | Turbo 调度 API 与 Admin；文档站单独启动     |
 | `pnpm dev:api` / `pnpm start:dev` | 仅启动 API watch 服务，默认端口 3000        |
 | `pnpm dev:admin`                  | 先生成同仓契约，再启动 Admin，默认端口 5173 |
 | `pnpm docs:dev`                   | 启动统一文档站，默认端口 5174               |
