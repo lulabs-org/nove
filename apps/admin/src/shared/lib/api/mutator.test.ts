@@ -94,32 +94,56 @@ describe('HTTP authentication and request handling', () => {
     expect(result.config.headers.get('x-request-id')).toMatch(/^\d+-[a-z0-9]+$/);
   });
 
-  it('proactively refreshes token before sending request when JWT is about to expire', async () => {
+  it.each(['base64', 'base64url'])(
+    'proactively refreshes an expiring JWT with a %s payload',
+    async (encoding) => {
+      await import('./mutator');
+      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+      const encodedPayload = btoa(
+        JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 30, nonce: '~~~???' })
+      );
+      const payload =
+        encoding === 'base64url'
+          ? encodedPayload.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+          : encodedPayload;
+      const expiringJwt = `${header}.${payload}.signature`;
+      authService.setToken(expiringJwt);
+
+      const refresh = vi.fn(async (config: InternalAxiosRequestConfig) =>
+        response(config, { accessToken: 'proactively-refreshed-token' })
+      );
+      const requests = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+
+      http.defaults.adapter = async (config) => {
+        if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+          return refresh(config);
+        }
+        return requests(config);
+      };
+
+      await http.get('/api/projects');
+      expect(refresh).toHaveBeenCalledTimes(1);
+      expect(requests).toHaveBeenCalledTimes(1);
+      expect(requests.mock.calls[0][0].headers.get('Authorization')).toBe(
+        'Bearer proactively-refreshed-token'
+      );
+      expect(authService.getToken()).toBe('proactively-refreshed-token');
+    }
+  );
+
+  it('preserves an undecodable token without attempting proactive refresh', async () => {
     await import('./mutator');
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 30 }));
-    const expiringJwt = `${header}.${payload}.signature`;
-    authService.setToken(expiringJwt);
-
-    const refresh = vi.fn(async (config: InternalAxiosRequestConfig) =>
-      response(config, { accessToken: 'proactively-refreshed-token' })
-    );
+    const token = 'header.invalid!payload.signature';
+    authService.setToken(token);
     const requests = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+    http.defaults.adapter = requests;
 
-    http.defaults.adapter = async (config) => {
-      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
-        return refresh(config);
-      }
-      return requests(config);
-    };
+    const result = await http.get('/api/projects');
 
-    await http.get('/api/projects');
-    expect(refresh).toHaveBeenCalledTimes(1);
     expect(requests).toHaveBeenCalledTimes(1);
-    expect(requests.mock.calls[0][0].headers.get('Authorization')).toBe(
-      'Bearer proactively-refreshed-token'
-    );
-    expect(authService.getToken()).toBe('proactively-refreshed-token');
+    expect(result.config.url).toBe('/api/projects');
+    expect(result.config.headers.get('Authorization')).toBe(`Bearer ${token}`);
+    expect(authService.getToken()).toBe(token);
   });
 
   it('shares one proactive refresh for concurrent requests when token is expiring soon', async () => {

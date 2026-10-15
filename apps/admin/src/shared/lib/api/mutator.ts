@@ -72,8 +72,7 @@ function decodeJwtPayload(token: string): { exp?: number } | null {
     if (pad) {
       base64 += '='.repeat(4 - pad);
     }
-    const decoded =
-      typeof atob === 'function' ? atob(base64) : Buffer.from(base64, 'base64').toString('utf-8');
+    const decoded = atob(base64);
     return JSON.parse(decoded);
   } catch {
     return null;
