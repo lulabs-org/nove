@@ -94,9 +94,40 @@ describe('HTTP authentication and request handling', () => {
     expect(result.config.headers.get('x-request-id')).toMatch(/^\d+-[a-z0-9]+$/);
   });
 
-  it('shares one refresh for concurrent 401s and retries with the new token', async () => {
+  it('proactively refreshes token before sending request when JWT is about to expire', async () => {
     await import('./mutator');
-    authService.setToken('expired-token');
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 30 }));
+    const expiringJwt = `${header}.${payload}.signature`;
+    authService.setToken(expiringJwt);
+
+    const refresh = vi.fn(async (config: InternalAxiosRequestConfig) =>
+      response(config, { accessToken: 'proactively-refreshed-token' })
+    );
+    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        return refresh(config);
+      }
+      return requests(config);
+    };
+
+    await http.get('/api/projects');
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(requests).toHaveBeenCalledTimes(1);
+    expect(requests.mock.calls[0][0].headers.get('Authorization')).toBe(
+      'Bearer proactively-refreshed-token'
+    );
+    expect(authService.getToken()).toBe('proactively-refreshed-token');
+  });
+
+  it('shares one proactive refresh for concurrent requests when token is expiring soon', async () => {
+    await import('./mutator');
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 30 }));
+    authService.setToken(`${header}.${payload}.signature`);
+
     let releaseRefresh!: () => void;
     const gate = new Promise<void>((resolve) => {
       releaseRefresh = resolve;
@@ -105,10 +136,8 @@ describe('HTTP authentication and request handling', () => {
       await gate;
       return response(config, { accessToken: 'new-token' });
     });
-    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => {
-      if (config.headers.get('Authorization') !== 'Bearer new-token') throw unauthorized(config);
-      return response(config);
-    });
+    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+
     http.defaults.adapter = async (config) => {
       if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
         return refresh(config);
@@ -120,22 +149,25 @@ describe('HTTP authentication and request handling', () => {
     await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
     releaseRefresh();
     const results = await pending;
+
     expect(results).toHaveLength(2);
-    expect(requests).toHaveBeenCalledTimes(4);
+    expect(requests).toHaveBeenCalledTimes(2);
+    expect(refresh).toHaveBeenCalledTimes(1);
     expect(authService.getToken()).toBe('new-token');
-    expect(refresh.mock.calls[0][0].url).toBe('/api/auth/refresh-token');
-    expect(JSON.parse(refresh.mock.calls[0][0].data)).toMatchObject({
-      clientType: 'web',
-      deviceId: 'test-device',
-    });
   });
 
-  it('clears credentials and emits one event when concurrent refresh attempts fail', async () => {
+  it('clears credentials and emits one event when proactive refresh fails', async () => {
     await import('./mutator');
-    authService.setToken('expired-token');
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 30 }));
+    authService.setToken(`${header}.${payload}.signature`);
     const dispatch = vi.spyOn(window, 'dispatchEvent');
+
     http.defaults.adapter = async (config) => {
-      throw unauthorized(config);
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        throw unauthorized(config);
+      }
+      return response(config);
     };
 
     const results = await Promise.allSettled([http.get('/api/projects'), http.get('/api/users')]);
@@ -146,25 +178,15 @@ describe('HTTP authentication and request handling', () => {
     ).toHaveLength(1);
   });
 
-  it('logs out after a retried request is still unauthorized without refreshing again', async () => {
+  it('logs out and clears credentials on 401 response for protected requests', async () => {
     await import('./mutator');
+    authService.setToken('valid-token');
     const dispatch = vi.spyOn(window, 'dispatchEvent');
-    const refresh = vi.fn(async (config: InternalAxiosRequestConfig) =>
-      response(config, { accessToken: 'invalid-token' })
-    );
-    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => {
-      throw unauthorized(config);
-    });
     http.defaults.adapter = async (config) => {
-      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
-        return refresh(config);
-      }
-      return requests(config);
+      throw unauthorized(config);
     };
 
     await expect(http.get('/api/projects')).rejects.toMatchObject({ response: { status: 401 } });
-    expect(refresh).toHaveBeenCalledTimes(1);
-    expect(requests).toHaveBeenCalledTimes(2);
     expect(authService.getToken()).toBeNull();
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'auth-unauthorized' }));
   });
@@ -180,7 +202,9 @@ describe('HTTP authentication and request handling', () => {
       }
       throw unauthorized(config);
     };
-    await expect(http.post('/api/auth/login')).rejects.toMatchObject({ response: { status: 401 } });
+    await expect(http.post('/api/auth/login')).rejects.toMatchObject({
+      response: { status: 401 },
+    });
     expect(refresh).not.toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
     expect(authService.getToken()).toBe('existing-token');

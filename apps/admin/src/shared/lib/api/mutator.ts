@@ -60,6 +60,37 @@ function setAuthorizationHeader(config: AxiosRequestConfig, token: string): void
   config.headers.Authorization = `Bearer ${token}`;
 }
 
+/**
+ * 解码 JWT Payload 载荷
+ */
+function decodeJwtPayload(token: string): { exp?: number } | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2 || !parts[1]) return null;
+    let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const pad = base64.length % 4;
+    if (pad) {
+      base64 += '='.repeat(4 - pad);
+    }
+    const decoded =
+      typeof atob === 'function' ? atob(base64) : Buffer.from(base64, 'base64').toString('utf-8');
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 检查 JWT Token 是否即将过期（默认剩余不足 60 秒视为即将过期）
+ */
+function isTokenExpiringSoon(token: string, thresholdSeconds = 60): boolean {
+  const payload = decodeJwtPayload(token);
+  if (!payload || typeof payload.exp !== 'number') {
+    return false;
+  }
+  return payload.exp - Math.floor(Date.now() / 1000) <= thresholdSeconds;
+}
+
 let isNotifyingUnauthorized = false;
 
 /**
@@ -97,7 +128,7 @@ const http = axios.create({
 let refreshPromise: Promise<string> | null = null;
 
 /**
- * 单例互斥刷新 AccessToken，确保并发 401 时仅发起一次刷新网络请求
+ * 单例互斥刷新 AccessToken，确保并发时仅发起一次网络刷新请求
  */
 function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
@@ -133,12 +164,22 @@ function refreshAccessToken(): Promise<string> {
 /*                                5. 拦截器配置                                */
 /* -------------------------------------------------------------------------- */
 
-// 请求拦截器
+// 请求拦截器：主动前置续期（Token 即将过期时静默换票）
 http.interceptors.request.use(
-  (config) => {
-    // 非公开接口自动注入 Token
+  async (config) => {
+    // 非公开接口自动注入 Token（并在即将过期时主动静默换票）
     if (!isPublicAuthRequest(config)) {
-      const token = authService.getToken();
+      let token = authService.getToken();
+
+      if (token && isTokenExpiringSoon(token)) {
+        try {
+          token = await refreshAccessToken();
+        } catch {
+          notifyUnauthorized();
+          return Promise.reject(new Error('Token refresh failed'));
+        }
+      }
+
       if (token) {
         setAuthorizationHeader(config, token);
       }
@@ -155,38 +196,20 @@ http.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 响应拦截器
+// 响应拦截器：纯净的全局 UI 异常通知与未授权登出
 http.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  (error) => {
     // 忽略用户或组件卸载引起的主动取消请求
     if (axios.isCancel(error)) {
       return Promise.reject(error);
     }
 
     const axiosError = error as AxiosError;
-    const originalRequest = axiosError.config as
-      | (AxiosRequestConfig & { _retry?: boolean })
-      | undefined;
 
-    // 401 未授权处理
-    if (axiosError.response?.status === 401 && !isPublicAuthRequest(originalRequest)) {
-      // 首次 401：尝试刷新 Token 并重试请求
-      if (originalRequest && !originalRequest._retry) {
-        originalRequest._retry = true;
-
-        try {
-          const accessToken = await refreshAccessToken();
-          setAuthorizationHeader(originalRequest, accessToken);
-          return http(originalRequest);
-        } catch (refreshError) {
-          return Promise.reject(refreshError);
-        }
-      }
-
-      // 重试后依然 401，说明凭证确实已失效，广播登出事件
+    // 401 未授权处理（非公开接口直接触发登出，无需重试）
+    if (axiosError.response?.status === 401 && !isPublicAuthRequest(axiosError.config)) {
       notifyUnauthorized();
-      return Promise.reject(error);
     }
 
     // 403 权限不足提示
