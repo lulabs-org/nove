@@ -1,4 +1,4 @@
-import { http } from '../../../../shared/lib/api/mutator';
+import { mutator } from '../../../../shared/lib/api/mutator';
 import type {
   IntegrationConfigMap,
   IntegrationDetail,
@@ -9,54 +9,66 @@ import type {
   TestAliyunSmsInput,
 } from '../types';
 
-async function list(): Promise<IntegrationSummary[]> {
-  const response = await http.get<IntegrationSummary[]>('/admin/integrations');
-  return response.data;
+function list(): Promise<IntegrationSummary[]> {
+  return mutator<IntegrationSummary[]>({
+    url: '/admin/integrations',
+    method: 'GET',
+  });
 }
 
-async function get<M extends IntegrationModule>(
+function get<M extends IntegrationModule>(
   module: M
 ): Promise<IntegrationDetail<IntegrationConfigMap[M]>> {
-  const response = await http.get<IntegrationDetail<IntegrationConfigMap[M]>>(
-    `/admin/integrations/${module}`
-  );
-  return response.data;
+  return mutator<IntegrationDetail<IntegrationConfigMap[M]>>({
+    url: `/admin/integrations/${module}`,
+    method: 'GET',
+  });
 }
 
-async function update<M extends IntegrationModule>(
+function update<M extends IntegrationModule>(
   module: M,
   data: IntegrationConfigMap[M]
 ): Promise<SaveIntegrationResult> {
-  const response = await http.put<SaveIntegrationResult>(`/admin/integrations/${module}`, data);
-  return response.data;
+  return mutator<SaveIntegrationResult>({
+    url: `/admin/integrations/${module}`,
+    method: 'PUT',
+    data,
+  });
 }
 
-async function test<M extends IntegrationModule>(
+function test<M extends IntegrationModule>(
   module: M,
   data: IntegrationConfigMap[M] & Partial<TestAliyunSmsInput>
 ): Promise<TestIntegrationResult> {
-  const response = await http.post<TestIntegrationResult>(
-    `/admin/integrations/${module}/test`,
-    data
-  );
-  return response.data;
+  return mutator<TestIntegrationResult>({
+    url: `/admin/integrations/${module}/test`,
+    method: 'POST',
+    data,
+  });
 }
 
-async function remove(module: IntegrationModule): Promise<SaveIntegrationResult> {
-  const response = await http.delete<SaveIntegrationResult>(`/admin/integrations/${module}`);
-  return response.data;
+function remove(module: IntegrationModule): Promise<SaveIntegrationResult> {
+  return mutator<SaveIntegrationResult>({
+    url: `/admin/integrations/${module}`,
+    method: 'DELETE',
+  });
 }
 
-async function uploadMailBrandLogo(file: Blob): Promise<{ url: string }> {
+function uploadMailBrandLogo(file: Blob): Promise<{ url: string }> {
   const data = new FormData();
   data.append('file', file);
-  const response = await http.put<{ url: string }>('/admin/integrations/mail/brand-logo', data);
-  return response.data;
+  return mutator<{ url: string }>({
+    url: '/admin/integrations/mail/brand-logo',
+    method: 'PUT',
+    data,
+  });
 }
 
-async function removeMailBrandLogo(): Promise<{ url: null }> {
-  const response = await http.delete<{ url: null }>('/admin/integrations/mail/brand-logo');
-  return response.data;
+function removeMailBrandLogo(): Promise<{ url: null }> {
+  return mutator<{ url: null }>({
+    url: '/admin/integrations/mail/brand-logo',
+    method: 'DELETE',
+  });
 }
 
 export const integrationsApi = {

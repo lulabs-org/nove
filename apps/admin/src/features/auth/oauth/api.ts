@@ -1,4 +1,4 @@
-import { http } from '../../../shared/lib/api/mutator';
+import { mutator } from '../../../shared/lib/api/mutator';
 
 export interface OAuthPermission {
   code: string;
@@ -25,28 +25,30 @@ interface OAuthDecisionResponse {
   redirect_uri: string;
 }
 
-export async function getOAuthAuthorizationRequest(requestId: string) {
-  const response = await http.get<OAuthAuthorizationRequest>(
-    `/api/oauth/authorization-requests/${encodeURIComponent(requestId)}`
-  );
-  return response.data;
+export function getOAuthAuthorizationRequest(
+  requestId: string
+): Promise<OAuthAuthorizationRequest> {
+  return mutator<OAuthAuthorizationRequest>({
+    url: `/api/oauth/authorization-requests/${encodeURIComponent(requestId)}`,
+    method: 'GET',
+  });
 }
 
-export async function approveOAuthAuthorizationRequest(
+export function approveOAuthAuthorizationRequest(
   requestId: string,
   scopes: string[],
   organizationId: string
-) {
-  const response = await http.post<OAuthDecisionResponse>(
-    `/api/oauth/authorization-requests/${encodeURIComponent(requestId)}/approve`,
-    { scopes, organization_id: organizationId }
-  );
-  return response.data;
+): Promise<OAuthDecisionResponse> {
+  return mutator<OAuthDecisionResponse>({
+    url: `/api/oauth/authorization-requests/${encodeURIComponent(requestId)}/approve`,
+    method: 'POST',
+    data: { scopes, organization_id: organizationId },
+  });
 }
 
-export async function denyOAuthAuthorizationRequest(requestId: string) {
-  const response = await http.post<OAuthDecisionResponse>(
-    `/api/oauth/authorization-requests/${encodeURIComponent(requestId)}/deny`
-  );
-  return response.data;
+export function denyOAuthAuthorizationRequest(requestId: string): Promise<OAuthDecisionResponse> {
+  return mutator<OAuthDecisionResponse>({
+    url: `/api/oauth/authorization-requests/${encodeURIComponent(requestId)}/deny`,
+    method: 'POST',
+  });
 }

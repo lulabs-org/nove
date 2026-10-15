@@ -1,10 +1,10 @@
-import { http } from '../../../shared/lib/api/mutator';
+import { mutator } from '../../../shared/lib/api/mutator';
 import type {
   OrganizationDto,
   UpdateOrganizationDto,
 } from '../../../shared/lib/api/orval/business/schemas';
 
-export async function saveOrganizationProfile(
+export function saveOrganizationProfile(
   orgId: string,
   values: UpdateOrganizationDto,
   file?: File,
@@ -16,6 +16,9 @@ export async function saveOrganizationProfile(
   }
   data.append('logoAction', removeLogo ? 'remove' : 'keep');
   if (file) data.append('file', file);
-  const response = await http.put<OrganizationDto>(`/admin/orgs/${orgId}/profile`, data);
-  return response.data;
+  return mutator<OrganizationDto>({
+    url: `/admin/orgs/${orgId}/profile`,
+    method: 'PUT',
+    data,
+  });
 }

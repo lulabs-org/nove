@@ -1,4 +1,10 @@
-import { AxiosError, AxiosHeaders, CanceledError, type InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  CanceledError,
+  type AxiosInstance,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { authService } from '../../../features/auth/api/service';
 
@@ -23,13 +29,28 @@ function unauthorized(config: InternalAxiosRequestConfig) {
   );
 }
 
+const AUTH_ENDPOINTS = {
+  LOGIN: '/api/auth/login',
+  REGISTER: '/api/auth/register',
+  RESET_PASSWORD: '/api/auth/reset-password',
+  REFRESH_TOKEN: '/api/auth/refresh-token',
+} as const;
+
 describe('HTTP authentication and request handling', () => {
+  let http: AxiosInstance;
+  const originalAxiosCreate = axios.create.bind(axios);
+
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
     vi.useFakeTimers();
     localStorage.clear();
     vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.test///');
+
+    vi.spyOn(axios, 'create').mockImplementation((config) => {
+      http = originalAxiosCreate(config);
+      return http;
+    });
   });
 
   afterEach(() => {
@@ -41,14 +62,14 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('normalizes the base URL and applies a timeout to refresh requests', async () => {
-    const { http } = await import('./mutator');
+    await import('./mutator');
     expect(http.defaults.baseURL).toBe('https://api.example.test');
     expect(http.defaults.timeout).toBe(15000);
     expect(http.defaults.withCredentials).toBe(true);
   });
 
   it('injects a token only for protected requests and preserves the caller request ID', async () => {
-    const { http, AUTH_ENDPOINTS } = await import('./mutator');
+    await import('./mutator');
     authService.setToken('existing-token');
     http.defaults.adapter = async (config) => response(config);
 
@@ -67,14 +88,14 @@ describe('HTTP authentication and request handling', () => {
 
   it('generates a request ID when randomUUID is unavailable', async () => {
     vi.stubGlobal('crypto', {});
-    const { http } = await import('./mutator');
+    await import('./mutator');
     http.defaults.adapter = async (config) => response(config);
     const result = await http.get('/api/projects');
     expect(result.config.headers.get('x-request-id')).toMatch(/^\d+-[a-z0-9]+$/);
   });
 
   it('shares one refresh for concurrent 401s and retries with the new token', async () => {
-    const { http, AUTH_ENDPOINTS } = await import('./mutator');
+    await import('./mutator');
     authService.setToken('expired-token');
     let releaseRefresh!: () => void;
     const gate = new Promise<void>((resolve) => {
@@ -110,7 +131,7 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('clears credentials and emits one event when concurrent refresh attempts fail', async () => {
-    const { http } = await import('./mutator');
+    await import('./mutator');
     authService.setToken('expired-token');
     const dispatch = vi.spyOn(window, 'dispatchEvent');
     http.defaults.adapter = async (config) => {
@@ -126,7 +147,7 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('logs out after a retried request is still unauthorized without refreshing again', async () => {
-    const { http, AUTH_ENDPOINTS } = await import('./mutator');
+    await import('./mutator');
     const dispatch = vi.spyOn(window, 'dispatchEvent');
     const refresh = vi.fn(async (config: InternalAxiosRequestConfig) =>
       response(config, { accessToken: 'invalid-token' })
@@ -149,7 +170,7 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('does not refresh or log out for a rejected public login', async () => {
-    const { http, AUTH_ENDPOINTS } = await import('./mutator');
+    await import('./mutator');
     authService.setToken('existing-token');
     const refresh = vi.fn();
     const dispatch = vi.spyOn(window, 'dispatchEvent');
@@ -166,7 +187,7 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('rejects canceled requests without displaying an error', async () => {
-    const { http } = await import('./mutator');
+    await import('./mutator');
     const canceled = new CanceledError('Canceled');
     http.defaults.adapter = async () => {
       throw canceled;
@@ -176,7 +197,7 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('unwraps response.data and merges custom options in mutator', async () => {
-    const { http, mutator } = await import('./mutator');
+    const { mutator } = await import('./mutator');
     http.defaults.adapter = async (config) => {
       expect(config.headers?.get('X-Custom-Opt')).toBe('value');
       return response(config, { success: true, count: 42 });

@@ -14,26 +14,14 @@ import { authService } from '../../../features/auth/api/service';
 import { getDeviceId, getDeviceInfo } from '../../../features/auth/model/device';
 
 /* -------------------------------------------------------------------------- */
-/*                                1. 类型定义                                  */
+/*                                1. 常量配置                                  */
 /* -------------------------------------------------------------------------- */
 
-export type RetryableRequestConfig = AxiosRequestConfig & {
-  _retry?: boolean;
-};
+const REQUEST_TIMEOUT = 15000;
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
+const AUTH_UNAUTHORIZED_EVENT = 'auth-unauthorized';
 
-export type RefreshTokenResponse = {
-  accessToken?: string;
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                2. 常量配置                                  */
-/* -------------------------------------------------------------------------- */
-
-export const REQUEST_TIMEOUT = 15000;
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
-export const AUTH_UNAUTHORIZED_EVENT = 'auth-unauthorized';
-
-export const AUTH_ENDPOINTS = {
+const AUTH_ENDPOINTS = {
   LOGIN: '/api/auth/login',
   REGISTER: '/api/auth/register',
   RESET_PASSWORD: '/api/auth/reset-password',
@@ -43,7 +31,7 @@ export const AUTH_ENDPOINTS = {
 const PUBLIC_AUTH_PATHS: readonly string[] = Object.values(AUTH_ENDPOINTS);
 
 /* -------------------------------------------------------------------------- */
-/*                                3. 辅助函数                                  */
+/*                                2. 辅助函数                                  */
 /* -------------------------------------------------------------------------- */
 
 /**
@@ -59,7 +47,7 @@ function generateRequestId(): string {
 /**
  * 判断当前请求是否属于公开认证接口（无需附加 Token 或无需 401 自动重试）
  */
-export function isPublicAuthRequest(config?: RetryableRequestConfig): boolean {
+function isPublicAuthRequest(config?: AxiosRequestConfig): boolean {
   const url = config?.url ?? '';
   return PUBLIC_AUTH_PATHS.some((path) => url.includes(path));
 }
@@ -67,7 +55,7 @@ export function isPublicAuthRequest(config?: RetryableRequestConfig): boolean {
 /**
  * 统一设置 Authorization 请求头
  */
-function setAuthorizationHeader(config: RetryableRequestConfig, token: string): void {
+function setAuthorizationHeader(config: AxiosRequestConfig, token: string): void {
   config.headers = config.headers ?? {};
   config.headers.Authorization = `Bearer ${token}`;
 }
@@ -93,17 +81,17 @@ function notifyUnauthorized(): void {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                4. HTTP 客户端                               */
+/*                                3. HTTP 客户端                               */
 /* -------------------------------------------------------------------------- */
 
-export const http = axios.create({
+const http = axios.create({
   baseURL: API_BASE_URL,
   timeout: REQUEST_TIMEOUT,
   withCredentials: true,
 });
 
 /* -------------------------------------------------------------------------- */
-/*                                5. Token 刷新机制                           */
+/*                                4. Token 刷新机制                           */
 /* -------------------------------------------------------------------------- */
 
 let refreshPromise: Promise<string> | null = null;
@@ -114,7 +102,7 @@ let refreshPromise: Promise<string> | null = null;
 function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
     refreshPromise = http
-      .post<RefreshTokenResponse>(AUTH_ENDPOINTS.REFRESH_TOKEN, {
+      .post<{ accessToken?: string }>(AUTH_ENDPOINTS.REFRESH_TOKEN, {
         clientType: 'web',
         deviceId: getDeviceId(),
         deviceInfo: getDeviceInfo(),
@@ -142,7 +130,7 @@ function refreshAccessToken(): Promise<string> {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                6. 拦截器配置                                */
+/*                                5. 拦截器配置                                */
 /* -------------------------------------------------------------------------- */
 
 // 请求拦截器
@@ -177,7 +165,9 @@ http.interceptors.response.use(
     }
 
     const axiosError = error as AxiosError;
-    const originalRequest = axiosError.config as RetryableRequestConfig | undefined;
+    const originalRequest = axiosError.config as
+      | (AxiosRequestConfig & { _retry?: boolean })
+      | undefined;
 
     // 401 未授权处理
     if (axiosError.response?.status === 401 && !isPublicAuthRequest(originalRequest)) {
@@ -221,7 +211,7 @@ http.interceptors.response.use(
 );
 
 /* -------------------------------------------------------------------------- */
-/*                                7. 请求适配器                                 */
+/*                                6. 请求适配器                                 */
 /* -------------------------------------------------------------------------- */
 
 /**

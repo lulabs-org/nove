@@ -1,4 +1,4 @@
-import { http, mutator } from '../../../../shared/lib/api/mutator';
+import { mutator } from '../../../../shared/lib/api/mutator';
 import type { PayslipListResponse, PayslipDetailResponse } from '../types';
 
 export const payslipApi = {
@@ -51,11 +51,11 @@ export const payslipApi = {
   },
 
   exportCsv(month?: string): Promise<Blob> {
-    return http
-      .get('/profit-sharing/payslips/export', {
-        params: month ? { month } : undefined,
-        responseType: 'blob',
-      })
-      .then((res) => res.data);
+    return mutator<Blob>({
+      url: '/profit-sharing/payslips/export',
+      method: 'GET',
+      params: month ? { month } : undefined,
+      responseType: 'blob',
+    });
   },
 };
