@@ -41,11 +41,10 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('normalizes the base URL and applies a timeout to refresh requests', async () => {
-    const { http, baseClient } = await import('./mutator');
+    const { http } = await import('./mutator');
     expect(http.defaults.baseURL).toBe('https://api.example.test');
-    expect(baseClient.defaults.baseURL).toBe('https://api.example.test');
-    expect(baseClient.defaults.timeout).toBe(15000);
-    expect(baseClient.defaults.withCredentials).toBe(true);
+    expect(http.defaults.timeout).toBe(15000);
+    expect(http.defaults.withCredentials).toBe(true);
   });
 
   it('injects a token only for protected requests and preserves the caller request ID', async () => {
@@ -75,7 +74,7 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('shares one refresh for concurrent 401s and retries with the new token', async () => {
-    const { http, baseClient } = await import('./mutator');
+    const { http, AUTH_ENDPOINTS } = await import('./mutator');
     authService.setToken('expired-token');
     let releaseRefresh!: () => void;
     const gate = new Promise<void>((resolve) => {
@@ -85,12 +84,16 @@ describe('HTTP authentication and request handling', () => {
       await gate;
       return response(config, { accessToken: 'new-token' });
     });
-    baseClient.defaults.adapter = refresh;
     const requests = vi.fn(async (config: InternalAxiosRequestConfig) => {
       if (config.headers.get('Authorization') !== 'Bearer new-token') throw unauthorized(config);
       return response(config);
     });
-    http.defaults.adapter = requests;
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        return refresh(config);
+      }
+      return requests(config);
+    };
 
     const pending = Promise.all([http.get('/api/projects'), http.get('/api/users')]);
     await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
@@ -107,12 +110,9 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('clears credentials and emits one event when concurrent refresh attempts fail', async () => {
-    const { http, baseClient } = await import('./mutator');
+    const { http } = await import('./mutator');
     authService.setToken('expired-token');
     const dispatch = vi.spyOn(window, 'dispatchEvent');
-    baseClient.defaults.adapter = async (config) => {
-      throw unauthorized(config);
-    };
     http.defaults.adapter = async (config) => {
       throw unauthorized(config);
     };
@@ -126,16 +126,20 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('logs out after a retried request is still unauthorized without refreshing again', async () => {
-    const { http, baseClient } = await import('./mutator');
+    const { http, AUTH_ENDPOINTS } = await import('./mutator');
     const dispatch = vi.spyOn(window, 'dispatchEvent');
     const refresh = vi.fn(async (config: InternalAxiosRequestConfig) =>
       response(config, { accessToken: 'invalid-token' })
     );
-    baseClient.defaults.adapter = refresh;
     const requests = vi.fn(async (config: InternalAxiosRequestConfig) => {
       throw unauthorized(config);
     });
-    http.defaults.adapter = requests;
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        return refresh(config);
+      }
+      return requests(config);
+    };
 
     await expect(http.get('/api/projects')).rejects.toMatchObject({ response: { status: 401 } });
     expect(refresh).toHaveBeenCalledTimes(1);
@@ -145,12 +149,14 @@ describe('HTTP authentication and request handling', () => {
   });
 
   it('does not refresh or log out for a rejected public login', async () => {
-    const { http, baseClient } = await import('./mutator');
+    const { http, AUTH_ENDPOINTS } = await import('./mutator');
     authService.setToken('existing-token');
     const refresh = vi.fn();
     const dispatch = vi.spyOn(window, 'dispatchEvent');
-    baseClient.defaults.adapter = refresh;
     http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        return refresh(config);
+      }
       throw unauthorized(config);
     };
     await expect(http.post('/api/auth/login')).rejects.toMatchObject({ response: { status: 401 } });

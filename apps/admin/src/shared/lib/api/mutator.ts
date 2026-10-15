@@ -93,15 +93,10 @@ function notifyUnauthorized(): void {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                4. 基础客户端                                */
+/*                                4. HTTP 客户端                               */
 /* -------------------------------------------------------------------------- */
 
-/**
- * 基础客户端：
- * 包含统一的 baseURL、timeout 与 withCredentials，
- * 不挂载 Token 注入与 401 自动重试拦截器，专门用于刷新令牌等底层认证请求。
- */
-export const baseClient = axios.create({
+export const http = axios.create({
   baseURL: API_BASE_URL,
   timeout: REQUEST_TIMEOUT,
   withCredentials: true,
@@ -118,7 +113,7 @@ let refreshPromise: Promise<string> | null = null;
  */
 function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
-    refreshPromise = baseClient
+    refreshPromise = http
       .post<RefreshTokenResponse>(AUTH_ENDPOINTS.REFRESH_TOKEN, {
         clientType: 'web',
         deviceId: getDeviceId(),
@@ -147,14 +142,8 @@ function refreshAccessToken(): Promise<string> {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                              6. 业务客户端与拦截器                          */
+/*                                6. 拦截器配置                                */
 /* -------------------------------------------------------------------------- */
-
-export const http = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: REQUEST_TIMEOUT,
-  withCredentials: true,
-});
 
 // 请求拦截器
 http.interceptors.request.use(
