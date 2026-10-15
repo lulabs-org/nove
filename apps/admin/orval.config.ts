@@ -21,16 +21,13 @@ export const clientConfig = {
       target: 'src/shared/lib/api/orval/business/index.ts',
       schemas: 'src/shared/lib/api/orval/business/schemas',
       client: 'react-query' as const,
+      httpClient: 'axios' as const,
       prettier: true,
       clean: true,
       override: {
         mutator: {
           path: 'src/shared/lib/api/mutator.ts',
           name: 'mutator',
-        },
-        query: {
-          useQuery: true,
-          useMutation: true,
         },
       },
     },

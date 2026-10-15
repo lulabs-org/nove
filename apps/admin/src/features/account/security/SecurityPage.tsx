@@ -225,7 +225,7 @@ export function SecurityPage() {
   });
 
   const revokeOthersMutation = useMutation({
-    mutationFn: accountSecurityControllerRevokeOtherSessions,
+    mutationFn: () => accountSecurityControllerRevokeOtherSessions(),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['account-security-sessions'] });
       message.success('其他设备已全部下线');
