@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Card, DatePicker, Input, Button, Space, Tag, Popconfirm, message } from 'antd';
 import {
   DownloadOutlined,
@@ -10,25 +10,38 @@ import {
   ThunderboltOutlined,
 } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import dayjs, { Dayjs } from 'dayjs';
+import { useSearchParams } from 'react-router-dom';
+import type { Dayjs } from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
 import { payslipApi } from './api/payslipApi';
 import { PayslipDetailDrawer } from './PayslipDetailDrawer';
 import { PayslipAdjustmentModal } from './PayslipAdjustmentModal';
 import type { PayslipSummaryItem } from './types';
+import { resolvePayslipMonth } from './payslipListUtils';
 
 const { Search } = Input;
 
 export const PayslipList: React.FC = () => {
   const queryClient = useQueryClient();
-  const [selectedMonth, setSelectedMonth] = useState<Dayjs>(dayjs());
+  const [searchParams, setSearchParams] = useSearchParams();
+  const monthParam = searchParams.get('month');
+  const memberId = searchParams.get('memberId')?.trim() || undefined;
+  const memberName = searchParams.get('memberName')?.trim() || undefined;
+  const [selectedMonth, setSelectedMonth] = useState<Dayjs>(() => resolvePayslipMonth(monthParam));
   const [keyword, setKeyword] = useState<string>('');
 
   const monthStr = selectedMonth.format('YYYY-MM');
 
+  useEffect(() => {
+    const nextMonth = resolvePayslipMonth(monthParam);
+    setSelectedMonth((currentMonth) =>
+      currentMonth.format('YYYY-MM') === nextMonth.format('YYYY-MM') ? currentMonth : nextMonth
+    );
+  }, [monthParam]);
+
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['profit-sharing-payslips', monthStr, keyword],
-    queryFn: () => payslipApi.list({ month: monthStr, keyword: keyword || undefined }),
+    queryKey: ['profit-sharing-payslips', monthStr, keyword, memberId],
+    queryFn: () => payslipApi.list({ month: monthStr, keyword: keyword || undefined, memberId }),
   });
 
   const items = data?.items || [];
@@ -88,6 +101,20 @@ export const PayslipList: React.FC = () => {
   const handleOpenAdjustment = (member: { id: string; name: string }) => {
     setAdjustmentTarget(member);
     setAdjustmentModalOpen(true);
+  };
+
+  const updateMonth = (date: Dayjs) => {
+    setSelectedMonth(date);
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set('month', date.format('YYYY-MM'));
+    setSearchParams(nextSearchParams, { replace: true });
+  };
+
+  const clearMemberFilter = () => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('memberId');
+    nextSearchParams.delete('memberName');
+    setSearchParams(nextSearchParams, { replace: true });
   };
 
   const handleExport = () => {
@@ -416,11 +443,16 @@ export const PayslipList: React.FC = () => {
             <span style={{ fontWeight: 700, fontSize: 16, color: '#1e293b', whiteSpace: 'nowrap' }}>
               工资条台账
             </span>
+            {memberId && (
+              <Tag color="blue" closable onClose={clearMemberFilter}>
+                员工：{items[0]?.memberName || memberName || '指定员工'}
+              </Tag>
+            )}
             <DatePicker
               picker="month"
               value={selectedMonth}
               onChange={(date) => {
-                if (date) setSelectedMonth(date);
+                if (date) updateMonth(date);
               }}
               allowClear={false}
               style={{ width: 115, flexShrink: 0 }}

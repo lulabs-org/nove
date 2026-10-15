@@ -210,6 +210,26 @@ describe('ProfitSharingPayslipService', () => {
       expect(item.subsidyCount).toBe(1);
       expect(item.deductionCount).toBe(1);
     });
+
+    it('should scope the payslip query to the requested member', async () => {
+      prismaService.profitShareRecord.findMany.mockResolvedValue([]);
+
+      const res = await payslipService.getPayslips({
+        month: '2026-05',
+        memberId: 'member-zhang-san',
+      });
+
+      expect(prismaService.profitShareRecord.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            memberId: 'member-zhang-san',
+          }),
+        }),
+      );
+      expect(res.month).toBe('2026-05');
+      expect(res.items).toEqual([]);
+      expect(res.summary.totalMembers).toBe(0);
+    });
   });
 
   describe('settleMemberPayslip', () => {
