@@ -136,7 +136,7 @@ export function ProfilePage() {
 
   const profileQuery = useQuery({
     queryKey: profileQueryKey,
-    queryFn: ({ signal }) => userControllerGetProfile(signal),
+    queryFn: ({ signal }) => userControllerGetProfile({ signal }),
   });
 
   useEffect(() => {

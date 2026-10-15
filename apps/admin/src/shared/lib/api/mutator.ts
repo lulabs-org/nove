@@ -225,10 +225,17 @@ http.interceptors.response.use(
 /* -------------------------------------------------------------------------- */
 
 /**
- * Orval 自定义 Axios 请求适配器，统一解包返回 response.data
+ * Orval 自定义 Axios 请求适配器 (遵循 Orval 官方规范)
+ * 支持第二参数 options 透传，统一解包返回 response.data
  */
-export const mutator = <T>(config: AxiosRequestConfig): Promise<T> => {
-  return http(config).then(({ data }) => data);
+export const mutator = <T>(
+  config: AxiosRequestConfig,
+  options?: AxiosRequestConfig
+): Promise<T> => {
+  return http({
+    ...config,
+    ...options,
+  }).then(({ data }) => data);
 };
 
 // 供 Orval 及 React Query 推断精确类型

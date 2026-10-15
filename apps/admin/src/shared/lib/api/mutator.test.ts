@@ -175,14 +175,17 @@ describe('HTTP authentication and request handling', () => {
     expect(showError).not.toHaveBeenCalled();
   });
 
-  it('unwraps response.data in mutator', async () => {
+  it('unwraps response.data and merges custom options in mutator', async () => {
     const { http, mutator } = await import('./mutator');
-    http.defaults.adapter = async (config) => response(config, { success: true, count: 42 });
+    http.defaults.adapter = async (config) => {
+      expect(config.headers?.get('X-Custom-Opt')).toBe('value');
+      return response(config, { success: true, count: 42 });
+    };
 
-    const result = await mutator<{ success: boolean; count: number }>({
-      url: '/test',
-      method: 'GET',
-    });
+    const result = await mutator<{ success: boolean; count: number }>(
+      { url: '/test', method: 'GET' },
+      { headers: { 'X-Custom-Opt': 'value' } }
+    );
     expect(result).toEqual({ success: true, count: 42 });
   });
 });
