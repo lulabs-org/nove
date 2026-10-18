@@ -6,6 +6,9 @@ import { DriveConfigService } from './drive-config.service';
 import { DriveAclService, DriveAuthContext } from '../policies';
 import { DriveAccessRepository, DriveFileRepository } from '../repositories';
 
+const DOCX_CONTENT_TYPE =
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
 describe('Drive image preview audit', () => {
   let module: TestingModule;
   let service: DriveService;
@@ -87,6 +90,45 @@ describe('Drive image preview audit', () => {
     expect(result.contentDisposition).toBe('inline');
     expect(access.createAudit).not.toHaveBeenCalled();
   });
+
+  it('previews PDF documents without download audits', async () => {
+    files.findDetails.mockResolvedValue({
+      ...record,
+      versions: [{ ...record.versions[0], contentType: 'application/pdf' }],
+    });
+    const result = await service.createPreviewUrl('file-a', auth);
+    expect(result.contentDisposition).toBe('inline');
+    expect(access.createAudit).not.toHaveBeenCalled();
+  });
+
+  it('signs the original object for docx previews without download audits', async () => {
+    files.findDetails.mockResolvedValue({
+      ...record,
+      node: { ...record.node, name: 'contract.docx' },
+      versions: [{ ...record.versions[0], contentType: DOCX_CONTENT_TYPE }],
+    });
+    const result = await service.createPreviewUrl('file-a', auth);
+    expect(result.contentDisposition).toBe('inline');
+    expect(storage.getDownloadUrl).toHaveBeenCalledWith(
+      expect.objectContaining({
+        key: 'cover-key',
+        contentType: DOCX_CONTENT_TYPE,
+        contentDisposition: 'inline',
+      }),
+    );
+    expect(access.createAudit).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the docx file extension when contentType is empty', async () => {
+    files.findDetails.mockResolvedValue({
+      ...record,
+      node: { ...record.node, name: 'CONTRACT.DOCX' },
+      versions: [{ ...record.versions[0], contentType: '' }],
+    });
+    const result = await service.createPreviewUrl('file-a', auth);
+    expect(result.contentDisposition).toBe('inline');
+  });
+
   it('explicit downloads still write DOWNLOAD audits', async () => {
     await service.createDownloadUrl('file-a', auth);
     expect(access.createAudit).toHaveBeenCalledTimes(1);
@@ -111,7 +153,14 @@ describe('Drive image preview audit', () => {
 
   it.each([
     ['pending images', { status: 'PENDING', contentType: 'image/png' }],
-    ['non-images', { status: 'ACTIVE', contentType: 'application/pdf' }],
+    [
+      'unsupported office documents',
+      {
+        status: 'ACTIVE',
+        contentType:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      },
+    ],
   ])('rejects previews for %s', async (_name, version) => {
     files.findDetails.mockResolvedValue({
       ...record,

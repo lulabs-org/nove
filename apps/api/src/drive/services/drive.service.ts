@@ -49,6 +49,31 @@ import {
   UploadSessionRepository,
 } from '../repositories';
 
+const PDF_CONTENT_TYPE = 'application/pdf';
+const DOCX_CONTENT_TYPE =
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+const INLINE_PREVIEW_CONTENT_TYPE = /^(?:image|video)\//;
+
+/**
+ * 图片、视频和 PDF 可以由浏览器直接内联渲染，预览地址返回原对象签名直链。
+ */
+function isInlinePreviewable(contentType: string): boolean {
+  return (
+    INLINE_PREVIEW_CONTENT_TYPE.test(contentType) ||
+    contentType === PDF_CONTENT_TYPE
+  );
+}
+
+/**
+ * Word 文档由前端 file-viewer 在浏览器本地解析渲染，内容不经过第三方服务；
+ * 预览地址同样返回原对象签名直链，contentType 缺失时按扩展名兜底识别。
+ */
+function isPreviewableDocx(contentType: string, fileName: string): boolean {
+  if (contentType === DOCX_CONTENT_TYPE) return true;
+  if (contentType) return false;
+  return extname(fileName).toLowerCase() === '.docx';
+}
+
 @Injectable()
 export class DriveService {
   constructor(
@@ -456,8 +481,12 @@ export class DriveService {
     if (!version || version.status !== FileVersionStatus.ACTIVE) {
       throw new ConflictException('文件尚不可下载');
     }
-    if (preview && !/^(image|video)\//.test(version.contentType)) {
-      throw new BadRequestException('仅支持图片和视频预览');
+    if (
+      preview &&
+      !isInlinePreviewable(version.contentType) &&
+      !isPreviewableDocx(version.contentType, record.node!.name)
+    ) {
+      throw new BadRequestException('仅支持图片、视频、PDF 和 Word 文档预览');
     }
     if (!preview) {
       await this.audit(
