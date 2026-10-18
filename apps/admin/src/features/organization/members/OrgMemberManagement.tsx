@@ -550,6 +550,32 @@ export function OrgMemberManagement() {
     if (activeTab === 'departments') setActiveTab('members');
   };
 
+  const handleUnifiedSearch = (value: string) => {
+    const keyword = value.trim().toLowerCase();
+    if (!keyword) {
+      handleFilterChange('keyword', undefined);
+      return;
+    }
+
+    const department =
+      allDepartments.find(
+        (item) =>
+          item.name.toLowerCase() === keyword || item.code.toLowerCase() === keyword
+      ) ||
+      allDepartments.find(
+        (item) =>
+          item.name.toLowerCase().includes(keyword) || item.code.toLowerCase().includes(keyword)
+      );
+
+    if (department) {
+      handleSelectDepartment(department.id);
+      handleFilterChange('keyword', undefined);
+      return;
+    }
+
+    handleFilterChange('keyword', value.trim());
+  };
+
   const openCreateMemberModal = () => {
     const defaultDepartmentIds = selectedDeptId ? [selectedDeptId] : [];
     memberForm.setFieldsValue({
@@ -1442,9 +1468,13 @@ export function OrgMemberManagement() {
                   <Search
                     allowClear
                     prefix={<SearchOutlined />}
-                    placeholder="请输入姓名、邮箱、手机号或用户 ID"
+                    placeholder="搜索部门、姓名、邮箱、手机号、工号或用户 ID"
                     value={deptKeyword}
-                    onChange={(event) => setDeptKeyword(event.target.value)}
+                    onChange={(event) => {
+                      setDeptKeyword(event.target.value);
+                      if (!event.target.value.trim()) handleFilterChange('keyword', undefined);
+                    }}
+                    onSearch={handleUnifiedSearch}
                   />
                 </div>
                 <div className="org-tree-list">

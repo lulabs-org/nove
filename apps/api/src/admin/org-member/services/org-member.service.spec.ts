@@ -361,7 +361,16 @@ describe('OrgMemberService.listMembers', () => {
         deletedAt: null,
         type: 'INTERNAL',
         status: 'ACTIVE',
-        OR: expect.any(Array),
+        OR: expect.arrayContaining([
+          {
+            user: {
+              phone: { contains: 'Alice', mode: 'insensitive' },
+            },
+          },
+          {
+            userId: { contains: 'Alice', mode: 'insensitive' },
+          },
+        ]),
         memberDepartments: {
           some: {
             orgId: 'org-1',
