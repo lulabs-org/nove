@@ -312,7 +312,7 @@
 }
 
 .org-members-page .ant-table-thead > tr > th {
-  background: var(--ant-color-bg-layout);
+  background: var(--app-table-head-bg);
   color: var(--ant-color-text-secondary);
   font-weight: 600;
 }

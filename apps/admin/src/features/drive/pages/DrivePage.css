@@ -59,7 +59,7 @@
   font-size: 13px;
 }
 .drive-table .ant-table-thead > tr > th {
-  background: var(--ant-color-bg-layout);
+  background: var(--app-table-head-bg);
   color: var(--ant-color-text-tertiary);
   font-size: 12px;
   font-weight: 500;

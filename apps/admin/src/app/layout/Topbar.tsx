@@ -12,6 +12,8 @@ import Layout from 'antd/es/layout';
 import Dropdown from 'antd/es/dropdown';
 import Avatar from 'antd/es/avatar';
 import Space from 'antd/es/space';
+import Button from 'antd/es/button';
+import Tooltip from 'antd/es/tooltip';
 import Modal from 'antd/es/modal';
 import theme from 'antd/es/theme';
 import {
@@ -19,9 +21,13 @@ import {
   UserOutlined,
   LogoutOutlined,
   ExclamationCircleFilled,
+  SunOutlined,
+  MoonOutlined,
+  DesktopOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth';
+import { useTheme } from '../providers/useTheme';
 import './Topbar.css';
 
 const { Header } = Layout;
@@ -34,6 +40,8 @@ interface TopbarProps {
 export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
   const { user, logout } = useAuth();
   const { token } = theme.useToken();
+  const { mode, resolved, setMode, toggle } = useTheme();
+  const nextThemeLabel = resolved === 'dark' ? '切换到亮色模式' : '切换到暗色模式';
 
   const menuItems = [
     {
@@ -46,7 +54,17 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
       icon: <SafetyOutlined />,
       label: <Link to="/settings/security">安全设置</Link>,
     },
-    { type: 'divider' as const },
+    ...(mode === 'system'
+      ? []
+      : [
+          {
+            key: 'theme-system',
+            icon: <DesktopOutlined />,
+            label: '跟随系统外观',
+            onClick: () => setMode('system'),
+          },
+          { type: 'divider' as const },
+        ]),
     {
       key: 'logout',
       icon: <LogoutOutlined />,
@@ -102,7 +120,24 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
           Nove System
         </span>
       </Link>
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', padding: '0 24px' }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 8,
+          padding: '0 24px',
+        }}
+      >
+        <Tooltip title={nextThemeLabel}>
+          <Button
+            type="text"
+            aria-label={nextThemeLabel}
+            icon={resolved === 'dark' ? <SunOutlined /> : <MoonOutlined />}
+            onClick={toggle}
+          />
+        </Tooltip>
         <Dropdown menu={{ items: menuItems }} placement="bottomRight">
           <Space style={{ cursor: 'pointer' }}>
             <Avatar src={user?.avatar} icon={<UserOutlined />} />

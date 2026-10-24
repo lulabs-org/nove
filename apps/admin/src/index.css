@@ -2,12 +2,11 @@
  * 全局基础样式。
  *
  * 颜色一律不使用字面量：可继承的颜色由 Ant Design 的 CSS 变量提供，
- * 页面底色由 `Layout` 组件绘制（见 app/layout）。此处只保留与排版、
+ * 页面底色与 `color-scheme` 由 ThemeProvider 的 ThemeChrome 写在 <html> 上
+ * （亮/暗两套值需要运行时计算，纯 CSS 拿不到 --ant-*）。此处只保留与排版、
  * 以及 Ant Design 无法覆盖的浏览器原生行为相关的规则。
  */
 :root {
-  color-scheme: light;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -23,9 +22,21 @@ body {
 /*
  * antd 只给 Layout.Content / Layout.Header 设置文字色，Layout / Sider 本身没有。
  * 用 token 补上，避免未包裹 Typography 的文字回落到浏览器默认的纯黑。
+ *
+ * --app-table-head-bg 是表头专用的表面色。亮色下用页面底色（比卡片深一档），
+ * 暗色下必须反过来用「浮起」色——否则表头会比卡片更黑，像在卡片上挖了个洞。
+ * 这里只能写成两条规则：纯 CSS 无法在 --ant-* 上做条件运算。
  */
 .ant-layout {
   color: var(--ant-color-text);
+  --app-table-head-bg: var(--ant-color-bg-layout);
+  --app-sidebar-bg: var(--ant-color-bg-layout);
+}
+
+[data-theme='dark'] .ant-layout {
+  --app-table-head-bg: var(--ant-color-bg-elevated);
+  /* 亮色里侧栏比卡片深一档；暗色里方向相反，侧栏要比页面底色抬高一档才站得住。 */
+  --app-sidebar-bg: var(--ant-color-bg-container);
 }
 
 /* Ant Design Table 全局表头与单元格防挤压、防折行优化 */

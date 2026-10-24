@@ -23,7 +23,7 @@ interface SidebarProps {
   collapsed?: boolean;
 }
 
-export const SIDEBAR_BACKGROUND = 'var(--ant-color-bg-layout)';
+export const SIDEBAR_BACKGROUND = 'var(--app-sidebar-bg)';
 
 function findActiveParentKeys(
   routes: RouteConfig[],
