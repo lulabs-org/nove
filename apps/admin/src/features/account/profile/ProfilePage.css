@@ -1,6 +1,6 @@
 .profile-page {
   min-height: calc(100vh - 148px);
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .profile-alert {
@@ -13,7 +13,7 @@
   align-items: center;
   gap: 20px;
   padding: 24px;
-  border: 1px solid #e8eaed;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 12px;
   background: linear-gradient(135deg, #f8faff 0%, #ffffff 72%);
 }
@@ -24,8 +24,8 @@
 
 .profile-avatar {
   flex: 0 0 auto;
-  background: #f0f5ff;
-  color: #3370ff;
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
 }
 
 .profile-hero-main {
@@ -61,9 +61,9 @@
 .profile-panel {
   min-width: 0;
   padding: 24px;
-  border: 1px solid #e8eaed;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 12px;
-  background: #fff;
+  background: var(--ant-color-bg-container);
 }
 
 .profile-side-panel {
@@ -76,13 +76,13 @@
   align-items: flex-start;
   gap: 10px;
   margin-bottom: 22px;
-  color: #1f2329;
+  color: var(--ant-color-text);
   font-weight: 600;
 }
 
 .profile-section-heading .anticon {
   margin-top: 3px;
-  color: #3370ff;
+  color: var(--ant-color-primary);
 }
 
 .profile-section-heading > div {
@@ -113,7 +113,7 @@
 .profile-form-group-heading-divided {
   margin-top: 4px;
   padding-top: 20px;
-  border-top: 1px solid #eff0f1;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .profile-form-actions {
@@ -137,8 +137,8 @@
 
 .profile-avatar-editor > .ant-avatar {
   flex: 0 0 auto;
-  background: #f0f5ff;
-  color: #3370ff;
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
 }
 
 .profile-avatar-editor-main {
@@ -161,28 +161,28 @@
   gap: 8px;
   min-width: 0;
   padding: 10px 0;
-  border-bottom: 1px solid #f2f3f5;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
 .profile-detail-icon {
-  color: #646a73;
+  color: var(--ant-color-text-secondary);
 }
 
 .profile-detail-label {
-  color: #646a73;
+  color: var(--ant-color-text-secondary);
   font-size: 13px;
   white-space: nowrap;
 }
 
 .profile-detail-value {
   min-width: 0;
-  color: #1f2329;
+  color: var(--ant-color-text);
   text-align: right;
   overflow-wrap: anywhere;
 }
 
 .profile-status-list {
-  border-top: 1px solid #eff0f1;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .profile-view-groups {
@@ -191,7 +191,7 @@
 }
 
 .profile-view-list {
-  border-top: 1px solid #eff0f1;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .profile-status-list .ant-tag {

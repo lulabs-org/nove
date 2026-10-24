@@ -19,7 +19,7 @@ interface PublicLayoutProps {
 
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+    <Layout style={{ minHeight: '100vh', background: 'var(--ant-color-bg-layout)' }}>
       <Content
         style={{
           display: 'flex',

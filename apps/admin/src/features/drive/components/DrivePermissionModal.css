@@ -14,7 +14,7 @@
   margin-bottom: 20px;
   padding-bottom: 16px;
   padding-right: 36px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
 .drive-perm-icon {
@@ -27,14 +27,15 @@
   justify-content: center;
   font-size: 22px;
   background: linear-gradient(135deg, #eef3ff 0%, #e0ebff 100%);
-  color: #2563eb;
+  color: var(--ant-color-primary);
+  /* 描边跟随同组装饰渐变，留在阶段二 */
   border: 1px solid #dbe5fe;
 }
 
 .drive-perm-icon.is-folder {
   background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  color: #d97706;
-  border-color: #fde68a;
+  color: var(--ant-color-warning);
+  border-color: var(--ant-color-warning-border);
 }
 
 .drive-perm-title-area {
@@ -48,7 +49,7 @@
   gap: 8px;
   font-size: 17px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--ant-color-text);
   line-height: 1.4;
   margin-bottom: 2px;
 }
@@ -67,25 +68,25 @@
   height: 22px;
   min-width: 22px;
   padding: 0 !important;
-  color: #94a3b8;
+  color: var(--ant-color-text-tertiary);
   transition: all 0.2s ease;
   border: none;
 }
 
 .drive-perm-help-btn:hover {
-  color: #2563eb !important;
-  background-color: #eff6ff !important;
+  color: var(--ant-color-primary) !important;
+  background-color: var(--ant-color-primary-bg) !important;
 }
 
 .drive-perm-node-subtitle {
   font-size: 12px;
-  color: #64748b;
+  color: var(--ant-color-text-secondary);
 }
 
 /* Sections */
 .drive-perm-section {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--ant-color-bg-container);
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 20px;
@@ -93,7 +94,7 @@
 }
 
 .drive-perm-section:focus-within {
-  border-color: #cbd5e1;
+  border-color: var(--ant-color-text-quaternary);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
@@ -103,7 +104,7 @@
   justify-content: space-between;
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--ant-color-text);
   margin-bottom: 14px;
 }
 
@@ -112,8 +113,8 @@
   font-weight: normal;
   padding: 1px 7px;
   border-radius: 12px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text-secondary);
 }
 
 /* Existing Grants List */
@@ -130,8 +131,8 @@
   gap: 12px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: #f8fafc;
-  border: 1px solid #f1f5f9;
+  background: var(--ant-color-bg-layout);
+  border: 1px solid var(--ant-color-border-secondary);
   margin-bottom: 8px;
   transition: all 0.15s ease;
 }
@@ -141,8 +142,8 @@
 }
 
 .drive-perm-grant-item:hover {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
+  background: var(--ant-color-fill-tertiary);
+  border-color: var(--ant-color-border-secondary);
 }
 
 .drive-perm-grant-principal {
@@ -155,27 +156,27 @@
 
 .drive-perm-grant-avatar {
   flex-shrink: 0;
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--ant-color-fill-secondary);
+  color: var(--ant-color-text-secondary);
 }
 
 .drive-perm-grant-avatar.is-user {
-  background: #e0f2fe;
+  background: var(--ant-color-primary-bg);
   color: #0284c7;
 }
 
 .drive-perm-grant-avatar.is-role {
-  background: #fef3c7;
-  color: #d97706;
+  background: var(--ant-color-warning-bg);
+  color: var(--ant-color-warning);
 }
 
 .drive-perm-grant-avatar.is-dept {
-  background: #ecfdf5;
-  color: #059669;
+  background: var(--ant-color-success-bg);
+  color: var(--ant-color-success);
 }
 
 .drive-perm-grant-avatar.is-org {
-  background: #f3e8ff;
+  background: var(--ant-color-primary-bg);
   color: #7c3aed;
 }
 
@@ -186,7 +187,7 @@
 .drive-perm-grant-name {
   font-size: 13px;
   font-weight: 500;
-  color: #1e293b;
+  color: var(--ant-color-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -194,7 +195,7 @@
 
 .drive-perm-grant-type {
   font-size: 11px;
-  color: #64748b;
+  color: var(--ant-color-text-secondary);
 }
 
 .drive-perm-grant-rights {
@@ -228,7 +229,7 @@
 .drive-perm-form-label {
   font-size: 12px;
   font-weight: 500;
-  color: #475569;
+  color: var(--ant-color-text-secondary);
   margin-bottom: 6px;
   display: flex;
   align-items: center;
@@ -237,7 +238,7 @@
 
 .drive-perm-form-label .toggle-btn {
   font-size: 11px;
-  color: #2563eb;
+  color: var(--ant-color-primary);
   cursor: pointer;
 }
 
@@ -260,10 +261,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px 12px;
-  background: #f8fafc;
+  background: var(--ant-color-bg-layout);
   padding: 12px 14px;
   border-radius: 8px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--ant-color-border-secondary);
 }
 
 .drive-perm-action-category {
@@ -275,7 +276,7 @@
 .drive-perm-action-category-title {
   font-size: 11px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--ant-color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 2px;

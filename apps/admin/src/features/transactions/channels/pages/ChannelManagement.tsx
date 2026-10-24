@@ -168,7 +168,7 @@ export function ChannelManagement() {
       render: (_value, record) => (
         <Space orientation="vertical" size={0}>
           <span style={{ fontWeight: 600 }}>{record.name}</span>
-          <span style={{ color: '#64748b', fontFamily: 'monospace', fontSize: 12 }}>
+          <span style={{ color: 'var(--ant-color-text-secondary)', fontFamily: 'monospace', fontSize: 12 }}>
             {record.code}
           </span>
         </Space>

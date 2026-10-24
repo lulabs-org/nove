@@ -3,10 +3,10 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: #fafbfc;
+  background: var(--ant-color-fill-quaternary);
   padding: 14px;
   border-radius: 8px;
-  border: 1px solid #ebedf0;
+  border: 1px solid var(--ant-color-border-secondary);
 }
 
 .data-rule-editor-toolbar {
@@ -15,7 +15,7 @@
   justify-content: space-between;
   gap: 16px;
   padding-bottom: 10px;
-  border-bottom: 1px dashed #d9d9d9;
+  border-bottom: 1px dashed var(--ant-color-border);
 }
 
 .data-rule-template-control {
@@ -26,7 +26,7 @@
 }
 
 .data-rule-template-label {
-  color: #1f2329;
+  color: var(--ant-color-text);
   font-size: 13px;
   font-weight: 600;
   display: inline-flex;
@@ -41,17 +41,17 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #86909c;
+  color: var(--ant-color-text-tertiary);
   cursor: help;
 }
 
 .data-rule-template-help:hover {
-  color: #1677ff;
+  color: var(--ant-color-primary);
 }
 
 .data-rule-template-help:focus-visible {
   border-radius: 2px;
-  outline: 2px solid #1677ff;
+  outline: 2px solid var(--ant-color-primary);
   outline-offset: 2px;
 }
 
@@ -73,7 +73,7 @@
 }
 
 .data-rule-template-description {
-  color: #8c8c8c;
+  color: var(--ant-color-text-tertiary);
   font-size: 12px;
   white-space: normal;
 }
@@ -112,10 +112,10 @@
 
 .data-rule-condition-group.is-nested {
   padding: 12px;
-  border: 1px solid #bed4ff;
-  border-left: 3px solid #1677ff;
+  border: 1px solid var(--ant-color-primary-border);
+  border-left: 3px solid var(--ant-color-primary);
   border-radius: 8px;
-  background: #f7faff;
+  background: var(--ant-color-fill-quaternary);
 }
 
 .data-rule-combinator-bar {
@@ -123,23 +123,23 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background: #ffffff;
+  background: var(--ant-color-bg-container);
   border-radius: 6px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid var(--ant-color-border-secondary);
   gap: 8px;
   flex-wrap: wrap;
 }
 
 .data-rule-combinator-label {
   font-size: 13px;
-  color: #4e5969;
+  color: var(--ant-color-text-secondary);
 }
 
 .data-rule-empty-rules {
   padding: 20px 0;
-  background: #ffffff;
+  background: var(--ant-color-bg-container);
   border-radius: 6px;
-  border: 1px dashed #c9cdd4;
+  border: 1px dashed var(--ant-color-text-quaternary);
 }
 
 .data-rule-rows-list {
@@ -153,15 +153,15 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: #ffffff;
+  background: var(--ant-color-bg-container);
   border-radius: 6px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid var(--ant-color-border-secondary);
   transition: border-color 0.2s;
   flex-wrap: wrap;
 }
 
 .data-rule-row-item:hover {
-  border-color: #1677ff;
+  border-color: var(--ant-color-primary);
 }
 
 .data-rule-row-index {
@@ -170,8 +170,8 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  background: #f2f3f5;
-  color: #86909c;
+  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text-tertiary);
   font-size: 12px;
   font-weight: 600;
   border-radius: 50%;
@@ -219,7 +219,7 @@
 }
 
 .data-rule-variable-description {
-  color: #8c8c8c;
+  color: var(--ant-color-text-tertiary);
   font-size: 12px;
 }
 
@@ -235,8 +235,8 @@
 }
 
 .data-rule-json-editor {
-  background: #1e1e1e !important;
-  color: #d4d4d4 !important;
+  background: var(--ant-color-bg-spotlight) !important;
+  color: var(--ant-color-text-light-solid) !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   font-size: 13px !important;
   border-radius: 6px !important;
@@ -244,9 +244,9 @@
 
 .data-rule-summary-box {
   margin-top: 4px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 6px;
-  background: #fff;
+  background: var(--ant-color-bg-container);
 }
 
 .data-rule-summary-static,
@@ -283,7 +283,7 @@
 }
 
 .data-rule-summary-chevron {
-  color: #8c8c8c;
+  color: var(--ant-color-text-tertiary);
   transition: transform 0.2s;
 }
 
@@ -300,7 +300,7 @@
 
 .data-rule-summary-tree {
   padding: 0 12px 12px;
-  color: #4e5969;
+  color: var(--ant-color-text-secondary);
   font-size: 13px;
 }
 
@@ -309,7 +309,7 @@
 }
 
 .data-rule-summary-group-label {
-  color: #1677ff;
+  color: var(--ant-color-primary);
   font-weight: 600;
 }
 
@@ -317,8 +317,8 @@
   display: flex;
   gap: 8px;
   padding: 8px 12px;
-  border-top: 1px solid #f5e6ba;
-  background: #fffdf5;
-  color: #8c6500;
+  border-top: 1px solid var(--ant-color-warning-border);
+  background: var(--ant-color-warning-bg);
+  color: var(--ant-color-warning-text);
   font-size: 12px;
 }

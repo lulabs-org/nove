@@ -8,7 +8,7 @@
   box-sizing: border-box;
   min-height: calc(100vh - 112px);
   flex-direction: column;
-  background: #f4f6f9;
+  background: var(--ant-color-fill-tertiary);
 }
 
 .minute-detail-header {
@@ -28,7 +28,7 @@
 
 .minute-detail-title-group h1 {
   margin: 0;
-  color: #172033;
+  color: var(--ant-color-text);
   font-size: 26px;
 }
 
@@ -37,7 +37,7 @@
   align-items: center;
   gap: 12px;
   margin-top: 6px;
-  color: #7c8799;
+  color: var(--ant-color-text-tertiary);
   flex-wrap: wrap;
 }
 
@@ -71,12 +71,12 @@
 .minute-section-heading span,
 .minute-participant-toolbar small,
 .minute-pane-meta {
-  color: #929bad;
+  color: var(--ant-color-text-tertiary);
   font-size: 12px;
 }
 
 .minute-summary-content {
-  color: #30394a;
+  color: var(--ant-color-text);
   font-size: 15px;
   line-height: 1.9;
   white-space: pre-wrap;
@@ -85,7 +85,7 @@
 .minute-summary-pane section {
   margin-top: 24px;
   padding-top: 18px;
-  border-top: 1px solid #edf0f4;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .minute-structured-list {
@@ -112,7 +112,7 @@
 }
 
 .minute-transcript-segment + .minute-transcript-segment {
-  border-top: 1px solid #f0f2f5;
+  border-top: 1px solid var(--ant-color-bg-layout);
 }
 
 .minute-transcript-meta {
@@ -126,18 +126,18 @@
 }
 
 .minute-transcript-meta strong {
-  color: #526078;
+  color: var(--ant-color-text-secondary);
   overflow-wrap: anywhere;
 }
 
 .minute-transcript-meta span {
   flex-shrink: 0;
-  color: #7c8799;
+  color: var(--ant-color-text-tertiary);
   font-variant-numeric: tabular-nums;
 }
 
 .minute-transcript-text {
-  color: #30394a;
+  color: var(--ant-color-text);
   line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -157,7 +157,7 @@
 }
 
 .minute-participant-item {
-  border: 1px solid #edf0f4;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -171,9 +171,9 @@
 }
 
 .minute-participant-row > .ant-avatar:not(.ant-avatar-image) {
-  color: #1d4ed8;
+  color: var(--ant-color-primary-active);
   background: linear-gradient(135deg, #e6f4ff, #e0e7ff);
-  border: 1px solid #c7d2fe;
+  border: 1px solid var(--ant-color-primary-border);
   font-weight: 600;
 }
 
@@ -207,14 +207,14 @@
 .minute-participant-identity span,
 .minute-participant-time span,
 .minute-participant-summary small {
-  color: #929bad;
+  color: var(--ant-color-text-tertiary);
   font-size: 12px;
 }
 
 .minute-participant-summary {
   padding: 14px 18px;
-  border-top: 1px solid #edf0f4;
-  background: #fafbfc;
+  border-top: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-fill-quaternary);
 }
 
 .minute-inline-error,
@@ -222,13 +222,13 @@
   margin: 10px 0;
   padding: 10px 12px;
   border-radius: 8px;
-  background: #fff2f0;
-  color: #cf1322;
+  background: var(--ant-color-error-bg);
+  color: var(--ant-color-error-text);
 }
 
 .minute-inline-note {
-  background: #f5f5f5;
-  color: #687386;
+  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text-tertiary);
 }
 
 .minute-info-pane {
@@ -243,7 +243,7 @@
 
 .minute-info-pane section {
   padding: 18px;
-  border: 1px solid #edf0f4;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 10px;
 }
 
@@ -268,7 +268,7 @@
 }
 
 .minute-info-pane dt {
-  color: #8a94a6;
+  color: var(--ant-color-text-tertiary);
 }
 
 .minute-info-pane dd {
@@ -282,8 +282,8 @@
   overflow: auto;
   padding: 14px;
   border-radius: 8px;
-  background: #171c26;
-  color: #d6deeb;
+  background: var(--ant-color-bg-spotlight);
+  color: var(--ant-color-text-light-solid);
 }
 
 @media (max-width: 900px) {

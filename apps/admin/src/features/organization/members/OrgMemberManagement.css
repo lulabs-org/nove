@@ -1,6 +1,6 @@
 .org-members-page {
   min-height: calc(100vh - 148px);
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .org-members-page .ant-tabs-nav {
@@ -12,7 +12,7 @@
   grid-template-columns: var(--org-tree-pane-width, 276px) minmax(0, 1fr);
   transition: grid-template-columns 180ms ease;
   min-height: calc(100vh - 242px);
-  border-top: 1px solid #eff0f1;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .org-structure-shell--no-aside {
@@ -26,7 +26,7 @@
   gap: 12px;
   min-width: 0;
   padding: 16px 16px 0 0;
-  border-right: 1px solid #eff0f1;
+  border-right: 1px solid var(--ant-color-border-secondary);
   overflow: visible;
 }
 
@@ -59,18 +59,18 @@
   min-width: 24px;
   height: 40px;
   padding: 0;
-  border: 1px solid #d9dce3;
+  border: 1px solid var(--ant-color-border);
   border-radius: 6px 0 0 6px;
-  background: #fff;
-  color: #646a73;
+  background: var(--ant-color-bg-container);
+  color: var(--ant-color-text-secondary);
   box-shadow: none;
 }
 
 .org-tree-collapse-button:hover,
 .org-tree-collapse-button:focus-visible {
-  border-color: #c9cdd4;
-  background: #fff !important;
-  color: #3370ff !important;
+  border-color: var(--ant-color-text-quaternary);
+  background: var(--ant-color-bg-container) !important;
+  color: var(--ant-color-primary) !important;
 }
 
 .org-structure-tree-pane.is-collapsed .org-tree-collapse-button {
@@ -91,12 +91,12 @@
   height: 40px;
   margin-bottom: 2px;
   border-radius: 4px;
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .org-dept-node:hover,
 .org-dept-node.is-active {
-  background: #f0f5ff;
+  background: var(--ant-color-primary-bg);
 }
 
 .org-dept-node-main,
@@ -143,7 +143,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #8f959e;
+  color: var(--ant-color-text-tertiary);
   cursor: col-resize;
 }
 
@@ -160,20 +160,20 @@
 .org-tree-resize-handle .anticon {
   position: relative;
   border-radius: 4px;
-  background: #fff;
+  background: var(--ant-color-bg-container);
   font-size: 13px;
   opacity: 0.65;
 }
 
 .org-tree-resize-handle:hover,
 .org-tree-resize-handle:focus-visible {
-  color: #3370ff;
+  color: var(--ant-color-primary);
   outline: none;
 }
 
 .org-tree-resize-handle:hover::before,
 .org-tree-resize-handle:focus-visible::before {
-  background: #3370ff;
+  background: var(--ant-color-primary);
 }
 
 .org-tree-resize-handle:hover .anticon,
@@ -305,15 +305,15 @@
 .org-form-section-title {
   margin: 4px 0 18px;
   padding-left: 10px;
-  border-left: 3px solid #3370ff;
+  border-left: 3px solid var(--ant-color-primary);
   font-size: 15px;
   font-weight: 600;
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .org-members-page .ant-table-thead > tr > th {
-  background: #f6f7f9;
-  color: #4e5969;
+  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text-secondary);
   font-weight: 600;
 }
 
@@ -342,7 +342,7 @@
 
   .org-structure-tree-pane {
     border-right: 0;
-    border-bottom: 1px solid #eff0f1;
+    border-bottom: 1px solid var(--ant-color-border-secondary);
     padding-right: 0;
   }
 

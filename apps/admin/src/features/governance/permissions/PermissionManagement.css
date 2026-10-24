@@ -1,13 +1,13 @@
 .permission-management-page {
   min-height: calc(100vh - 148px);
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .permission-tab-summary {
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  color: #646a73;
+  color: var(--ant-color-text-secondary);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -16,7 +16,7 @@
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   min-height: calc(100vh - 258px);
-  border-top: 1px solid #eff0f1;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .permission-tree-pane {
@@ -29,7 +29,7 @@
   min-width: 0;
   overflow: hidden;
   padding: 18px 16px 16px 0;
-  border-right: 1px solid #eff0f1;
+  border-right: 1px solid var(--ant-color-border-secondary);
 }
 
 .permission-tree-title {
@@ -37,7 +37,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  color: #1f2329;
+  color: var(--ant-color-text);
   font-weight: 600;
 }
 
@@ -46,7 +46,7 @@
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-color: rgba(31, 35, 41, 0.28) transparent;
+  scrollbar-color: var(--ant-color-text-quaternary) transparent;
   scrollbar-width: thin;
 }
 
@@ -60,11 +60,11 @@
 
 .permission-tree-list::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgba(31, 35, 41, 0.24);
+  background: var(--ant-color-text-quaternary);
 }
 
 .permission-tree-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(31, 35, 41, 0.38);
+  background: var(--ant-color-text-tertiary);
 }
 
 .permission-tree-node {
@@ -79,14 +79,14 @@
   border-radius: 4px;
   background: transparent;
   box-shadow: none;
-  color: #1f2329;
+  color: var(--ant-color-text);
   text-align: left;
   cursor: pointer;
 }
 
 .permission-tree-node:hover,
 .permission-tree-node.is-active {
-  background: #f0f5ff;
+  background: var(--ant-color-primary-bg);
 }
 
 .permission-tree-node:hover,
@@ -111,7 +111,7 @@
 
 .permission-resource-meta {
   overflow: hidden;
-  color: #8f959e;
+  color: var(--ant-color-text-tertiary);
   font-size: 12px;
   font-weight: 400;
   text-overflow: ellipsis;
@@ -182,8 +182,8 @@
 }
 
 .permission-management-page .ant-table-thead > tr > th {
-  background: #f2f3f5;
-  color: #646a73;
+  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text-secondary);
   font-weight: 600;
 }
 
@@ -196,7 +196,7 @@
 
 .permission-description {
   display: block;
-  color: #3b3f45;
+  color: var(--ant-color-text);
   overflow-wrap: anywhere;
   white-space: normal;
 }
@@ -205,7 +205,7 @@
   display: block;
   max-width: 360px;
   overflow: hidden;
-  color: #3b3f45;
+  color: var(--ant-color-text);
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
@@ -217,8 +217,8 @@
 .permission-form-section {
   margin: 4px 0 18px;
   padding-left: 10px;
-  border-left: 3px solid #3370ff;
-  color: #1f2329;
+  border-left: 3px solid var(--ant-color-primary);
+  color: var(--ant-color-text);
   font-weight: 600;
 }
 
@@ -250,7 +250,7 @@
     max-height: 340px;
     padding-right: 0;
     border-right: 0;
-    border-bottom: 1px solid #eff0f1;
+    border-bottom: 1px solid var(--ant-color-border-secondary);
   }
 
   .permission-table-pane {
