@@ -86,7 +86,7 @@
 }
 
 .profit-dashboard-refresh-btn:hover {
-  border-color: var(--ant-color-border-secondary) !important;
+  border-color: var(--ant-color-border) !important;
   color: var(--ant-color-primary) !important;
   background: var(--ant-color-bg-layout) !important;
 }

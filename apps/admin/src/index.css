@@ -20,6 +20,14 @@ body {
   min-height: 100vh;
 }
 
+/*
+ * antd 只给 Layout.Content / Layout.Header 设置文字色，Layout / Sider 本身没有。
+ * 用 token 补上，避免未包裹 Typography 的文字回落到浏览器默认的纯黑。
+ */
+.ant-layout {
+  color: var(--ant-color-text);
+}
+
 /* Ant Design Table 全局表头与单元格防挤压、防折行优化 */
 .ant-table-thead > tr > th {
   white-space: nowrap !important;
