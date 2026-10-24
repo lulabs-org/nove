@@ -223,7 +223,7 @@
   padding: 10px 12px;
   border-radius: 8px;
   background: var(--ant-color-error-bg);
-  color: var(--ant-color-error-text);
+  color: var(--ant-red-7);
 }
 
 .minute-inline-note {

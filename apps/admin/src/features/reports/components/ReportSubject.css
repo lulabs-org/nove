@@ -14,7 +14,7 @@
 
 .report-subject-summary[data-target-type='PLATFORM_USER'] > .ant-avatar {
   background: var(--ant-color-warning-bg);
-  color: var(--ant-color-warning-text);
+  color: var(--ant-orange-8);
 }
 
 .report-subject-summary[data-target-type='PROJECT'] > .ant-avatar {
