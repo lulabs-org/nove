@@ -332,7 +332,7 @@
   justify-content: center;
   padding: 88px clamp(42px, 6vw, 92px) 72px;
   background:
-    radial-gradient(circle at 100% 0%, rgba(219, 234, 254, 0.52), transparent 28%), #f8fafc;
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--ant-blue-2) 52%, transparent), transparent 28%), var(--ant-color-bg-layout);
 }
 
 .nove-access-status {
@@ -343,16 +343,16 @@
   align-items: center;
   gap: 7px;
   padding: 7px 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 999px;
-  color: #64748b;
+  color: var(--ant-color-text-secondary);
   font-size: 11px;
   font-weight: 550;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--ant-color-bg-elevated);
 }
 
 .nove-access-status .anticon {
-  color: #0f766e;
+  color: var(--ant-cyan-8);
 }
 
 .nove-login-panel {
@@ -430,7 +430,7 @@
 
 .nove-login-tabs .ant-tabs-tab-active {
   background: var(--ant-color-bg-container);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07);
+  box-shadow: var(--ant-box-shadow-tertiary);
 }
 
 .nove-login-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
@@ -463,7 +463,7 @@
   border-color: var(--ant-color-border-secondary);
   border-radius: 11px;
   background: var(--ant-color-bg-container);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  box-shadow: var(--ant-box-shadow-tertiary);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease;
@@ -475,7 +475,7 @@
 
 .nove-login-form .ant-input-affix-wrapper-focused {
   border-color: var(--ant-color-primary-hover);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--ant-control-outline);
 }
 
 .nove-login-form .ant-input-prefix {
@@ -520,14 +520,14 @@
   font-size: 14px;
   font-weight: 620;
   background: linear-gradient(110deg, var(--ant-color-primary-active), var(--ant-color-primary));
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--ant-color-primary) 20%, transparent);
 }
 
 .nove-login-submit .ant-btn:hover,
 .nove-login-submit .ant-btn:focus {
   color: var(--ant-color-text-light-solid) !important;
-  background: linear-gradient(110deg, #1e40af, var(--ant-color-primary-active)) !important;
-  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.26);
+  background: linear-gradient(110deg, var(--ant-blue-8), var(--ant-color-primary-active)) !important;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--ant-color-primary) 26%, transparent);
 }
 
 .nove-security-note {
@@ -546,7 +546,7 @@
 
 .nove-security-note > .anticon {
   margin-top: 2px;
-  color: #0f766e;
+  color: var(--ant-cyan-8);
   font-size: 15px;
 }
 

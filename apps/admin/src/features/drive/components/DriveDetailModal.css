@@ -2,9 +2,7 @@
   border-radius: 16px;
   overflow: hidden;
   padding: 24px 28px;
-  box-shadow:
-    0 20px 40px -15px rgba(15, 23, 42, 0.18),
-    0 0 1px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--ant-box-shadow);
 }
 
 /* Header Area */
@@ -27,48 +25,48 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--ant-box-shadow-tertiary);
 }
 
 .drive-detail-icon.is-folder {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  background: linear-gradient(135deg, var(--ant-color-warning-bg) 0%, var(--ant-gold-2) 100%);
   color: var(--ant-color-warning);
   border: 1px solid var(--ant-color-warning-border);
 }
 
 .drive-detail-icon.is-audio {
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  background: linear-gradient(135deg, var(--ant-geekblue-1) 0%, var(--ant-geekblue-2) 100%);
   /* 装饰性靛蓝色系，与同组渐变一起留在阶段二 */
-  color: #4f46e5;
-  border: 1px solid #c7d2fe;
+  color: var(--ant-geekblue);
+  border: 1px solid var(--ant-geekblue-2);
 }
 
 .drive-detail-icon.is-video {
-  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+  background: linear-gradient(135deg, var(--ant-red-1) 0%, var(--ant-red-2) 100%);
   color: var(--ant-color-error);
   border: 1px solid var(--ant-color-error-border);
 }
 
 .drive-detail-icon.is-image {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  background: linear-gradient(135deg, var(--ant-color-success-bg) 0%, var(--ant-green-2) 100%);
   color: var(--ant-color-success);
   border: 1px solid var(--ant-color-success-border);
 }
 
 .drive-detail-icon.is-pdf {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  background: linear-gradient(135deg, var(--ant-color-error-bg) 0%, var(--ant-red-2) 100%);
   color: var(--ant-color-error);
   border: 1px solid var(--ant-color-error-border);
 }
 
 .drive-detail-icon.is-archive {
-  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  background: linear-gradient(135deg, var(--ant-orange-1) 0%, var(--ant-orange-2) 100%);
   color: var(--ant-color-warning);
   border: 1px solid var(--ant-color-warning-border);
 }
 
 .drive-detail-icon.is-generic {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  background: linear-gradient(135deg, var(--ant-color-primary-bg) 0%, var(--ant-blue-2) 100%);
   color: var(--ant-color-primary);
   border: 1px solid var(--ant-color-primary-border);
 }
@@ -292,7 +290,7 @@
 .drive-detail-binding-card:hover {
   background: var(--ant-color-bg-container);
   border-color: var(--ant-color-text-quaternary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--ant-box-shadow-tertiary);
 }
 
 .drive-detail-binding-head {

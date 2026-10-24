@@ -15,10 +15,10 @@
   color: var(--ant-color-text-tertiary);
   font-size: 24px;
   background:
-    linear-gradient(45deg, #f8fafc 25%, transparent 25%),
-    linear-gradient(-45deg, #f8fafc 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f8fafc 75%),
-    linear-gradient(-45deg, transparent 75%, #f8fafc 75%), #fff;
+    linear-gradient(45deg, var(--ant-color-fill-quaternary) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--ant-color-fill-quaternary) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--ant-color-fill-quaternary) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--ant-color-fill-quaternary) 75%), var(--ant-color-bg-container);
   background-position:
     0 0,
     0 8px,
@@ -27,7 +27,7 @@
   background-size: 16px 16px;
   border: 1px solid var(--ant-color-border-secondary);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgb(15 23 42 / 8%);
+  box-shadow: var(--ant-box-shadow-tertiary);
 }
 
 .project-cover-preview img {
@@ -118,10 +118,10 @@
 
 .project-primary-cell-avatar:not(.ant-avatar-image) {
   /* 装饰性靛蓝色系，与同组渐变一起留在阶段二 */
-  color: #4f46e5;
-  background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 58%, #cffafe 100%);
-  border: 1px solid #c7d2fe;
-  box-shadow: 0 2px 6px rgb(79 70 229 / 10%);
+  color: var(--ant-geekblue);
+  background: linear-gradient(135deg, var(--ant-purple-1) 0%, var(--ant-blue-1) 58%, var(--ant-cyan-1) 100%);
+  border: 1px solid var(--ant-geekblue-2);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--ant-geekblue) 10%, transparent);
 }
 
 .project-primary-cell-content {

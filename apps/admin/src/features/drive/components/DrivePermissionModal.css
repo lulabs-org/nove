@@ -2,9 +2,7 @@
   border-radius: 16px;
   overflow: hidden;
   padding: 24px 28px;
-  box-shadow:
-    0 20px 40px -15px rgba(15, 23, 42, 0.18),
-    0 0 1px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--ant-box-shadow);
 }
 
 .drive-perm-header {
@@ -26,14 +24,14 @@
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  background: linear-gradient(135deg, #eef3ff 0%, #e0ebff 100%);
+  background: linear-gradient(135deg, var(--ant-blue-1) 0%, var(--ant-blue-2) 100%);
   color: var(--ant-color-primary);
   /* 描边跟随同组装饰渐变，留在阶段二 */
-  border: 1px solid #dbe5fe;
+  border: 1px solid var(--ant-geekblue-2);
 }
 
 .drive-perm-icon.is-folder {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  background: linear-gradient(135deg, var(--ant-color-warning-bg) 0%, var(--ant-gold-2) 100%);
   color: var(--ant-color-warning);
   border-color: var(--ant-color-warning-border);
 }
@@ -95,7 +93,7 @@
 
 .drive-perm-section:focus-within {
   border-color: var(--ant-color-text-quaternary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--ant-box-shadow-tertiary);
 }
 
 .drive-perm-section-title {
@@ -162,7 +160,7 @@
 
 .drive-perm-grant-avatar.is-user {
   background: var(--ant-color-primary-bg);
-  color: #0284c7;
+  color: var(--ant-blue-5);
 }
 
 .drive-perm-grant-avatar.is-role {
@@ -177,7 +175,7 @@
 
 .drive-perm-grant-avatar.is-org {
   background: var(--ant-color-primary-bg);
-  color: #7c3aed;
+  color: var(--ant-purple);
 }
 
 .drive-perm-grant-info {

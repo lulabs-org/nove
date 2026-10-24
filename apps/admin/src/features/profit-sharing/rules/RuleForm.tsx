@@ -1252,7 +1252,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
           justifyContent: 'flex-end',
           gap: 12,
           zIndex: 10,
-          boxShadow: '0 -4px 12px rgba(0,0,0,0.05)',
+          boxShadow: '0 -4px 12px color-mix(in srgb, var(--ant-color-text) 5%, transparent)',
         }}
       >
         <Button onClick={onCancel} size="middle">

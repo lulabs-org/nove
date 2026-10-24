@@ -18,8 +18,8 @@
 }
 
 .report-subject-summary[data-target-type='PROJECT'] > .ant-avatar {
-  background: linear-gradient(135deg, #ede9fe, #dbeafe);
-  color: #6d28d9;
+  background: linear-gradient(135deg, var(--ant-purple-1), var(--ant-blue-1));
+  color: var(--ant-purple);
 }
 
 .report-subject-summary[data-target-type='ORGANIZATION'] > .ant-avatar {

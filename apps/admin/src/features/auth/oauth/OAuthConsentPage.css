@@ -4,8 +4,8 @@
   padding: 24px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 8% 8%, rgba(37, 99, 235, 0.13), transparent 34%),
-    radial-gradient(circle at 92% 92%, rgba(13, 148, 136, 0.1), transparent 30%), #f4f7fb;
+    radial-gradient(circle at 8% 8%, color-mix(in srgb, var(--ant-color-primary) 13%, transparent), transparent 34%),
+    radial-gradient(circle at 92% 92%, color-mix(in srgb, var(--ant-cyan-6) 10%, transparent), transparent 30%), var(--ant-blue-1);
 }
 
 .oauth-consent--centered {
@@ -23,7 +23,7 @@
   border: 1px solid var(--ant-color-border-secondary);
   border-radius: 24px;
   background: white;
-  box-shadow: 0 28px 90px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--ant-box-shadow);
 }
 
 .oauth-consent__summary {
@@ -33,7 +33,7 @@
   padding: 32px 28px 26px;
   border-right: 1px solid var(--ant-color-border-secondary);
   background:
-    linear-gradient(160deg, rgba(219, 234, 254, 0.78), rgba(240, 253, 250, 0.64) 72%), #f8fafc;
+    linear-gradient(160deg, color-mix(in srgb, var(--ant-blue-2) 78%, transparent), color-mix(in srgb, var(--ant-cyan-1) 64%, transparent) 72%), var(--ant-color-bg-layout);
 }
 
 .oauth-consent__app-identity {
@@ -51,8 +51,8 @@
   border-radius: 14px;
   color: white;
   font-size: 22px;
-  background: linear-gradient(135deg, #2563eb, #0f766e);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+  background: linear-gradient(135deg, var(--ant-color-primary), var(--ant-cyan-8));
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--ant-color-primary) 20%, transparent);
 }
 
 .oauth-consent__app-copy {
@@ -119,7 +119,7 @@
   margin-top: 24px;
   padding-top: 22px;
   border-top: 1px solid var(--ant-color-border-secondary);
-  color: #0f766e;
+  color: var(--ant-cyan-8);
 }
 
 .oauth-consent__security-note > .anticon {
@@ -286,7 +286,7 @@
   color: var(--ant-color-primary-active);
   border-color: var(--ant-color-primary-border);
   background: white;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--ant-color-primary) 10%, transparent);
 }
 
 .oauth-consent__resource-tab small {

@@ -394,5 +394,5 @@
 .org-role-data-rule-card.is-selected {
   border-color: var(--ant-color-primary);
   background: var(--ant-color-primary-bg);
-  box-shadow: 0 1px 3px rgba(22, 119, 255, 0.12);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ant-color-primary) 12%, transparent);
 }

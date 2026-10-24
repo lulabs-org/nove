@@ -172,7 +172,7 @@
 
 .minute-participant-row > .ant-avatar:not(.ant-avatar-image) {
   color: var(--ant-color-primary-active);
-  background: linear-gradient(135deg, #e6f4ff, #e0e7ff);
+  background: linear-gradient(135deg, var(--ant-blue-1), var(--ant-geekblue-2));
   border: 1px solid var(--ant-color-primary-border);
   font-weight: 600;
 }

@@ -86,7 +86,7 @@
 
 .dashboard-quick-link:hover {
   border-color: var(--ant-color-primary-border);
-  box-shadow: inset 0 0 8px rgba(51, 112, 255, 0.1);
+  box-shadow: inset 0 0 8px color-mix(in srgb, var(--ant-color-primary) 10%, transparent);
 }
 
 .dashboard-quick-link-icon {
@@ -137,7 +137,7 @@
 }
 
 .dashboard-stat-card:hover {
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 8px color-mix(in srgb, var(--ant-color-text) 12%, transparent);
 }
 
 .dashboard-stat-card-value {
