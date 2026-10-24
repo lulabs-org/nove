@@ -37,7 +37,7 @@ export function RouteBreadcrumb({ routes }: RouteBreadcrumbProps) {
         alignItems: 'center',
         margin: '0 -12px',
         padding: '0 24px',
-        background: 'var(--ant-color-fill-tertiary)',
+        background: 'var(--ant-color-bg-layout)',
       }}
     >
       <Breadcrumb
