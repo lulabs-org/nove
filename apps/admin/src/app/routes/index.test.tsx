@@ -113,6 +113,14 @@ describe('application routes', () => {
     });
   });
 
+  it('exposes the QA data hub with record read permission', () => {
+    expect(routes.find((route) => route.path === '/qa')).toMatchObject({
+      title: '问答数据',
+      menu: true,
+      permission: PERMISSIONS.QA.RECORD_READ,
+    });
+  });
+
   it('keeps the legacy meeting detail route as a hidden redirect entry', () => {
     expect(routes.find((route) => route.path === '/meetings/:id')).toMatchObject({
       title: '会议妙记重定向',
