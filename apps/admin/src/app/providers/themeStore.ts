@@ -1,14 +1,14 @@
 /**
  * 主题偏好。
  *
- * 三态：light / dark 由用户显式选择，system 跟随操作系统。
+ * 只有「用户显式选过亮/暗」这一种状态会被记住；没选过就是 null，按操作系统偏好渲染。
  * 只存 localStorage 裸字符串（`nove-admin:theme`），不用 zustand persist：
  * 首帧防闪脚本要在 React 启动前读这个值，裸字符串比 persist 的 JSON 信封更好解析。
  */
 import { create } from 'zustand';
 
-export type ThemeMode = 'light' | 'dark' | 'system';
-export type ResolvedTheme = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark';
+export type ResolvedTheme = ThemeMode;
 
 export const THEME_STORAGE_KEY = 'nove-admin:theme';
 
@@ -20,21 +20,16 @@ export function prefersDark(): boolean {
   return window.matchMedia(DARK_QUERY).matches;
 }
 
-/** 把用户偏好解析成最终生效的明暗。 */
-export function resolveTheme(mode: ThemeMode, systemDark: boolean): ResolvedTheme {
-  if (mode === 'system') return systemDark ? 'dark' : 'light';
-  return mode;
-}
-
-function readStoredMode(): ThemeMode {
-  if (typeof window === 'undefined') return 'system';
+/** 没存过偏好时返回 null，调用方据此回落到操作系统设置。 */
+function readStoredMode(): ThemeMode | null {
+  if (typeof window === 'undefined') return null;
   try {
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
+    if (stored === 'light' || stored === 'dark') return stored;
   } catch {
-    // 隐私模式等场景下 localStorage 可能不可用，回落到跟随系统。
+    // 隐私模式等场景下 localStorage 可能不可用，按未设置处理。
   }
-  return 'system';
+  return null;
 }
 
 function persistMode(mode: ThemeMode): void {
@@ -46,23 +41,19 @@ function persistMode(mode: ThemeMode): void {
 }
 
 interface ThemeState {
-  mode: ThemeMode;
-  setMode: (mode: ThemeMode) => void;
-  /** 在亮/暗之间切换；从 system 出发时，切到当前生效模式的相反值。 */
+  mode: ThemeMode | null;
+  /** 在亮/暗之间切换；未设置过时，从当前系统偏好的相反值开始。 */
   toggle: () => void;
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
   mode: readStoredMode(),
 
-  setMode: (mode) => {
-    persistMode(mode);
-    set({ mode });
-  },
-
   toggle: () => {
-    const { mode, setMode } = get();
-    const next: ResolvedTheme = resolveTheme(mode, prefersDark()) === 'dark' ? 'light' : 'dark';
-    setMode(next);
+    const { mode } = get();
+    const current: ResolvedTheme = mode ?? (prefersDark() ? 'dark' : 'light');
+    const next: ResolvedTheme = current === 'dark' ? 'light' : 'dark';
+    persistMode(next);
+    set({ mode: next });
   },
 }));

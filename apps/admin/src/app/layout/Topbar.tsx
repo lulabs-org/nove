@@ -23,7 +23,6 @@ import {
   ExclamationCircleFilled,
   SunOutlined,
   MoonOutlined,
-  DesktopOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth';
@@ -40,7 +39,7 @@ interface TopbarProps {
 export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
   const { user, logout } = useAuth();
   const { token } = theme.useToken();
-  const { mode, resolved, setMode, toggle } = useTheme();
+  const { resolved, toggle } = useTheme();
   const nextThemeLabel = resolved === 'dark' ? '切换到亮色模式' : '切换到暗色模式';
 
   const menuItems = [
@@ -54,17 +53,6 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
       icon: <SafetyOutlined />,
       label: <Link to="/settings/security">安全设置</Link>,
     },
-    ...(mode === 'system'
-      ? []
-      : [
-          {
-            key: 'theme-system',
-            icon: <DesktopOutlined />,
-            label: '跟随系统外观',
-            onClick: () => setMode('system'),
-          },
-          { type: 'divider' as const },
-        ]),
     {
       key: 'logout',
       icon: <LogoutOutlined />,

@@ -14,12 +14,11 @@
       (function () {
         try {
           var stored = localStorage.getItem('nove-admin:theme');
-          var mode = stored === 'light' || stored === 'dark' ? stored : 'system';
           var dark =
-            mode === 'dark' ||
-            (mode === 'system' &&
-              typeof window.matchMedia === 'function' &&
-              window.matchMedia('(prefers-color-scheme: dark)').matches);
+            stored === 'light' || stored === 'dark'
+              ? stored === 'dark'
+              : typeof window.matchMedia === 'function' &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
           var root = document.documentElement;
           root.dataset.theme = dark ? 'dark' : 'light';
           root.style.colorScheme = dark ? 'dark' : 'light';
