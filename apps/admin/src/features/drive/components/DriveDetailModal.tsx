@@ -453,7 +453,7 @@ export function DriveDetailModal({
                           <span className="drive-detail-label">
                             SHA-256 完整性校验和
                             <Tooltip title="基于文件二进制内容的防篡改加密哈希">
-                              <InfoCircleOutlined style={{ marginLeft: 6, color: '#94a3b8' }} />
+                              <InfoCircleOutlined style={{ marginLeft: 6, color: 'var(--ant-color-text-tertiary)' }} />
                             </Tooltip>
                           </span>
                           <div className="drive-detail-code-row">

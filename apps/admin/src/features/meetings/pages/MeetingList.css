@@ -5,8 +5,8 @@
   flex-wrap: wrap;
   padding: 16px;
   margin-bottom: 16px;
-  background: #fff;
-  border: 1px solid #edf0f5;
+  background: var(--ant-color-bg-container);
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 12px;
 }
 
@@ -16,15 +16,15 @@
 
 .meeting-list-table-card {
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #edf0f5;
+  background: var(--ant-color-bg-container);
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 12px;
 }
 
 .meeting-list-table-card .ant-table-thead > tr > th {
-  color: #5c6678;
+  color: var(--ant-color-text-secondary);
   font-weight: 600;
-  background: #f8f9fb;
+  background: var(--ant-color-bg-layout);
 }
 
 .meeting-title-link {

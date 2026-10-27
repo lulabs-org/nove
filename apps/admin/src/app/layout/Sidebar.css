@@ -1,5 +1,5 @@
 .admin-sidebar-scroll {
-  scrollbar-color: rgb(143 149 158 / 38%) transparent;
+  scrollbar-color: var(--ant-color-text-quaternary) transparent;
   scrollbar-width: thin;
 }
 
@@ -12,12 +12,12 @@
 }
 
 .admin-sidebar-scroll::-webkit-scrollbar-thumb {
-  background: rgb(143 149 158 / 38%);
+  background: var(--ant-color-text-quaternary);
   border-radius: 999px;
 }
 
 .admin-sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgb(100 106 115 / 55%);
+  background: var(--ant-color-text-tertiary);
 }
 
 .ant-menu-submenu-popup .sidebar-popup-heading {
@@ -29,7 +29,7 @@
 }
 
 .ant-menu-submenu-popup .sidebar-popup-heading-label {
-  color: #8f959e;
+  color: var(--ant-color-text-tertiary);
   font-weight: 500;
 }
 

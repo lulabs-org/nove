@@ -135,7 +135,7 @@ export function AdminLayout({ routes, children }: AdminLayoutProps) {
               marginTop: pathname === '/' ? 12 : 0,
               padding: 24,
               overflow: 'auto',
-              background: '#fff',
+              background: 'var(--ant-color-bg-container)',
               borderRadius: 8,
             }}
           >

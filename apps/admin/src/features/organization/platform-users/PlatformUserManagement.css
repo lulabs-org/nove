@@ -1,11 +1,11 @@
 .platform-users-page {
   min-height: calc(100vh - 148px);
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .platform-users-breadcrumb {
   margin: -4px 0 12px;
-  color: #646a73;
+  color: var(--ant-color-text-secondary);
   font-size: 13px;
 }
 
@@ -30,8 +30,8 @@
 /* ─── Table ───────────────────────────────────────────────────────────────── */
 
 .platform-users-page .ant-table-thead > tr > th {
-  background: #f6f7f9;
-  color: #4e5969;
+  background: var(--ant-color-bg-layout);
+  color: var(--ant-color-text-secondary);
   font-weight: 600;
 }
 
@@ -113,10 +113,10 @@
 .platform-user-section-title {
   margin: 4px 0 18px;
   padding-left: 10px;
-  border-left: 3px solid #3370ff;
+  border-left: 3px solid var(--ant-color-primary);
   font-size: 15px;
   font-weight: 600;
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 /* ─── Linked user card ────────────────────────────────────────────────────── */
@@ -127,8 +127,8 @@
   gap: 12px;
   padding: 12px 16px;
   border-radius: 8px;
-  background: #f6f7f9;
-  border: 1px solid #eff0f1;
+  background: var(--ant-color-fill-tertiary);
+  border: 1px solid var(--ant-color-border-secondary);
 }
 
 .platform-user-linked-info {
@@ -181,7 +181,7 @@
 }
 
 .platform-user-local-option-id {
-  color: #8f959e;
+  color: var(--ant-color-text-tertiary);
 }
 
 /* ─── Responsive ──────────────────────────────────────────────────────────── */

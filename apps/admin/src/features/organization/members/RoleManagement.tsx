@@ -1243,7 +1243,7 @@ export function RoleManagement() {
                                     </Tag>
                                   </div>
                                   <div style={{ marginTop: 4, paddingLeft: 24 }}>
-                                    <Text style={{ fontSize: 13, color: '#1677ff' }}>
+                                    <Text style={{ fontSize: 13, color: 'var(--ant-color-primary)' }}>
                                       业务释义：{explanation}
                                     </Text>
                                   </div>

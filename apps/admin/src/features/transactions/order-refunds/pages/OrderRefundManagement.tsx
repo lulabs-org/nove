@@ -270,7 +270,7 @@ export function OrderRefundManagement() {
       render: (value: string, record) => (
         <Space direction="vertical" size={2}>
           <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{value}</span>
-          <span style={{ color: '#64748b', fontSize: 12 }}>{record.applicantName || '-'}</span>
+          <span style={{ color: 'var(--ant-color-text-secondary)', fontSize: 12 }}>{record.applicantName || '-'}</span>
         </Space>
       ),
     },
@@ -281,7 +281,7 @@ export function OrderRefundManagement() {
         record.order ? (
           <Space direction="vertical" size={2}>
             <span>{record.order.orderCode}</span>
-            <span style={{ color: '#64748b', fontSize: 12 }}>{record.order.orderNumber}</span>
+            <span style={{ color: 'var(--ant-color-text-secondary)', fontSize: 12 }}>{record.order.orderNumber}</span>
           </Space>
         ) : (
           '-'
@@ -550,7 +550,7 @@ export function OrderRefundManagement() {
                         ) : null}
                         ，扣除后有效使用 <strong>{calculationPreview.effectiveUsedDays}</strong>{' '}
                         天（剩余约 {calculationPreview.remainingDays} 天）。建议退款：
-                        <strong style={{ color: '#1677ff' }}>
+                        <strong style={{ color: 'var(--ant-color-primary)' }}>
                           ¥{(calculationPreview.suggestedRefundAmount / 100).toFixed(2)}
                         </strong>
                       </span>

@@ -37,13 +37,13 @@ export function RouteBreadcrumb({ routes }: RouteBreadcrumbProps) {
         alignItems: 'center',
         margin: '0 -12px',
         padding: '0 24px',
-        background: '#f5f6f8',
+        background: 'var(--ant-color-bg-layout)',
       }}
     >
       <Breadcrumb
         separator="〉"
         items={trail.map((title) => ({ title }))}
-        style={{ color: '#646a73', fontSize: 13 }}
+        style={{ color: 'var(--ant-color-text-secondary)', fontSize: 13 }}
       />
     </div>
   );

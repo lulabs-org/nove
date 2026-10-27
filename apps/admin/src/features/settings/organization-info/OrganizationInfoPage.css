@@ -1,6 +1,6 @@
 .organization-info-page {
   min-height: 100%;
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .organization-info-tabs {
@@ -8,7 +8,7 @@
   height: 48px;
   margin: -24px -24px 28px;
   padding: 0 24px;
-  border-bottom: 1px solid #e5e6eb;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
 .organization-info-tab {
@@ -16,7 +16,7 @@
   padding: 0 4px;
   border: 0;
   background: transparent;
-  color: #3370ff;
+  color: var(--ant-color-primary);
   font: inherit;
   cursor: default;
 }
@@ -27,7 +27,7 @@
   bottom: -1px;
   left: 0;
   height: 2px;
-  background: #3370ff;
+  background: var(--ant-color-primary);
   content: '';
 }
 
@@ -38,7 +38,7 @@
 .organization-info-section-title.ant-typography {
   margin: 0 0 16px;
   padding-left: 10px;
-  border-left: 3px solid #3370ff;
+  border-left: 3px solid var(--ant-color-primary);
 }
 
 .organization-info-hero {
@@ -49,7 +49,7 @@
   padding: 24px 28px;
   overflow: hidden;
   border-radius: 10px;
-  background: linear-gradient(115deg, #f2f7ff 0%, #eef5ff 58%, #dceaff 100%);
+  background: linear-gradient(115deg, var(--ant-blue-1) 0%, var(--ant-blue-1) 58%, var(--ant-blue-2) 100%);
 }
 
 .organization-info-logo {
@@ -60,17 +60,17 @@
   flex: 0 0 64px;
   place-items: center;
   overflow: hidden;
-  border: 1px solid #e5e6eb;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 12px;
-  background: #fff;
-  color: #fff;
+  background: var(--ant-color-bg-container);
+  color: var(--ant-color-text-light-solid);
   font-size: 28px;
   font-weight: 600;
 }
 
 .organization-info-logo.is-fallback {
   border-color: transparent;
-  background: #3370ff;
+  background: var(--ant-color-primary);
 }
 
 .organization-info-logo img {
@@ -90,7 +90,7 @@
 
 .organization-info-hero-main > .ant-typography {
   margin-top: 8px;
-  color: #646a73;
+  color: var(--ant-color-text-secondary);
 }
 
 .organization-info-section-header {
@@ -110,7 +110,7 @@
   gap: 28px 64px;
   margin: 0;
   padding: 28px;
-  border: 1px solid #eff0f1;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 10px;
 }
 
@@ -121,7 +121,7 @@
 .organization-info-grid dt,
 .organization-info-description > .ant-typography:first-child {
   margin-bottom: 8px;
-  color: #8f959e;
+  color: var(--ant-color-text-tertiary);
   font-size: 13px;
 }
 
@@ -177,10 +177,10 @@
   width: 80px;
   height: 80px;
   overflow: hidden;
-  border: 1px solid #e5e6eb;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 10px;
-  background: #fafbfc;
-  color: #8f959e;
+  background: var(--ant-color-fill-quaternary);
+  color: var(--ant-color-text-tertiary);
 }
 
 .organization-logo-preview img {
