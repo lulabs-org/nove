@@ -1,4 +1,4 @@
-import { mutator } from '../../../shared/lib/api/mutator';
+import { mutator } from '../../../../shared/lib/api/mutator';
 
 export interface OAuthPermission {
   code: string;

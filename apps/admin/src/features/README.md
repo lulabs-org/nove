@@ -10,13 +10,13 @@
 
 ## 目录结构
 
-每个 feature 目录应包含：
+按功能需要组织目录；复合业务域可在子功能中使用相同结构：
 
 ```
 feature-name/
   components/     - 该功能的专用组件
   hooks/         - 该功能的专用 hooks
-  services/      - API 调用
+  api/           - API 调用与生成客户端适配，相关测试就近放置
   types/         - 该功能的类型定义
   index.tsx      - 入口文件
 ```
@@ -27,3 +27,10 @@ feature-name/
 - 可以使用 shared 中的代码
 - 不依赖其他 features（避免循环依赖）
 - 每个 feature 应该是独立的
+
+## API 分层
+
+- 有请求的功能将请求定义放在本功能的 `api/` 目录；纯视图功能无需创建空目录。
+- 页面、组件和业务 hooks 通过功能 API 访问后端；新增或调整请求时，将 `mutator` 和 Orval 运行时调用收敛到 `api/`，类型可使用 `import type` 引用生成模型。
+- API 层负责请求路径、参数和响应适配，也可提供生成查询 hooks 与缓存 key 的功能入口；页面保留交互状态和缓存刷新逻辑。
+- 移动 API 文件时同步更新调用方和测试 mock 路径，不保留旧路径转发文件。

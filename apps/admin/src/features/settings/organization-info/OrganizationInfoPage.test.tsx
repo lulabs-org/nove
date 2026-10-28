@@ -6,6 +6,7 @@ import { OrganizationInfoPage } from './OrganizationInfoPage';
 
 const mocks = vi.hoisted(() => ({
   save: vi.fn(),
+  getProfile: vi.fn(),
   canUpdate: true,
   organization: {
     id: 'org-1',
@@ -22,11 +23,13 @@ vi.mock('../../../shared/hooks/useAuth', () => ({
     checkPermission: () => mocks.canUpdate,
   }),
 }));
-vi.mock('../../../shared/lib/api/orval/business/admin-organizations', () => ({
-  getOrganizationControllerGetOrganizationQueryKey: (id: string) => ['organization', id],
-  useOrganizationControllerGetOrganization: () => ({ data: mocks.organization, isLoading: false }),
+vi.mock('./api/organizationProfileApi', () => ({
+  organizationProfileApi: {
+    getProfile: mocks.getProfile,
+    saveProfile: mocks.save,
+    getQueryKey: (id: string) => ['organization-profile', id],
+  },
 }));
-vi.mock('./organizationProfileApi', () => ({ saveOrganizationProfile: mocks.save }));
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -40,6 +43,7 @@ beforeEach(() => {
   );
   mocks.canUpdate = true;
   mocks.save.mockResolvedValue(mocks.organization);
+  mocks.getProfile.mockResolvedValue(mocks.organization);
   Object.defineProperty(URL, 'createObjectURL', {
     configurable: true,
     value: vi.fn(() => 'blob:logo-preview'),
@@ -57,7 +61,12 @@ beforeEach(() => {
   );
 });
 function setup() {
-  const client = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
   const view = render(
     <QueryClientProvider client={client}>
       <OrganizationInfoPage />
@@ -66,7 +75,8 @@ function setup() {
   return { ...view, user: userEvent.setup({ applyAccept: false }) };
 }
 async function openEditor() {
-  fireEvent.click(screen.getByRole('button', { name: /编辑/ }));
+  const button = await screen.findByRole('button', { name: /编辑/ });
+  fireEvent.click(button);
   return screen.findByRole('dialog');
 }
 function fileInput(dialog: HTMLElement) {
@@ -156,9 +166,10 @@ describe('OrganizationInfoPage logo editor', () => {
       'blob:logo-preview'
     );
   });
-  it('hides the edit action without update permission', () => {
+  it('hides the edit action without update permission', async () => {
     mocks.canUpdate = false;
     setup();
+    await screen.findByText('基础信息');
     expect(screen.queryByRole('button', { name: /编辑/ })).not.toBeInTheDocument();
   });
 });

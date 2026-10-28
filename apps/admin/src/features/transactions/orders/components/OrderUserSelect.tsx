@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import Select from 'antd/es/select';
 import { useEffect, useMemo, useState } from 'react';
-import { mutator } from '../../../../shared/lib/api/mutator';
 import { orderApi } from '../api/orderApi';
-import type { OrderRelation, OrderUserOption } from '../types';
+import type { OrderRelation } from '../types';
 import { mergeOrderUserOptions } from './orderUserOptions';
 
 interface OrderUserSelectProps {
@@ -35,7 +34,7 @@ export function OrderUserSelect({
 
   const singleUserQuery = useQuery({
     queryKey: ['order-user-single', value],
-    queryFn: () => mutator<OrderUserOption>({ url: `/admin/users/${value}`, method: 'GET' }),
+    queryFn: () => orderApi.getUser(value!),
     enabled: Boolean(value && !usersQuery.data?.items?.some((u) => u.id === value)),
     staleTime: 60_000,
   });

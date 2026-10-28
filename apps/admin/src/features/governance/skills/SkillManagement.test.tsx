@@ -13,7 +13,7 @@ vi.mock('../../../shared/hooks/useAuth', () => ({
   useAuth: () => ({ checkPermission: () => true }),
 }));
 
-vi.mock('./skillApi', () => ({
+vi.mock('./api/skillApi', () => ({
   skillApi: {
     list: mocks.list,
     get: mocks.get,

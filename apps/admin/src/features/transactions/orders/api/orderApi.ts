@@ -10,6 +10,7 @@ import type {
   OrderListParams,
   OrderProductOptionList,
   OrderStatus,
+  OrderUserOption,
   OrderUserOptionList,
   UnfreezeOrderPayload,
   UpdateOrder,
@@ -69,6 +70,13 @@ export const orderApi = {
         active: true,
         keyword: keyword || undefined,
       },
+    });
+  },
+
+  getUser(id: string): Promise<OrderUserOption> {
+    return mutator<OrderUserOption>({
+      url: `/admin/users/${id}`,
+      method: 'GET',
     });
   },
 

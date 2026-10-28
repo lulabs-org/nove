@@ -22,7 +22,7 @@ import {
   type SkillPage,
   type SkillStatus,
   type SkillVersion,
-} from './skillApi';
+} from './api/skillApi';
 
 const categories: SkillCategory[] = ['MEETING', 'SPEAKER', 'TASK', 'REPORT', 'GENERAL'];
 const statuses: SkillStatus[] = ['ACTIVE', 'DISABLED', 'DEPRECATED'];

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { skillApi } from './skillApi';
-import { mutator } from '../../../shared/lib/api/mutator';
+import { mutator } from '../../../../shared/lib/api/mutator';
 
-vi.mock('../../../shared/lib/api/mutator', () => ({ mutator: vi.fn() }));
+vi.mock('../../../../shared/lib/api/mutator', () => ({ mutator: vi.fn() }));
 
 describe('skillApi', () => {
   beforeEach(() => vi.clearAllMocks());

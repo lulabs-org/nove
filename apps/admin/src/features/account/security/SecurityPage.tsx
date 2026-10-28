@@ -32,23 +32,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  accountSecurityControllerChangeEmail,
-  accountSecurityControllerChangePassword,
-  accountSecurityControllerChangePhone,
-  accountSecurityControllerGetLoginActivities,
-  accountSecurityControllerGetSecurity,
-  accountSecurityControllerListSessions,
-  accountSecurityControllerRevokeOtherSessions,
-  accountSecurityControllerRevokeSession,
-  accountSecurityControllerSendEmailCode,
-  accountSecurityControllerSendIdentityCode,
-  accountSecurityControllerSendPhoneCode,
-  accountSecurityControllerVerifyIdentity,
-} from '../../../shared/lib/api/orval/business/account-security';
-import type {
-  LoginActivityDto,
-  SecuritySessionDto,
-} from '../../../shared/lib/api/orval/business/schemas';
+  securityApi,
+  type LoginActivityDto,
+  type SecuritySessionDto,
+} from './api/securityApi';
 import { useAuthStore } from '../../auth/model/authStore';
 import './SecurityPage.css';
 
@@ -142,16 +129,16 @@ export function SecurityPage() {
 
   const securityQuery = useQuery({
     queryKey: ['account-security'],
-    queryFn: ({ signal }) => accountSecurityControllerGetSecurity({ signal }),
+    queryFn: ({ signal }) => securityApi.getSecurity({ signal }),
   });
   const sessionsQuery = useQuery({
     queryKey: ['account-security-sessions'],
-    queryFn: ({ signal }) => accountSecurityControllerListSessions({ signal }),
+    queryFn: ({ signal }) => securityApi.listSessions({ signal }),
   });
   const activitiesQuery = useQuery({
     queryKey: ['account-security-activities', activityPage],
     queryFn: ({ signal }) =>
-      accountSecurityControllerGetLoginActivities({ page: activityPage, pageSize: 10 }, { signal }),
+      securityApi.getLoginActivities({ page: activityPage, pageSize: 10 }, { signal }),
   });
 
   const refreshSecurity = async () => {
@@ -173,19 +160,19 @@ export function SecurityPage() {
           : { identityCode: values.identityCode }),
       };
       if (action === 'password') {
-        return accountSecurityControllerChangePassword({
+        return securityApi.changePassword({
           ...proof,
           newPassword: values.newPassword!,
         });
       }
       if (action === 'email') {
-        return accountSecurityControllerChangeEmail({
+        return securityApi.changeEmail({
           ...proof,
           email: values.email!,
           newCode: values.newCode!,
         });
       }
-      return accountSecurityControllerChangePhone({
+      return securityApi.changePhone({
         ...proof,
         countryCode: values.countryCode!,
         phone: values.phone!,
@@ -216,7 +203,7 @@ export function SecurityPage() {
   });
 
   const revokeSessionMutation = useMutation({
-    mutationFn: (id: string) => accountSecurityControllerRevokeSession(id),
+    mutationFn: (id: string) => securityApi.revokeSession(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['account-security-sessions'] });
       message.success('设备已下线');
@@ -225,7 +212,7 @@ export function SecurityPage() {
   });
 
   const revokeOthersMutation = useMutation({
-    mutationFn: () => accountSecurityControllerRevokeOtherSessions(),
+    mutationFn: () => securityApi.revokeOtherSessions(),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['account-security-sessions'] });
       message.success('其他设备已全部下线');
@@ -269,7 +256,7 @@ export function SecurityPage() {
     form.setFields([{ name: 'identityCode', errors: [] }]);
     setSendingIdentityCode(true);
     try {
-      const result = await accountSecurityControllerSendIdentityCode({ channel });
+      const result = await securityApi.sendIdentityCode({ channel });
       identityCountdown.start();
       message.success(`验证码已发送至 ${result.maskedTarget || '当前联系方式'}`);
     } catch (error) {
@@ -287,10 +274,10 @@ export function SecurityPage() {
     try {
       if (action === 'email') {
         const { email } = await form.validateFields(['email']);
-        await accountSecurityControllerSendEmailCode({ email: email! });
+        await securityApi.sendEmailCode({ email: email! });
       } else {
         const { countryCode, phone } = await form.validateFields(['countryCode', 'phone']);
-        await accountSecurityControllerSendPhoneCode({
+        await securityApi.sendPhoneCode({
           countryCode: countryCode!,
           phone: phone!,
         });
@@ -321,7 +308,7 @@ export function SecurityPage() {
     };
     setVerifyingIdentity(true);
     try {
-      await accountSecurityControllerVerifyIdentity(proof);
+      await securityApi.verifyIdentity(proof);
       setStep(1);
     } catch (error) {
       const errorMessage = getErrorMessage(error, '身份验证失败');

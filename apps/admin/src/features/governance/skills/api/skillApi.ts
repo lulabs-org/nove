@@ -1,4 +1,4 @@
-import { mutator } from '../../../shared/lib/api/mutator';
+import { mutator } from '../../../../shared/lib/api/mutator';
 
 export type SkillCategory = 'MEETING' | 'SPEAKER' | 'TASK' | 'REPORT' | 'GENERAL';
 export type SkillStatus = 'ACTIVE' | 'DISABLED' | 'DEPRECATED';

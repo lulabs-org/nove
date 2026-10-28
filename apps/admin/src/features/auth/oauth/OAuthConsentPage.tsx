@@ -25,7 +25,7 @@ import {
   getOAuthAuthorizationRequest,
   type OAuthAuthorizationRequest,
   type OAuthPermission,
-} from './api';
+} from './api/oauthApi';
 import './OAuthConsentPage.css';
 
 const DANGEROUS_ACTIONS = new Set(['create', 'update', 'delete', 'import', 'write']);

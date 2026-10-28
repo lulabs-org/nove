@@ -14,15 +14,13 @@ import {
   Upload,
 } from 'antd';
 import { DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../shared/hooks/useAuth';
 import {
-  getOrganizationControllerGetOrganizationQueryKey,
-  useOrganizationControllerGetOrganization,
-} from '../../../shared/lib/api/orval/business/admin-organizations';
-import type { UpdateOrganizationDto } from '../../../shared/lib/api/orval/business/schemas';
+  organizationProfileApi,
+  type UpdateOrganizationDto,
+} from './api/organizationProfileApi';
 import { PERMISSIONS } from '../../../shared/utils/permissions';
-import { saveOrganizationProfile } from './organizationProfileApi';
 import './OrganizationInfoPage.css';
 
 const { Text, Title, Paragraph } = Typography;
@@ -61,16 +59,18 @@ export function OrganizationInfoPage() {
   const orgId = user?.currentOrgId || '';
   const canUpdate = checkPermission(PERMISSIONS.ORGANIZATION.UPDATE);
 
-  const organizationQuery = useOrganizationControllerGetOrganization(orgId, {
-    query: { enabled: !!orgId },
+  const organizationQuery = useQuery({
+    queryKey: organizationProfileApi.getQueryKey(orgId),
+    queryFn: ({ signal }) => organizationProfileApi.getProfile(orgId, signal),
+    enabled: !!orgId,
   });
   const updateOrganization = useMutation({
     mutationFn: (values: UpdateOrganizationDto) =>
-      saveOrganizationProfile(orgId, values, logoFile, removeLogo),
+      organizationProfileApi.saveProfile(orgId, values, logoFile, removeLogo),
     onSuccess: (updated) => {
-      queryClient.setQueryData(getOrganizationControllerGetOrganizationQueryKey(orgId), updated);
+      queryClient.setQueryData(organizationProfileApi.getQueryKey(orgId), updated);
       void queryClient.invalidateQueries({
-        queryKey: getOrganizationControllerGetOrganizationQueryKey(orgId),
+        queryKey: organizationProfileApi.getQueryKey(orgId),
       });
       messageApi.success('企业信息已更新');
       setEditorOpen(false);

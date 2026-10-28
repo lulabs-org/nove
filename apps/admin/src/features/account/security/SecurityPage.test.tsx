@@ -21,19 +21,21 @@ const api = vi.hoisted(() => ({
 
 const auth = vi.hoisted(() => ({ clearAuth: vi.fn() }));
 
-vi.mock('../../../shared/lib/api/orval/business/account-security', () => ({
-  accountSecurityControllerGetSecurity: api.getSecurity,
-  accountSecurityControllerListSessions: api.listSessions,
-  accountSecurityControllerGetLoginActivities: api.getActivities,
-  accountSecurityControllerSendIdentityCode: api.sendIdentityCode,
-  accountSecurityControllerSendEmailCode: api.sendEmailCode,
-  accountSecurityControllerSendPhoneCode: api.sendPhoneCode,
-  accountSecurityControllerVerifyIdentity: api.verifyIdentity,
-  accountSecurityControllerChangePassword: api.changePassword,
-  accountSecurityControllerChangeEmail: api.changeEmail,
-  accountSecurityControllerChangePhone: api.changePhone,
-  accountSecurityControllerRevokeSession: api.revokeSession,
-  accountSecurityControllerRevokeOtherSessions: api.revokeOthers,
+vi.mock('./api/securityApi', () => ({
+  securityApi: {
+    getSecurity: api.getSecurity,
+    listSessions: api.listSessions,
+    getLoginActivities: api.getActivities,
+    sendIdentityCode: api.sendIdentityCode,
+    sendEmailCode: api.sendEmailCode,
+    sendPhoneCode: api.sendPhoneCode,
+    verifyIdentity: api.verifyIdentity,
+    changePassword: api.changePassword,
+    changeEmail: api.changeEmail,
+    changePhone: api.changePhone,
+    revokeSession: api.revokeSession,
+    revokeOtherSessions: api.revokeOthers,
+  },
 }));
 
 vi.mock('../../auth/model/authStore', () => ({

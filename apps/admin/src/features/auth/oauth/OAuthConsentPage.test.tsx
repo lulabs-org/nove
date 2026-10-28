@@ -5,9 +5,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useAuthStore } from '../model/authStore';
 import { OAuthConsentPage } from './OAuthConsentPage';
-import { getOAuthAuthorizationRequest } from './api';
+import { getOAuthAuthorizationRequest } from './api/oauthApi';
 
-vi.mock('./api', () => ({
+vi.mock('./api/oauthApi', () => ({
   approveOAuthAuthorizationRequest: vi.fn(),
   denyOAuthAuthorizationRequest: vi.fn(),
   getOAuthAuthorizationRequest: vi.fn(),
