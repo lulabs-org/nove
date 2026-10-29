@@ -29,7 +29,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
    */
   useEffect(() => {
     ConfigProvider.config({
-      holderRender: (node) => <ConfigProvider theme={{ algorithm }}>{node}</ConfigProvider>,
+      holderRender: (children) => <ConfigProvider theme={{ algorithm }}>{children}</ConfigProvider>,
     });
   }, [algorithm]);
 
