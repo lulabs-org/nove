@@ -21,9 +21,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const { resolved } = useTheme();
   const algorithm = resolved === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm;
 
-  // 静态 message / notification / Modal.confirm 不经过 Context，只能走全局配置。
+  /*
+   * 静态 message / notification / Modal.confirm 渲染在独立的 React 根里，拿不到 Context。
+   * 按 ConfigProvider.config() 文档给出的 holderRender 写法，用 ConfigProvider 包住静态实例——
+   * 只传 theme 也能生效，但 antd 会因为缺 holderRender 打 "Static function can not
+   * consume context" 的警告。
+   */
   useEffect(() => {
-    ConfigProvider.config({ theme: { algorithm } });
+    ConfigProvider.config({
+      holderRender: (node) => <ConfigProvider theme={{ algorithm }}>{node}</ConfigProvider>,
+    });
   }, [algorithm]);
 
   return (
