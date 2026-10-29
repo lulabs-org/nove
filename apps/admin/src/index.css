@@ -7,6 +7,15 @@
  * 以及 Ant Design 无法覆盖的浏览器原生行为相关的规则。
  */
 :root {
+  /*
+   * 基础排版。这一层不是模板残留，而是 <App> 之外的兜底：
+   * 去掉它 <html> 会回落到浏览器默认的 Times，凡是没有被 antd 组件覆盖的
+   * 文字都会变成衬线体。组件树内仍由 <App> 的 fontFamily token 接管。
+   */
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
