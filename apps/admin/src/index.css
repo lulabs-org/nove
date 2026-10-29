@@ -18,21 +18,9 @@ body {
 /*
  * antd 只给 Layout.Content / Layout.Header 设置文字色，Layout / Sider 本身没有。
  * 用 token 补上，避免未包裹 Typography 的文字回落到浏览器默认的纯黑。
- *
- * --app-table-head-bg 是表头专用的表面色。亮色下用页面底色（比卡片深一档），
- * 暗色下必须反过来用「浮起」色——否则表头会比卡片更黑，像在卡片上挖了个洞。
- * 这里只能写成两条规则：纯 CSS 无法在 --ant-* 上做条件运算。
  */
 .ant-layout {
   color: var(--ant-color-text);
-  --app-table-head-bg: var(--ant-color-bg-layout);
-  --app-sidebar-bg: var(--ant-color-bg-layout);
-}
-
-[data-theme='dark'] .ant-layout {
-  --app-table-head-bg: var(--ant-color-bg-elevated);
-  /* 亮色里侧栏比卡片深一档；暗色里方向相反，侧栏要比页面底色抬高一档才站得住。 */
-  --app-sidebar-bg: var(--ant-color-bg-container);
 }
 
 /* Ant Design Table 全局表头与单元格防挤压、防折行优化 */

@@ -1,11 +1,10 @@
 /**
  * 主题提供者。
  *
- * 只做三件事：
+ * 只做两件事：
  * 1. 按用户偏好选 defaultAlgorithm / darkAlgorithm，交给 ConfigProvider；
  * 2. 用 ConfigProvider.config() 同步静态方法（message.* / Modal.confirm）的主题——
- *    这些方法渲染在独立的 React 根里，拿不到 Context；
- * 3. 把生效模式与少量基础色写到 <html> / <body>，供页面底色和原生控件使用。
+ *    这些方法渲染在独立的 React 根里，拿不到 Context。
  *
  * 注意：不要设置 theme.cssVar.prefix。全站 CSS 写的是 var(--ant-*)，前缀一改
  * 所有变量都会静默失效；key 由 antd 用 useId 自动生成，不需要手动设。
@@ -14,7 +13,6 @@ import { useEffect, type ReactNode } from 'react';
 import ConfigProvider from 'antd/es/config-provider';
 import AntdApp from 'antd/es/app';
 import theme from 'antd/es/theme';
-import type { ResolvedTheme } from './themeStore';
 import { useTheme } from './useTheme';
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -35,31 +33,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ConfigProvider theme={{ algorithm }}>
-      <AntdApp>
-        <ThemeChrome themeKey={resolved} />
-        {children}
-      </AntdApp>
+      <AntdApp>{children}</AntdApp>
     </ConfigProvider>
   );
-}
-
-/**
- * 把生效主题写到 document 上。
- *
- * `--ant-*` 只声明在 antd 组件根节点上，<html> / <body> 取不到，所以 body 的底色
- * 必须由 JS 写入具体值；`data-theme` 供首帧脚本与少量仅靠 CSS 无法表达的覆盖使用。
- */
-function ThemeChrome({ themeKey }: { themeKey: ResolvedTheme }) {
-  const { token } = theme.useToken();
-
-  useEffect(() => {
-    const root = document.documentElement;
-    root.dataset.theme = themeKey;
-    root.style.colorScheme = themeKey;
-    root.style.backgroundColor = token.colorBgLayout;
-    document.body.style.backgroundColor = token.colorBgLayout;
-    document.body.style.color = token.colorText;
-  }, [themeKey, token]);
-
-  return null;
 }

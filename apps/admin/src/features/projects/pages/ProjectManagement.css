@@ -38,7 +38,7 @@
 .project-management-table-card .ant-table-thead > tr > th {
   color: var(--ant-color-text-secondary);
   font-weight: 600;
-  background: var(--app-table-head-bg);
+  background: var(--ant-color-bg-layout);
 }
 
 .project-management-table-card .ant-table-pagination {

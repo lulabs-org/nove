@@ -182,7 +182,7 @@
 }
 
 .permission-management-page .ant-table-thead > tr > th {
-  background: var(--app-table-head-bg);
+  background: var(--ant-color-bg-layout);
   color: var(--ant-color-text-secondary);
   font-weight: 600;
 }
