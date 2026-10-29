@@ -183,7 +183,7 @@ export const RuleList: React.FC = () => {
 
         return (
           <Space direction="vertical" size={2}>
-            <span style={{ fontWeight: 500, color: '#1e293b' }}>{record.name}</span>
+            <span style={{ fontWeight: 500, color: 'var(--ant-color-text)' }}>{record.name}</span>
             <Space size={4} wrap>
               {isFixed ? (
                 <Tag color="purple">月度固定薪资/津贴</Tag>
@@ -224,7 +224,7 @@ export const RuleList: React.FC = () => {
           return (
             <Space size="small">
               <Tag color="purple">长期有效</Tag>
-              <span style={{ color: '#64748b', fontSize: 12 }}>
+              <span style={{ color: 'var(--ant-color-text-secondary)', fontSize: 12 }}>
                 自 {start.format('YYYY-MM-DD')} 起
               </span>
             </Space>
@@ -235,13 +235,13 @@ export const RuleList: React.FC = () => {
           return (
             <Space size="small">
               <Tag color="cyan">{start.format('YYYY年MM月')}</Tag>
-              <span style={{ color: '#94a3b8', fontSize: 12 }}>整月</span>
+              <span style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 12 }}>整月</span>
             </Space>
           );
         }
 
         return (
-          <span style={{ color: '#475569' }}>
+          <span style={{ color: 'var(--ant-color-text-secondary)' }}>
             {start.format('YYYY-MM-DD')} ~ {end.format('YYYY-MM-DD')}
           </span>
         );
@@ -474,7 +474,7 @@ export const RuleList: React.FC = () => {
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
               >
                 <span>
-                  已选择 <strong style={{ color: '#2563eb' }}>{selectedRowKeys.length}</strong>{' '}
+                  已选择 <strong style={{ color: 'var(--ant-color-primary)' }}>{selectedRowKeys.length}</strong>{' '}
                   条规则
                 </span>
                 <Space>

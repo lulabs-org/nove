@@ -1,16 +1,12 @@
 .nove-login {
-  --nove-ink: #0b1220;
-  --nove-muted: #64748b;
-  --nove-blue: #2563eb;
-  --nove-blue-dark: #1d4ed8;
   display: grid;
   grid-template-columns: minmax(520px, 1.18fr) minmax(500px, 0.82fr);
   width: 100%;
   min-width: 320px;
   min-height: 100vh;
   min-height: 100dvh;
-  color: var(--nove-ink);
-  background: #f8fafc;
+  color: var(--ant-color-text);
+  background: var(--ant-color-bg-layout);
 }
 
 .nove-login__brand {
@@ -336,7 +332,7 @@
   justify-content: center;
   padding: 88px clamp(42px, 6vw, 92px) 72px;
   background:
-    radial-gradient(circle at 100% 0%, rgba(219, 234, 254, 0.52), transparent 28%), #f8fafc;
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--ant-blue-2) 52%, transparent), transparent 28%), var(--ant-color-bg-layout);
 }
 
 .nove-access-status {
@@ -347,16 +343,16 @@
   align-items: center;
   gap: 7px;
   padding: 7px 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 999px;
-  color: #64748b;
+  color: var(--ant-color-text-secondary);
   font-size: 11px;
   font-weight: 550;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--ant-color-bg-elevated);
 }
 
 .nove-access-status .anticon {
-  color: #0f766e;
+  color: var(--ant-cyan-8);
 }
 
 .nove-login-panel {
@@ -375,7 +371,7 @@
 .nove-login-heading > span {
   display: block;
   margin-bottom: 13px;
-  color: var(--nove-blue);
+  color: var(--ant-color-primary);
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 0.18em;
@@ -383,7 +379,7 @@
 
 .nove-login-heading h2 {
   margin: 0;
-  color: var(--nove-ink);
+  color: var(--ant-color-text);
   font-size: 35px;
   font-weight: 670;
   line-height: 1.2;
@@ -392,7 +388,7 @@
 
 .nove-login-heading p {
   margin: 11px 0 0;
-  color: var(--nove-muted);
+  color: var(--ant-color-text-secondary);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -404,9 +400,9 @@
 .nove-login-tabs .ant-tabs-nav {
   margin: 0 0 28px;
   padding: 4px;
-  border: 1px solid #e7edf4;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 12px;
-  background: #f1f5f9;
+  background: var(--ant-color-fill-tertiary);
 }
 
 .nove-login-tabs .ant-tabs-nav::before,
@@ -425,7 +421,7 @@
   margin: 0 !important;
   padding: 9px 14px;
   border-radius: 8px;
-  color: #64748b;
+  color: var(--ant-color-text-secondary);
   transition:
     color 160ms ease,
     background 160ms ease,
@@ -433,12 +429,12 @@
 }
 
 .nove-login-tabs .ant-tabs-tab-active {
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07);
+  background: var(--ant-color-bg-container);
+  box-shadow: var(--ant-box-shadow-tertiary);
 }
 
 .nove-login-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #0f172a !important;
+  color: var(--ant-color-text) !important;
   font-weight: 600;
 }
 
@@ -456,7 +452,7 @@
 
 .nove-login-form .ant-form-item-label > label {
   height: auto;
-  color: #334155;
+  color: var(--ant-color-text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -464,44 +460,44 @@
 .nove-login-form .ant-input-affix-wrapper {
   min-height: 51px;
   padding: 0 15px;
-  border-color: #dce4ee;
+  border-color: var(--ant-color-border-secondary);
   border-radius: 11px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  background: var(--ant-color-bg-container);
+  box-shadow: var(--ant-box-shadow-tertiary);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease;
 }
 
 .nove-login-form .ant-input-affix-wrapper:hover {
-  border-color: #93b4ec;
+  border-color: var(--ant-color-primary-border);
 }
 
 .nove-login-form .ant-input-affix-wrapper-focused {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--ant-color-primary-hover);
+  box-shadow: 0 0 0 3px var(--ant-control-outline);
 }
 
 .nove-login-form .ant-input-prefix {
   margin-right: 10px;
-  color: #94a3b8;
+  color: var(--ant-color-text-tertiary);
 }
 
 .nove-login-form .ant-input {
-  color: #0f172a;
+  color: var(--ant-color-text);
   font-size: 14px;
   background: transparent;
 }
 
 .nove-login-form .ant-input::placeholder {
-  color: #a3afbf;
+  color: var(--ant-color-text-quaternary);
 }
 
 .nove-code-button {
   height: auto !important;
   padding: 0 2px !important;
   border: 0 !important;
-  color: var(--nove-blue) !important;
+  color: var(--ant-color-primary) !important;
   font-size: 12px !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -520,18 +516,18 @@
   padding: 0 18px 0 20px;
   border: 0;
   border-radius: 11px;
-  color: #fff;
+  color: var(--ant-color-text-light-solid);
   font-size: 14px;
   font-weight: 620;
-  background: linear-gradient(110deg, var(--nove-blue-dark), var(--nove-blue));
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+  background: linear-gradient(110deg, var(--ant-color-primary-active), var(--ant-color-primary));
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--ant-color-primary) 20%, transparent);
 }
 
 .nove-login-submit .ant-btn:hover,
 .nove-login-submit .ant-btn:focus {
-  color: #fff !important;
-  background: linear-gradient(110deg, #1e40af, var(--nove-blue-dark)) !important;
-  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.26);
+  color: var(--ant-color-text-light-solid) !important;
+  background: linear-gradient(110deg, var(--ant-blue-8), var(--ant-color-primary-active)) !important;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--ant-color-primary) 26%, transparent);
 }
 
 .nove-security-note {
@@ -540,17 +536,17 @@
   gap: 11px;
   margin-top: 26px;
   padding: 14px 15px;
-  border: 1px solid #e5ebf2;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 10px;
-  color: #64748b;
+  color: var(--ant-color-text-secondary);
   font-size: 11px;
   line-height: 1.55;
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--ant-color-bg-elevated);
 }
 
 .nove-security-note > .anticon {
   margin-top: 2px;
-  color: #0f766e;
+  color: var(--ant-cyan-8);
   font-size: 15px;
 }
 
@@ -561,7 +557,7 @@
 
 .nove-security-note strong {
   margin-bottom: 1px;
-  color: #334155;
+  color: var(--ant-color-text-secondary);
   font-size: 12px;
 }
 
@@ -572,7 +568,7 @@
   left: clamp(42px, 6vw, 92px);
   display: flex;
   justify-content: space-between;
-  color: #94a3b8;
+  color: var(--ant-color-text-tertiary);
   font-size: 10px;
 }
 
@@ -593,7 +589,7 @@
 @media (max-width: 860px) {
   .nove-login {
     display: block;
-    background: #f8fafc;
+    background: var(--ant-color-bg-layout);
   }
 
   .nove-login__brand {

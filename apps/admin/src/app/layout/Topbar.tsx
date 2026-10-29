@@ -12,6 +12,7 @@ import Layout from 'antd/es/layout';
 import Dropdown from 'antd/es/dropdown';
 import Avatar from 'antd/es/avatar';
 import Space from 'antd/es/space';
+import Button from 'antd/es/button';
 import Modal from 'antd/es/modal';
 import theme from 'antd/es/theme';
 import {
@@ -19,9 +20,14 @@ import {
   UserOutlined,
   LogoutOutlined,
   ExclamationCircleFilled,
+  SunOutlined,
+  MoonOutlined,
+  DesktopOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth';
+import { useTheme } from '../providers/useTheme';
+
 import './Topbar.css';
 
 const { Header } = Layout;
@@ -34,6 +40,18 @@ interface TopbarProps {
 export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
   const { user, logout } = useAuth();
   const { token } = theme.useToken();
+  const { mode, setMode } = useTheme();
+
+  /* 三态收在一个下拉里，避免「按钮切亮暗 + 菜单里重置」这种分散入口。 */
+  const activeMode = mode ?? 'system';
+  const themeItems = [
+    { key: 'light', icon: <SunOutlined />, label: '亮色' },
+    { key: 'dark', icon: <MoonOutlined />, label: '暗色' },
+    { key: 'system', icon: <DesktopOutlined />, label: '跟随系统' },
+  ].map((item) => ({ ...item, icon: <span style={{ width: 14 }}>{item.icon}</span> }));
+  const activeThemeLabel = themeItems.find((item) => item.key === activeMode)?.label ?? '跟随系统';
+  const activeThemeIcon =
+    activeMode === 'light' ? <SunOutlined /> : activeMode === 'dark' ? <MoonOutlined /> : <DesktopOutlined />;
 
   const menuItems = [
     {
@@ -46,7 +64,6 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
       icon: <SafetyOutlined />,
       label: <Link to="/settings/security">安全设置</Link>,
     },
-    { type: 'divider' as const },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
@@ -69,7 +86,7 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
   return (
     <Header
       style={{
-        background: '#fff',
+        background: 'var(--ant-color-bg-container)',
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -93,7 +110,7 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
           justifyContent: 'center',
           fontSize: 18,
           fontWeight: 600,
-          color: '#17233d',
+          color: 'var(--ant-color-text)',
           textDecoration: 'none',
         }}
       >
@@ -102,7 +119,32 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
           Nove System
         </span>
       </Link>
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', padding: '0 24px' }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 8,
+          padding: '0 24px',
+        }}
+      >
+        <Dropdown
+          placement="bottomRight"
+          menu={{
+            items: themeItems,
+            selectable: true,
+            selectedKeys: [activeMode],
+            onClick: ({ key }) => setMode(key === 'system' ? null : (key as 'light' | 'dark')),
+          }}
+        >
+          <Button
+            type="text"
+            aria-label={`主题外观：${activeThemeLabel}`}
+            title={`主题外观：${activeThemeLabel}`}
+            icon={activeThemeIcon}
+          />
+        </Dropdown>
         <Dropdown menu={{ items: menuItems }} placement="bottomRight">
           <Space style={{ cursor: 'pointer' }}>
             <Avatar src={user?.avatar} icon={<UserOutlined />} />

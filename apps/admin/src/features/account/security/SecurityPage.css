@@ -42,13 +42,13 @@
 .security-device-icon {
   padding: 10px;
   border-radius: 10px;
-  background: #f0f5ff;
-  color: #3370ff;
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
   font-size: 22px;
 }
 
 .security-login-failed > td {
-  background: #fff7f6 !important;
+  background: var(--ant-color-error-bg) !important;
 }
 
 .security-pagination {

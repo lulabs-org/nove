@@ -107,7 +107,7 @@ export function DataRulePreviewModal({ open, onClose, rule }: DataRulePreviewMod
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="业务释义" span={2}>
-            <Text strong style={{ color: '#1677ff' }}>
+            <Text strong style={{ color: 'var(--ant-color-primary)' }}>
               {explanation}
             </Text>
           </Descriptions.Item>
@@ -122,7 +122,7 @@ export function DataRulePreviewModal({ open, onClose, rule }: DataRulePreviewMod
               <span>模拟运行用户上下文 (Mock User Context)</span>
             </Space>
           }
-          style={{ marginBottom: 16, background: '#fafbfc' }}
+          style={{ marginBottom: 16, background: 'var(--ant-color-fill-quaternary)' }}
         >
           <Space direction="vertical" style={{ width: '100%' }} size="small">
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -184,13 +184,13 @@ export function DataRulePreviewModal({ open, onClose, rule }: DataRulePreviewMod
               }}
             >
               <Space size="small">
-                <PlayCircleOutlined style={{ color: '#52c41a' }} />
+                <PlayCircleOutlined style={{ color: 'var(--ant-color-success)' }} />
                 <Text strong>最终生效的数据库查询条件:</Text>
               </Space>
               <Button
                 size="small"
                 type="text"
-                icon={copied ? <CheckOutlined style={{ color: '#52c41a' }} /> : <CopyOutlined />}
+                icon={copied ? <CheckOutlined style={{ color: 'var(--ant-color-success)' }} /> : <CopyOutlined />}
                 onClick={handleCopy}
               >
                 {copied ? '已复制' : '复制'}

@@ -184,7 +184,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               );
             })}
           {mode === 'preview' && (
-            <span style={{ fontSize: 13, color: '#8c8c8c', paddingLeft: 4 }}>实时渲染预览模式</span>
+            <span style={{ fontSize: 13, color: 'var(--ant-color-text-tertiary)', paddingLeft: 4 }}>实时渲染预览模式</span>
           )}
         </div>
 

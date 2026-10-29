@@ -39,13 +39,13 @@ export function RotateApiKeyModal({
     >
       {result && (
         <div style={{ padding: '20px 0' }}>
-          <div style={{ marginBottom: 16, color: '#ff4d4f', fontWeight: 500 }}>
+          <div style={{ marginBottom: 16, color: 'var(--ant-color-error)', fontWeight: 500 }}>
             ⚠️ 请立即复制您的新 API Key，它只会显示这一次！
           </div>
           <div
             style={{
               padding: 12,
-              backgroundColor: '#f5f5f5',
+              backgroundColor: 'var(--ant-color-fill-tertiary)',
               borderRadius: 4,
               fontFamily: 'monospace',
               fontSize: 14,
@@ -58,7 +58,7 @@ export function RotateApiKeyModal({
           >
             <span>{result.key}</span>
           </div>
-          <div style={{ marginTop: 16, color: '#666', fontSize: 12 }}>
+          <div style={{ marginTop: 16, color: 'var(--ant-color-text-secondary)', fontSize: 12 }}>
             <p>• ID: {result.id}</p>
             <p>• 名称: {result.name}</p>
             <p>• 前缀: {result.prefix}</p>

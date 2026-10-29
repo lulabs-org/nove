@@ -17,7 +17,7 @@ function groupScopes(scopes: string[]) {
 }
 
 export function ScopeSummary({ scopes = [] }: ScopeSummaryProps) {
-  if (scopes.length === 0) return <span style={{ color: '#999' }}>未配置</span>;
+  if (scopes.length === 0) return <span style={{ color: 'var(--ant-color-text-tertiary)' }}>未配置</span>;
 
   if (scopes.length <= 2) {
     return (
@@ -40,7 +40,7 @@ export function ScopeSummary({ scopes = [] }: ScopeSummaryProps) {
         <div key={group} style={{ marginBottom: 12 }}>
           <div style={{ marginBottom: 6, fontWeight: 600 }}>
             {group}
-            <span style={{ marginLeft: 6, color: '#999', fontWeight: 400 }}>
+            <span style={{ marginLeft: 6, color: 'var(--ant-color-text-tertiary)', fontWeight: 400 }}>
               {groupScopes.length} 项
             </span>
           </div>
@@ -68,7 +68,7 @@ export function ScopeSummary({ scopes = [] }: ScopeSummaryProps) {
           查看 {scopes.length} 项权限
         </Button>
       </Popover>
-      <span style={{ color: '#999', fontSize: 12 }}>{groupEntries.length} 个分组</span>
+      <span style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 12 }}>{groupEntries.length} 个分组</span>
     </Space>
   );
 }
