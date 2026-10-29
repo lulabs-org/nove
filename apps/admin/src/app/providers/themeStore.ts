@@ -46,23 +46,13 @@ interface ThemeState {
   mode: ThemeMode | null;
   /** 显式指定亮/暗，传 null 回到跟随系统。 */
   setMode: (mode: ThemeMode | null) => void;
-  /** 在亮/暗之间切换；未设置过时，从当前系统偏好的相反值开始。 */
-  toggle: () => void;
 }
 
-export const useThemeStore = create<ThemeState>((set, get) => ({
+export const useThemeStore = create<ThemeState>((set) => ({
   mode: readStoredMode(),
 
   setMode: (mode) => {
     persistMode(mode);
     set({ mode });
-  },
-
-  toggle: () => {
-    const { mode } = get();
-    const current: ResolvedTheme = mode ?? (prefersDark() ? 'dark' : 'light');
-    const next: ResolvedTheme = current === 'dark' ? 'light' : 'dark';
-    persistMode(next);
-    set({ mode: next });
   },
 }));
