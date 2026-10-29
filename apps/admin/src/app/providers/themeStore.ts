@@ -32,9 +32,11 @@ function readStoredMode(): ThemeMode | null {
   return null;
 }
 
-function persistMode(mode: ThemeMode): void {
+/** `null` 表示「跟随系统」，此时删掉存储项，而不是写一个特殊值。 */
+function persistMode(mode: ThemeMode | null): void {
   try {
-    window.localStorage.setItem(THEME_STORAGE_KEY, mode);
+    if (mode === null) window.localStorage.removeItem(THEME_STORAGE_KEY);
+    else window.localStorage.setItem(THEME_STORAGE_KEY, mode);
   } catch {
     // 写不进去也不该中断当前会话。
   }
@@ -42,12 +44,19 @@ function persistMode(mode: ThemeMode): void {
 
 interface ThemeState {
   mode: ThemeMode | null;
+  /** 显式指定亮/暗，传 null 回到跟随系统。 */
+  setMode: (mode: ThemeMode | null) => void;
   /** 在亮/暗之间切换；未设置过时，从当前系统偏好的相反值开始。 */
   toggle: () => void;
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
   mode: readStoredMode(),
+
+  setMode: (mode) => {
+    persistMode(mode);
+    set({ mode });
+  },
 
   toggle: () => {
     const { mode } = get();

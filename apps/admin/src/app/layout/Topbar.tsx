@@ -12,8 +12,7 @@ import Layout from 'antd/es/layout';
 import Dropdown from 'antd/es/dropdown';
 import Avatar from 'antd/es/avatar';
 import Space from 'antd/es/space';
-import Button from 'antd/es/button';
-import Tooltip from 'antd/es/tooltip';
+import Segmented from 'antd/es/segmented';
 import Modal from 'antd/es/modal';
 import theme from 'antd/es/theme';
 import {
@@ -23,10 +22,12 @@ import {
   ExclamationCircleFilled,
   SunOutlined,
   MoonOutlined,
+  DesktopOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth';
 import { useTheme } from '../providers/useTheme';
+
 import './Topbar.css';
 
 const { Header } = Layout;
@@ -39,8 +40,14 @@ interface TopbarProps {
 export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
   const { user, logout } = useAuth();
   const { token } = theme.useToken();
-  const { resolved, toggle } = useTheme();
-  const nextThemeLabel = resolved === 'dark' ? '切换到亮色模式' : '切换到暗色模式';
+  const { mode, setMode } = useTheme();
+
+  /* 三态放在同一个控件里，避免「按钮切亮暗 + 菜单里重置」这种分散入口。 */
+  const themeOptions = [
+    { value: 'light', icon: <SunOutlined />, label: '亮色' },
+    { value: 'dark', icon: <MoonOutlined />, label: '暗色' },
+    { value: 'system', icon: <DesktopOutlined />, label: '跟随系统' },
+  ];
 
   const menuItems = [
     {
@@ -118,14 +125,12 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
           padding: '0 24px',
         }}
       >
-        <Tooltip title={nextThemeLabel}>
-          <Button
-            type="text"
-            aria-label={nextThemeLabel}
-            icon={resolved === 'dark' ? <SunOutlined /> : <MoonOutlined />}
-            onClick={toggle}
-          />
-        </Tooltip>
+        <Segmented
+          aria-label="主题外观"
+          value={mode ?? 'system'}
+          options={themeOptions}
+          onChange={(value) => setMode(value === 'system' ? null : (value as 'light' | 'dark'))}
+        />
         <Dropdown menu={{ items: menuItems }} placement="bottomRight">
           <Space style={{ cursor: 'pointer' }}>
             <Avatar src={user?.avatar} icon={<UserOutlined />} />
