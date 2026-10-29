@@ -12,7 +12,7 @@ import Layout from 'antd/es/layout';
 import Dropdown from 'antd/es/dropdown';
 import Avatar from 'antd/es/avatar';
 import Space from 'antd/es/space';
-import Segmented from 'antd/es/segmented';
+import Button from 'antd/es/button';
 import Modal from 'antd/es/modal';
 import theme from 'antd/es/theme';
 import {
@@ -42,12 +42,16 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
   const { token } = theme.useToken();
   const { mode, setMode } = useTheme();
 
-  /* 三态放在同一个控件里，避免「按钮切亮暗 + 菜单里重置」这种分散入口。 */
-  const themeOptions = [
-    { value: 'light', icon: <SunOutlined />, label: '亮色' },
-    { value: 'dark', icon: <MoonOutlined />, label: '暗色' },
-    { value: 'system', icon: <DesktopOutlined />, label: '跟随系统' },
-  ];
+  /* 三态收在一个下拉里，避免「按钮切亮暗 + 菜单里重置」这种分散入口。 */
+  const activeMode = mode ?? 'system';
+  const themeItems = [
+    { key: 'light', icon: <SunOutlined />, label: '亮色' },
+    { key: 'dark', icon: <MoonOutlined />, label: '暗色' },
+    { key: 'system', icon: <DesktopOutlined />, label: '跟随系统' },
+  ].map((item) => ({ ...item, icon: <span style={{ width: 14 }}>{item.icon}</span> }));
+  const activeThemeLabel = themeItems.find((item) => item.key === activeMode)?.label ?? '跟随系统';
+  const activeThemeIcon =
+    activeMode === 'light' ? <SunOutlined /> : activeMode === 'dark' ? <MoonOutlined /> : <DesktopOutlined />;
 
   const menuItems = [
     {
@@ -125,12 +129,22 @@ export function Topbar({ collapsed, sidebarWidth }: TopbarProps) {
           padding: '0 24px',
         }}
       >
-        <Segmented
-          aria-label="主题外观"
-          value={mode ?? 'system'}
-          options={themeOptions}
-          onChange={(value) => setMode(value === 'system' ? null : (value as 'light' | 'dark'))}
-        />
+        <Dropdown
+          placement="bottomRight"
+          menu={{
+            items: themeItems,
+            selectable: true,
+            selectedKeys: [activeMode],
+            onClick: ({ key }) => setMode(key === 'system' ? null : (key as 'light' | 'dark')),
+          }}
+        >
+          <Button
+            type="text"
+            aria-label={`主题外观：${activeThemeLabel}`}
+            title={`主题外观：${activeThemeLabel}`}
+            icon={activeThemeIcon}
+          />
+        </Dropdown>
         <Dropdown menu={{ items: menuItems }} placement="bottomRight">
           <Space style={{ cursor: 'pointer' }}>
             <Avatar src={user?.avatar} icon={<UserOutlined />} />
