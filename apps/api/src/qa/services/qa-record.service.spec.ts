@@ -9,6 +9,9 @@ describe('QARecordService', () => {
     create: jest.Mock;
     createBatch: jest.Mock;
     findMany: jest.Mock;
+    findById: jest.Mock;
+    update: jest.Mock;
+    delete: jest.Mock;
   };
   let sessions: { findById: jest.Mock };
   let minuteService: { getById: jest.Mock };
@@ -18,6 +21,9 @@ describe('QARecordService', () => {
       create: jest.fn(),
       createBatch: jest.fn(),
       findMany: jest.fn(),
+      findById: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
     };
     sessions = { findById: jest.fn() };
     minuteService = { getById: jest.fn() };
@@ -109,5 +115,36 @@ describe('QARecordService', () => {
     expect(records.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ orgId: 'org-1', minuteId: 'minute-1' }),
     );
+  });
+
+  it('updates a record only when it belongs to the organization', async () => {
+    records.findById.mockResolvedValue({ id: 'record-1' });
+    records.update.mockResolvedValue({ id: 'record-1' });
+
+    await service.update('org-1', 'record-1', {
+      question: 'Updated question',
+    });
+
+    expect(records.findById).toHaveBeenCalledWith('record-1', 'org-1');
+    expect(records.update).toHaveBeenCalledWith('record-1', 'org-1', {
+      question: 'Updated question',
+    });
+  });
+
+  it('rejects deleting a record from another organization', async () => {
+    records.findById.mockResolvedValue(null);
+
+    await expect(service.delete('org-1', 'record-2')).rejects.toThrow(
+      NotFoundException,
+    );
+    expect(records.delete).not.toHaveBeenCalled();
+  });
+
+  it('deletes a record in the current organization', async () => {
+    records.findById.mockResolvedValue({ id: 'record-1' });
+
+    await service.delete('org-1', 'record-1');
+
+    expect(records.delete).toHaveBeenCalledWith('record-1', 'org-1');
   });
 });

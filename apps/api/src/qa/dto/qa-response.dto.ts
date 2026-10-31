@@ -18,9 +18,16 @@ export class QACitationResponseDto {
   @ApiProperty() createdAt: Date;
 }
 
+export class QARecordSessionResponseDto {
+  @ApiProperty() id: string;
+  @ApiProperty() title: string;
+}
+
 export class QARecordResponseDto {
   @ApiProperty() id: string;
   @ApiProperty() sessionId: string;
+  @ApiPropertyOptional({ type: QARecordSessionResponseDto })
+  session?: QARecordSessionResponseDto;
   @ApiProperty() question: string;
   @ApiProperty() answer: string;
   @ApiProperty({ enum: QAGeneratedBy }) generatedBy: QAGeneratedBy;

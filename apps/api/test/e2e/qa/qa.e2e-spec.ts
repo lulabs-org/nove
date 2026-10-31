@@ -110,7 +110,7 @@ describe('QA data hub (e2e)', () => {
     await app.close();
   });
 
-  it('creates a session, stores and finds a record, then submits feedback', async () => {
+  it('creates, edits, finds, and deletes sessions and records', async () => {
     const sessionResponse = await request(httpServer)
       .post('/api/v1/qa/sessions')
       .send({
@@ -120,6 +120,16 @@ describe('QA data hub (e2e)', () => {
       })
       .expect(201);
     const sessionId = readRequiredId(sessionResponse.body as unknown);
+
+    await request(httpServer)
+      .patch(`/api/v1/qa/sessions/${sessionId}`)
+      .send({ title: '产品发布问答' })
+      .expect(200)
+      .expect(({ body }: { body: unknown }) => {
+        expect(body).toEqual(
+          expect.objectContaining({ id: sessionId, title: '产品发布问答' }),
+        );
+      });
 
     const recordResponse = await request(httpServer)
       .post(`/api/v1/qa/sessions/${sessionId}/records`)
@@ -139,13 +149,35 @@ describe('QA data hub (e2e)', () => {
       .expect(201);
     const recordId = readRequiredId(recordResponse.body as unknown);
 
+    await request(httpServer)
+      .patch(`/api/v1/qa/records/${recordId}`)
+      .send({
+        answer: '会议确认系统将在 10 月 31 日上线。',
+        citations: [],
+      })
+      .expect(200)
+      .expect(({ body }: { body: unknown }) => {
+        expect(body).toEqual(
+          expect.objectContaining({
+            id: recordId,
+            answer: '会议确认系统将在 10 月 31 日上线。',
+            citations: [],
+          }),
+        );
+      });
+
     const listResponse = await request(httpServer)
       .get('/api/v1/qa/records')
-      .query({ keyword: '10 月 30 日' })
+      .query({ keyword: '10 月 31 日' })
       .expect(200);
 
     expect(readItems(listResponse.body as unknown)).toEqual(
-      expect.arrayContaining([expect.objectContaining({ id: recordId })]),
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: recordId,
+          session: { id: sessionId, title: '产品发布问答' },
+        }),
+      ]),
     );
 
     const feedbackResponse = await request(httpServer)
@@ -165,5 +197,32 @@ describe('QA data hub (e2e)', () => {
         feedbackComment: '答案与会议原文一致',
       }),
     );
+
+    await request(httpServer)
+      .post(`/api/v1/qa/records/${recordId}/feedback`)
+      .send({ rating: null })
+      .expect(201)
+      .expect(({ body }: { body: unknown }) => {
+        expect(body).toEqual(
+          expect.objectContaining({ id: recordId, rating: null }),
+        );
+      });
+
+    await request(httpServer)
+      .delete(`/api/v1/qa/records/${recordId}`)
+      .expect(204);
+
+    const emptyListResponse = await request(httpServer)
+      .get('/api/v1/qa/records')
+      .query({ sessionId })
+      .expect(200);
+    expect(readItems(emptyListResponse.body as unknown)).toHaveLength(0);
+
+    await request(httpServer)
+      .delete(`/api/v1/qa/sessions/${sessionId}`)
+      .expect(204);
+    await request(httpServer)
+      .get(`/api/v1/qa/sessions/${sessionId}`)
+      .expect(404);
   });
 });

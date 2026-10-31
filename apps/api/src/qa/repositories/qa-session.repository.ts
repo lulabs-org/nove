@@ -61,6 +61,18 @@ export class QASessionRepository {
     });
   }
 
+  update(
+    id: string,
+    orgId: string,
+    userId: string,
+    data: Prisma.QASessionUpdateInput,
+  ) {
+    return this.prisma.qASession.update({
+      where: { id, orgId, userId, deletedAt: null },
+      data,
+    });
+  }
+
   softDelete(id: string, orgId: string, userId: string) {
     return this.prisma.qASession.update({
       where: { id, orgId, userId, deletedAt: null },

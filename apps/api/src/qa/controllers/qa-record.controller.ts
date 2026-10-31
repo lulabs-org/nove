@@ -1,7 +1,18 @@
 import { RequirePermissions } from '@/admin/permission/decorators/permissions.decorator';
 import { CurrentOrg } from '@/auth/decorators';
 import { CuidPipe } from '@/common/pipes/cuid.pipe';
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -14,6 +25,7 @@ import {
   QARecordListResponseDto,
   QARecordResponseDto,
   QueryQARecordDto,
+  UpdateQARecordDto,
 } from '../dto';
 import { QARecordService } from '../services';
 
@@ -52,5 +64,29 @@ export class QARecordController {
   @ApiResponse({ status: 200, type: QARecordListResponseDto })
   findAll(@Query() query: QueryQARecordDto, @CurrentOrg() orgId: string) {
     return this.records.findAll(orgId, query);
+  }
+
+  @Patch('records/:recordId')
+  @RequirePermissions('qa:record:update')
+  @ApiOperation({ summary: '编辑问答记录及引用' })
+  @ApiResponse({ status: 200, type: QARecordResponseDto })
+  update(
+    @Param('recordId', CuidPipe) recordId: string,
+    @Body() dto: UpdateQARecordDto,
+    @CurrentOrg() orgId: string,
+  ) {
+    return this.records.update(orgId, recordId, dto);
+  }
+
+  @Delete('records/:recordId')
+  @RequirePermissions('qa:record:delete')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: '删除问答记录' })
+  @ApiResponse({ status: 204 })
+  delete(
+    @Param('recordId', CuidPipe) recordId: string,
+    @CurrentOrg() orgId: string,
+  ) {
+    return this.records.delete(orgId, recordId);
   }
 }

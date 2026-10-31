@@ -7,7 +7,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateQASessionDto, QueryQASessionDto } from '../dto';
+import {
+  CreateQASessionDto,
+  QueryQASessionDto,
+  UpdateQASessionDto,
+} from '../dto';
 import { QASessionRepository } from '../repositories';
 
 @Injectable()
@@ -61,6 +65,29 @@ export class QASessionService {
     const session = await this.sessions.findById(id, orgId, userId);
     if (!session) throw new NotFoundException('QA session not found');
     return session;
+  }
+
+  async update(
+    id: string,
+    orgId: string,
+    userId: string,
+    dto: UpdateQASessionDto,
+  ) {
+    const session = await this.findById(id, orgId, userId);
+    const targetType = dto.targetType ?? session.targetType;
+    const targetId =
+      dto.targetId === undefined
+        ? session.targetId
+        : dto.targetId?.trim() || null;
+    await this.assertTarget(targetType, targetId, orgId);
+    return this.sessions.update(id, orgId, userId, {
+      ...(dto.title !== undefined ? { title: dto.title.trim() } : {}),
+      targetType,
+      targetId,
+      ...(dto.metadata !== undefined
+        ? { metadata: dto.metadata as Prisma.InputJsonValue }
+        : {}),
+    });
   }
 
   async delete(id: string, orgId: string, userId: string): Promise<void> {

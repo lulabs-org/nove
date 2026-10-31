@@ -49,6 +49,12 @@ describe('QA controller contracts', () => {
       'qa:session:delete',
     ],
     [
+      QASessionController.prototype.update,
+      ':id',
+      RequestMethod.PATCH,
+      'qa:session:update',
+    ],
+    [
       QARecordController.prototype.create,
       'sessions/:sessionId/records',
       RequestMethod.POST,
@@ -65,6 +71,18 @@ describe('QA controller contracts', () => {
       'records',
       RequestMethod.GET,
       'qa:record:read',
+    ],
+    [
+      QARecordController.prototype.update,
+      'records/:recordId',
+      RequestMethod.PATCH,
+      'qa:record:update',
+    ],
+    [
+      QARecordController.prototype.delete,
+      'records/:recordId',
+      RequestMethod.DELETE,
+      'qa:record:delete',
     ],
     [
       QAFeedbackController.prototype.submit,

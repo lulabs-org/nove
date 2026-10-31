@@ -5,3 +5,5 @@ export * from './qa-feedback.dto';
 export * from './qa-response.dto';
 export * from './query-qa-record.dto';
 export * from './query-qa-session.dto';
+export * from './update-qa-record.dto';
+export * from './update-qa-session.dto';

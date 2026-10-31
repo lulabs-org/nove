@@ -5,9 +5,18 @@ import {
 } from '@/generated/prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { CreateQACitationDto, CreateQARecordDto } from '../dto';
+import {
+  CreateQACitationDto,
+  CreateQARecordDto,
+  UpdateQARecordDto,
+} from '../dto';
 
 type RecordCreateData = CreateQARecordDto & { sessionId: string };
+
+const recordInclude = {
+  citations: true,
+  session: { select: { id: true, title: true } },
+} satisfies Prisma.QARecordInclude;
 
 @Injectable()
 export class QARecordRepository {
@@ -16,7 +25,7 @@ export class QARecordRepository {
   create(data: RecordCreateData) {
     return this.prisma.qARecord.create({
       data: this.toCreateInput(data),
-      include: { citations: true },
+      include: recordInclude,
     });
   }
 
@@ -25,7 +34,7 @@ export class QARecordRepository {
       records.map((record) =>
         this.prisma.qARecord.create({
           data: this.toCreateInput(record),
-          include: { citations: true },
+          include: recordInclude,
         }),
       ),
     );
@@ -86,7 +95,7 @@ export class QARecordRepository {
         skip: params.skip,
         take: params.take,
         orderBy: { createdAt: 'desc' },
-        include: { citations: true },
+        include: recordInclude,
       }),
     ]);
     return { items, total };
@@ -95,7 +104,55 @@ export class QARecordRepository {
   findById(id: string, orgId: string) {
     return this.prisma.qARecord.findFirst({
       where: { id, session: { orgId, deletedAt: null } },
-      include: { citations: true },
+      include: recordInclude,
+    });
+  }
+
+  update(id: string, orgId: string, data: UpdateQARecordDto) {
+    return this.prisma.qARecord.update({
+      where: { id, session: { orgId, deletedAt: null } },
+      data: {
+        ...(data.question !== undefined
+          ? { question: data.question.trim() }
+          : {}),
+        ...(data.answer !== undefined ? { answer: data.answer.trim() } : {}),
+        ...(data.generatedBy !== undefined
+          ? { generatedBy: data.generatedBy }
+          : {}),
+        ...(data.aiModel !== undefined
+          ? { aiModel: data.aiModel?.trim() || null }
+          : {}),
+        ...(data.promptTokens !== undefined
+          ? { promptTokens: data.promptTokens }
+          : {}),
+        ...(data.completionTokens !== undefined
+          ? { completionTokens: data.completionTokens }
+          : {}),
+        ...(data.totalTokens !== undefined
+          ? { totalTokens: data.totalTokens }
+          : {}),
+        ...(data.latencyMs !== undefined ? { latencyMs: data.latencyMs } : {}),
+        ...(data.metadata !== undefined
+          ? { metadata: data.metadata as Prisma.InputJsonValue }
+          : {}),
+        ...(data.citations !== undefined
+          ? {
+              citations: {
+                deleteMany: {},
+                create: data.citations.map((citation) =>
+                  this.toCitationInput(citation),
+                ),
+              },
+            }
+          : {}),
+      },
+      include: recordInclude,
+    });
+  }
+
+  delete(id: string, orgId: string) {
+    return this.prisma.qARecord.delete({
+      where: { id, session: { orgId, deletedAt: null } },
     });
   }
 
@@ -103,7 +160,7 @@ export class QARecordRepository {
     id: string,
     orgId: string,
     data: {
-      rating: QAFeedbackRating;
+      rating: QAFeedbackRating | null;
       feedbackReason?: string | null;
       feedbackComment?: string | null;
     },
@@ -114,7 +171,7 @@ export class QARecordRepository {
         session: { orgId, deletedAt: null },
       },
       data,
-      include: { citations: true },
+      include: recordInclude,
     });
   }
 

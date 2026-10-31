@@ -26,6 +26,7 @@ export interface QACitation {
 export interface QARecord {
   id: string;
   sessionId: string;
+  session?: Pick<QASession, 'id' | 'title'>;
   question: string;
   answer: string;
   generatedBy: QAGeneratedBy;
@@ -50,6 +51,8 @@ export interface CreateSessionInput {
   targetId?: string;
 }
 
+export type UpdateSessionInput = Partial<CreateSessionInput>;
+
 export interface CreateRecordInput {
   question: string;
   answer: string;
@@ -62,6 +65,8 @@ export interface CreateRecordInput {
     snippet: string;
   }>;
 }
+
+export type UpdateRecordInput = Partial<CreateRecordInput>;
 
 export interface RecordListParams {
   page?: number;
@@ -84,6 +89,14 @@ export const qaApi = {
     return mutator({ url: '/api/v1/qa/sessions', method: 'POST', data });
   },
 
+  updateSession(id: string, data: UpdateSessionInput): Promise<QASession> {
+    return mutator({ url: `/api/v1/qa/sessions/${id}`, method: 'PATCH', data });
+  },
+
+  deleteSession(id: string): Promise<void> {
+    return mutator({ url: `/api/v1/qa/sessions/${id}`, method: 'DELETE' });
+  },
+
   listRecords(params: RecordListParams): Promise<PageResult<QARecord>> {
     return mutator({ url: '/api/v1/qa/records', method: 'GET', params });
   },
@@ -96,7 +109,15 @@ export const qaApi = {
     });
   },
 
-  submitFeedback(recordId: string, rating: QAFeedbackRating): Promise<QARecord> {
+  updateRecord(id: string, data: UpdateRecordInput): Promise<QARecord> {
+    return mutator({ url: `/api/v1/qa/records/${id}`, method: 'PATCH', data });
+  },
+
+  deleteRecord(id: string): Promise<void> {
+    return mutator({ url: `/api/v1/qa/records/${id}`, method: 'DELETE' });
+  },
+
+  submitFeedback(recordId: string, rating: QAFeedbackRating | null): Promise<QARecord> {
     return mutator({
       url: `/api/v1/qa/records/${recordId}/feedback`,
       method: 'POST',

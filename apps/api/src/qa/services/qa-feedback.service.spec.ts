@@ -58,4 +58,17 @@ describe('QAFeedbackService', () => {
       }),
     );
   });
+
+  it('clears an existing feedback rating', async () => {
+    records.findById.mockResolvedValue({ id: 'record-1' });
+    records.updateFeedback.mockResolvedValue({ id: 'record-1', rating: null });
+
+    await service.submit('org-1', 'record-1', { rating: null });
+
+    expect(records.updateFeedback).toHaveBeenCalledWith('record-1', 'org-1', {
+      rating: null,
+      feedbackReason: null,
+      feedbackComment: null,
+    });
+  });
 });

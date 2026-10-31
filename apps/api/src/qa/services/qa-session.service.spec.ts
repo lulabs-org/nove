@@ -15,6 +15,7 @@ describe('QASessionService', () => {
     create: jest.Mock;
     findMany: jest.Mock;
     findById: jest.Mock;
+    update: jest.Mock;
     softDelete: jest.Mock;
   };
   let minuteService: { getById: jest.Mock };
@@ -28,6 +29,7 @@ describe('QASessionService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
       findById: jest.fn(),
+      update: jest.fn(),
       softDelete: jest.fn(),
     };
     minuteService = { getById: jest.fn() };
@@ -159,6 +161,38 @@ describe('QASessionService', () => {
       'session-1',
       'org-1',
       'user-1',
+    );
+  });
+
+  it('updates an owned session after validating its target', async () => {
+    sessions.findById.mockResolvedValue({
+      id: 'session-1',
+      targetType: QATargetType.GLOBAL,
+      targetId: null,
+    });
+    prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+    sessions.update.mockResolvedValue({ id: 'session-1' });
+
+    await service.update('session-1', 'org-1', 'user-1', {
+      title: ' Updated questions ',
+      targetType: QATargetType.PROJECT,
+      targetId: 'project-1',
+    });
+
+    expect(prisma.project.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'project-1', orgId: 'org-1', deletedAt: null },
+      }),
+    );
+    expect(sessions.update).toHaveBeenCalledWith(
+      'session-1',
+      'org-1',
+      'user-1',
+      expect.objectContaining({
+        title: 'Updated questions',
+        targetType: QATargetType.PROJECT,
+        targetId: 'project-1',
+      }),
     );
   });
 });

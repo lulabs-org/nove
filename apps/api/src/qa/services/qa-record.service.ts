@@ -4,6 +4,7 @@ import {
   BatchCreateQARecordDto,
   CreateQARecordDto,
   QueryQARecordDto,
+  UpdateQARecordDto,
 } from '../dto';
 import { QARecordRepository, QASessionRepository } from '../repositories';
 
@@ -28,6 +29,16 @@ export class QARecordService {
 
   async findAll(orgId: string, query: QueryQARecordDto) {
     return this.findPaged(orgId, query);
+  }
+
+  async update(orgId: string, recordId: string, dto: UpdateQARecordDto) {
+    await this.assertRecord(recordId, orgId);
+    return this.records.update(recordId, orgId, dto);
+  }
+
+  async delete(orgId: string, recordId: string): Promise<void> {
+    await this.assertRecord(recordId, orgId);
+    await this.records.delete(recordId, orgId);
   }
 
   async findByMinute(orgId: string, minuteId: string, query: QueryQARecordDto) {
@@ -65,6 +76,12 @@ export class QARecordService {
   private async assertSession(sessionId: string, orgId: string): Promise<void> {
     if (!(await this.sessions.findById(sessionId, orgId))) {
       throw new NotFoundException('QA session not found');
+    }
+  }
+
+  private async assertRecord(recordId: string, orgId: string): Promise<void> {
+    if (!(await this.records.findById(recordId, orgId))) {
+      throw new NotFoundException('QA record not found');
     }
   }
 }

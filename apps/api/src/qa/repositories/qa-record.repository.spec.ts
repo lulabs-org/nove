@@ -48,7 +48,10 @@ describe('QARecordRepository', () => {
           ],
         },
       }),
-      include: { citations: true },
+      include: {
+        citations: true,
+        session: { select: { id: true, title: true } },
+      },
     });
   });
 

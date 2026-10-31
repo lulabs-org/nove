@@ -1,11 +1,18 @@
 import { QAFeedbackRating } from '@/generated/prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateIf,
+} from 'class-validator';
 
 export class QAFeedbackDto {
-  @ApiProperty({ enum: QAFeedbackRating })
+  @ApiProperty({ enum: QAFeedbackRating, nullable: true })
+  @ValidateIf((_object, value) => value !== null)
   @IsEnum(QAFeedbackRating)
-  rating: QAFeedbackRating;
+  rating: QAFeedbackRating | null;
 
   @ApiPropertyOptional({ maxLength: 50 })
   @IsOptional()

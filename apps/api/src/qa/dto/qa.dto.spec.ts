@@ -3,6 +3,8 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { CreateQARecordDto } from './create-qa-record.dto';
 import { CreateQASessionDto } from './create-qa-session.dto';
+import { UpdateQARecordDto } from './update-qa-record.dto';
+import { UpdateQASessionDto } from './update-qa-session.dto';
 
 describe('QA DTO validation', () => {
   it('accepts valid session and nested record input', async () => {
@@ -56,5 +58,18 @@ describe('QA DTO validation', () => {
     expect((await validate(record)).map((error) => error.property)).toEqual(
       expect.arrayContaining(['generatedBy', 'promptTokens', 'citations']),
     );
+  });
+
+  it('accepts partial session and record updates', async () => {
+    const session = plainToInstance(UpdateQASessionDto, {
+      title: 'Renamed session',
+    });
+    const record = plainToInstance(UpdateQARecordDto, {
+      answer: 'Updated answer',
+      citations: [],
+    });
+
+    await expect(validate(session)).resolves.toHaveLength(0);
+    await expect(validate(record)).resolves.toHaveLength(0);
   });
 });

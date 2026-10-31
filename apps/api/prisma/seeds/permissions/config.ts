@@ -1180,6 +1180,14 @@ const QA_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
     type: PermissionType.API,
   },
   {
+    name: '编辑问答会话',
+    code: 'qa:session:update',
+    description: '编辑问答会话',
+    resource: 'qa:session',
+    action: 'update',
+    type: PermissionType.API,
+  },
+  {
     name: '删除问答会话',
     code: 'qa:session:delete',
     description: '软删除问答会话',
@@ -1201,6 +1209,22 @@ const QA_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
     description: '写入当前组织的问答记录',
     resource: 'qa:record',
     action: 'create',
+    type: PermissionType.API,
+  },
+  {
+    name: '编辑问答记录',
+    code: 'qa:record:update',
+    description: '编辑当前组织的问答记录',
+    resource: 'qa:record',
+    action: 'update',
+    type: PermissionType.API,
+  },
+  {
+    name: '删除问答记录',
+    code: 'qa:record:delete',
+    description: '删除当前组织的问答记录',
+    resource: 'qa:record',
+    action: 'delete',
     type: PermissionType.API,
   },
   {

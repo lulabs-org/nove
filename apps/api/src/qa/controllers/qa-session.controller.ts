@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -24,6 +25,7 @@ import {
   QASessionListResponseDto,
   QASessionResponseDto,
   QueryQASessionDto,
+  UpdateQASessionDto,
 } from '../dto';
 import { QASessionService } from '../services';
 
@@ -78,6 +80,24 @@ export class QASessionController {
       id,
       orgId,
       this.sessions.requireUserId(userId),
+    );
+  }
+
+  @Patch(':id')
+  @RequirePermissions('qa:session:update')
+  @ApiOperation({ summary: '编辑问答会话' })
+  @ApiResponse({ status: 200, type: QASessionResponseDto })
+  update(
+    @Param('id', CuidPipe) id: string,
+    @Body() dto: UpdateQASessionDto,
+    @CurrentOrg() orgId: string,
+    @Auth('userId') userId?: string | null,
+  ) {
+    return this.sessions.update(
+      id,
+      orgId,
+      this.sessions.requireUserId(userId),
+      dto,
     );
   }
 
