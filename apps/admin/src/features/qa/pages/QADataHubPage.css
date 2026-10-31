@@ -1,0 +1,68 @@
+.qa-data-hub-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.qa-data-hub-search {
+  width: 280px;
+  flex: 0 0 280px;
+}
+
+.qa-data-hub-toolbar > .ant-select,
+.qa-session-controls > .ant-select {
+  min-width: 160px;
+}
+
+.qa-session-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qa-data-hub-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.qa-citation-list {
+  display: grid;
+  gap: 10px;
+  max-width: 360px;
+}
+
+.qa-citation-list > div > div {
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.qa-record-meta {
+  width: 100%;
+}
+
+.qa-record-meta > .ant-form-item {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .qa-data-hub-search,
+  .qa-data-hub-toolbar > .ant-select,
+  .qa-session-controls,
+  .qa-data-hub-actions {
+    width: 100%;
+  }
+
+  .qa-session-controls > .ant-select {
+    flex: 1;
+  }
+
+  .qa-data-hub-search {
+    flex-basis: 100%;
+  }
+
+  .qa-data-hub-actions {
+    margin-left: 0;
+  }
+}

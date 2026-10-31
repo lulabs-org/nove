@@ -166,6 +166,17 @@ export const PERMISSIONS = {
     MANAGE_ACL: 'drive:manage-acl',
     ADMIN: 'drive:admin',
   },
+  QA: {
+    SESSION_READ: 'qa:session:read',
+    SESSION_CREATE: 'qa:session:create',
+    SESSION_UPDATE: 'qa:session:update',
+    SESSION_DELETE: 'qa:session:delete',
+    RECORD_READ: 'qa:record:read',
+    RECORD_CREATE: 'qa:record:create',
+    RECORD_UPDATE: 'qa:record:update',
+    RECORD_DELETE: 'qa:record:delete',
+    FEEDBACK_CREATE: 'qa:feedback:create',
+  },
   SKILL: {
     READ: 'skill:read',
     CREATE: 'skill:create',
