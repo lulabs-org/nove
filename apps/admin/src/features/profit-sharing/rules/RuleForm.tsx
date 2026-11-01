@@ -16,6 +16,7 @@ import {
   Alert,
   message,
 } from 'antd';
+import theme from 'antd/es/theme';
 import { MinusCircleOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs, { Dayjs } from 'dayjs';
@@ -85,6 +86,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
+  const { token } = theme.useToken();
   const [form] = Form.useForm();
   const [ruleType, setRuleType] = useState<RuleType>('ORDER_PERCENTAGE');
   const [periodMode, setPeriodMode] = useState<PeriodMode>('MONTH');
@@ -517,7 +519,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
         label="分账模式"
         required
         extra={
-          <span style={{ fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>
+          <span style={{ fontSize: 12, color: token.colorTextTertiary }}>
             {ruleType === 'FIXED_MONTHLY'
               ? '每月固定发放底薪、餐补话费津贴、全勤奖等，自动生成流水并归集至工资条'
               : '依每笔订单金额比例提成，支持随订单责任人 / 关单人动态归属'}
@@ -583,7 +585,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
         required
         style={{ marginBottom: 16 }}
         extra={
-          <span style={{ fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>
+          <span style={{ fontSize: 12, color: token.colorTextTertiary }}>
             {periodMode === 'MONTH' && '覆盖自然整月（该月 1 日 00:00:00 至月末 23:59:59）'}
             {periodMode === 'CUSTOM' && '按自然天生效（起止日 00:00:00 至 23:59:59）'}
             {periodMode === 'PERMANENT' && '自生效日起持续生效，每月自动结转，直至手动停用'}
@@ -738,7 +740,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
       <Form.List name="modules">
         {(fields, { add, remove }) => (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
-            <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--ant-color-text)' }}>
+            <div style={{ fontWeight: 600, fontSize: 16, color: token.colorText }}>
               {ruleType === 'FIXED_MONTHLY' ? '月度固定分账款项列表' : '各分润模块配置'}
             </div>
             {fields.map(({ key, name, ...restField }) => {
@@ -752,7 +754,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
                   title={
                     ruleType === 'FIXED_MONTHLY' ? (
                       <Space size="small">
-                        <span style={{ fontWeight: 600, color: 'var(--ant-color-text)' }}>
+                        <span style={{ fontWeight: 600, color: token.colorText }}>
                           款项配置 {name + 1}
                         </span>
                         <Tag
@@ -776,14 +778,14 @@ export const RuleForm: React.FC<RuleFormProps> = ({
                                 : '固定底薪'}
                         </Tag>
                         {currentMod.name && (
-                          <span style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 12, fontWeight: 'normal' }}>
+                          <span style={{ color: token.colorTextTertiary, fontSize: 12, fontWeight: 'normal' }}>
                             ({currentMod.name})
                           </span>
                         )}
                       </Space>
                     ) : (
                       <Space size="small">
-                        <span style={{ fontWeight: 600, color: 'var(--ant-color-text)' }}>
+                        <span style={{ fontWeight: 600, color: token.colorText }}>
                           模块配置 {name + 1}
                         </span>
                         {currentMod.name && (
@@ -794,7 +796,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
                         {currentMod.shareRatio ? (
                           <span
                             style={{
-                              color: 'var(--ant-color-primary)',
+                              color: token.colorPrimary,
                               fontFamily: 'monospace',
                               fontWeight: 600,
                               fontSize: 12,
@@ -819,7 +821,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
                       </Button>
                     )
                   }
-                  style={{ background: 'var(--ant-color-fill-quaternary)', border: '1px solid var(--ant-color-border-secondary)', borderRadius: 8 }}
+                  style={{ background: token.colorFillQuaternary, border: `1px solid ${token.colorBorderSecondary}`, borderRadius: 8 }}
                 >
                   <Form.Item {...restField} name={[name, 'id']} hidden>
                     <Input />
@@ -885,10 +887,10 @@ export const RuleForm: React.FC<RuleFormProps> = ({
 
                       <div
                         style={{
-                          background: 'var(--ant-color-bg-container)',
+                          background: token.colorBgContainer,
                           padding: 16,
                           borderRadius: 8,
-                          border: '1px solid var(--ant-color-border-secondary)',
+                          border: `1px solid ${token.colorBorderSecondary}`,
                           marginTop: 12,
                         }}
                       >
@@ -896,7 +898,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
                           {...restField}
                           name={[name, 'allocationMode']}
                           label={
-                            <span style={{ fontWeight: 500, color: 'var(--ant-color-text-secondary)' }}>
+                            <span style={{ fontWeight: 500, color: token.colorTextSecondary }}>
                               收益人确定方式
                             </span>
                           }
@@ -968,7 +970,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
 
                         {currentAllocMode === 'FIXED' && (
                           <div>
-                            <div style={{ marginBottom: 8, fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>
+                            <div style={{ marginBottom: 8, fontSize: 12, color: token.colorTextTertiary }}>
                               指定固定收益人列表及其在模块内的分配占比（总和必须为 100%）：
                             </div>
                             <Form.List name={[name, 'allocations']}>
@@ -1076,7 +1078,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
                                   flexWrap: 'wrap',
                                 }}
                               >
-                                <span style={{ fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>常用:</span>
+                                <span style={{ fontSize: 12, color: token.colorTextTertiary }}>常用:</span>
                                 {(currentMod.category === 'BONUS'
                                   ? ['月度全勤奖', '月度绩效奖', '销冠特别激励', '优秀员工奖']
                                   : currentMod.category === 'SUBSIDY'
@@ -1108,19 +1110,19 @@ export const RuleForm: React.FC<RuleFormProps> = ({
                       {/* 固定分账模式下的员工与固定金额 */}
                       <div
                         style={{
-                          background: 'var(--ant-color-bg-container)',
+                          background: token.colorBgContainer,
                           padding: 16,
                           borderRadius: 8,
-                          border: '1px solid var(--ant-color-border-secondary)',
+                          border: `1px solid ${token.colorBorderSecondary}`,
                           marginTop: 12,
                         }}
                       >
-                        <div style={{ marginBottom: 10, fontWeight: 500, color: 'var(--ant-color-text-secondary)' }}>
+                        <div style={{ marginBottom: 10, fontWeight: 500, color: token.colorTextSecondary }}>
                           <span>收益员工与每月固定发放金额</span>
                           <span
                             style={{
                               fontSize: 12,
-                              color: 'var(--ant-color-text-tertiary)',
+                              color: token.colorTextTertiary,
                               fontWeight: 'normal',
                               marginLeft: 8,
                             }}
@@ -1230,7 +1232,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
               }
               block
               icon={<PlusOutlined />}
-              style={{ height: 44, color: 'var(--ant-color-primary)', borderColor: 'var(--ant-color-primary-border)', fontWeight: 500 }}
+              style={{ height: 44, color: token.colorPrimary, borderColor: token.colorPrimaryBorder, fontWeight: 500 }}
             >
               {ruleType === 'FIXED_MONTHLY' ? '添加固定分账款项' : '添加分润模块'}
             </Button>
@@ -1245,14 +1247,14 @@ export const RuleForm: React.FC<RuleFormProps> = ({
           bottom: 0,
           margin: '24px -24px -24px -24px',
           padding: '12px 24px',
-          background: 'var(--ant-color-bg-elevated)',
+          background: token.colorBgElevated,
           backdropFilter: 'blur(8px)',
-          borderTop: '1px solid var(--ant-color-border-secondary)',
+          borderTop: `1px solid ${token.colorBorderSecondary}`,
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 12,
           zIndex: 10,
-          boxShadow: '0 -4px 12px color-mix(in srgb, var(--ant-color-text) 5%, transparent)',
+          boxShadow: `0 -4px 12px color-mix(in srgb, ${token.colorText} 5%, transparent)`,
         }}
       >
         <Button onClick={onCancel} size="middle">

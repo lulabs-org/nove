@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import type { GetRef } from 'antd';
 import { Input, Segmented, Tooltip } from 'antd';
+import theme from 'antd/es/theme';
 import React, { useRef, useState } from 'react';
 import { MarkdownViewer } from '../MarkdownViewer';
 import './MarkdownEditor.css';
@@ -95,6 +96,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   className = '',
   style,
 }) => {
+  const { token } = theme.useToken();
   const [mode, setMode] = useState<Mode>('edit');
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<TextAreaRef>(null);
@@ -184,7 +186,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               );
             })}
           {mode === 'preview' && (
-            <span style={{ fontSize: 13, color: 'var(--ant-color-text-tertiary)', paddingLeft: 4 }}>实时渲染预览模式</span>
+            <span style={{ fontSize: 13, color: token.colorTextTertiary, paddingLeft: 4 }}>实时渲染预览模式</span>
           )}
         </div>
 

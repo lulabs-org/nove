@@ -41,6 +41,7 @@ import Tabs from 'antd/es/tabs';
 import Tag from 'antd/es/tag';
 import Timeline from 'antd/es/timeline';
 import Tooltip from 'antd/es/tooltip';
+import theme from 'antd/es/theme';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { driveApi } from '../api/driveApi';
@@ -149,6 +150,7 @@ export function DriveDetailModal({
   onOpenPermissions,
   onDownload,
 }: DriveDetailModalProps) {
+  const { token } = theme.useToken();
   const [loading, setLoading] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'bindings' | 'audit'>('overview');
@@ -453,7 +455,7 @@ export function DriveDetailModal({
                           <span className="drive-detail-label">
                             SHA-256 完整性校验和
                             <Tooltip title="基于文件二进制内容的防篡改加密哈希">
-                              <InfoCircleOutlined style={{ marginLeft: 6, color: 'var(--ant-color-text-tertiary)' }} />
+                              <InfoCircleOutlined style={{ marginLeft: 6, color: token.colorTextTertiary }} />
                             </Tooltip>
                           </span>
                           <div className="drive-detail-code-row">

@@ -1,6 +1,7 @@
 import Modal from 'antd/es/modal';
 import Button from 'antd/es/button';
 import message from 'antd/es/message';
+import theme from 'antd/es/theme';
 import { CopyOutlined } from '@ant-design/icons';
 import type { RotateApiKeyResult } from '../types';
 
@@ -17,6 +18,7 @@ export function RotateApiKeyModal({
   result,
   onCopyComplete,
 }: RotateApiKeyModalProps) {
+  const { token } = theme.useToken();
   const handleCopyKey = () => {
     if (result?.key) {
       navigator.clipboard.writeText(result.key);
@@ -39,13 +41,13 @@ export function RotateApiKeyModal({
     >
       {result && (
         <div style={{ padding: '20px 0' }}>
-          <div style={{ marginBottom: 16, color: 'var(--ant-color-error)', fontWeight: 500 }}>
+          <div style={{ marginBottom: 16, color: token.colorError, fontWeight: 500 }}>
             ⚠️ 请立即复制您的新 API Key，它只会显示这一次！
           </div>
           <div
             style={{
               padding: 12,
-              backgroundColor: 'var(--ant-color-fill-tertiary)',
+              backgroundColor: token.colorFillTertiary,
               borderRadius: 4,
               fontFamily: 'monospace',
               fontSize: 14,
@@ -58,7 +60,7 @@ export function RotateApiKeyModal({
           >
             <span>{result.key}</span>
           </div>
-          <div style={{ marginTop: 16, color: 'var(--ant-color-text-secondary)', fontSize: 12 }}>
+          <div style={{ marginTop: 16, color: token.colorTextSecondary, fontSize: 12 }}>
             <p>• ID: {result.id}</p>
             <p>• 名称: {result.name}</p>
             <p>• 前缀: {result.prefix}</p>

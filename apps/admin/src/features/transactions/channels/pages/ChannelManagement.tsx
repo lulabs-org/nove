@@ -18,6 +18,7 @@ import Table from 'antd/es/table';
 import Tag from 'antd/es/tag';
 import Tooltip from 'antd/es/tooltip';
 import type { TableProps } from 'antd/es/table';
+import theme from 'antd/es/theme';
 import { useMemo, useState } from 'react';
 import { Perm } from '../../../../app/guards/Perm';
 import {
@@ -52,6 +53,7 @@ function buildPayload(values: ChannelFormValues): CreateChannel {
 }
 
 export function ChannelManagement() {
+  const { token } = theme.useToken();
   const [filters, setFilters] = useState<TableQueryParams>({
     page: 1,
     pageSize: 10,
@@ -168,7 +170,7 @@ export function ChannelManagement() {
       render: (_value, record) => (
         <Space orientation="vertical" size={0}>
           <span style={{ fontWeight: 600 }}>{record.name}</span>
-          <span style={{ color: 'var(--ant-color-text-secondary)', fontFamily: 'monospace', fontSize: 12 }}>
+          <span style={{ color: token.colorTextSecondary, fontFamily: 'monospace', fontSize: 12 }}>
             {record.code}
           </span>
         </Space>

@@ -1,4 +1,5 @@
 import { Breadcrumb } from 'antd';
+import theme from 'antd/es/theme';
 import { matchPath, useLocation } from 'react-router-dom';
 import type { RouteConfig } from '../../shared/types';
 
@@ -22,6 +23,7 @@ function findRouteTrail(routes: RouteConfig[], pathname: string): string[] {
 }
 
 export function RouteBreadcrumb({ routes }: RouteBreadcrumbProps) {
+  const { token } = theme.useToken();
   const { pathname } = useLocation();
   if (pathname === '/') return null;
 
@@ -37,13 +39,13 @@ export function RouteBreadcrumb({ routes }: RouteBreadcrumbProps) {
         alignItems: 'center',
         margin: '0 -12px',
         padding: '0 24px',
-        background: 'var(--ant-color-bg-layout)',
+        background: token.colorBgLayout,
       }}
     >
       <Breadcrumb
         separator="〉"
         items={trail.map((title) => ({ title }))}
-        style={{ color: 'var(--ant-color-text-secondary)', fontSize: 13 }}
+        style={{ color: token.colorTextSecondary, fontSize: 13 }}
       />
     </div>
   );

@@ -20,6 +20,7 @@ import Spin from 'antd/es/spin';
 import Tag from 'antd/es/tag';
 import Timeline from 'antd/es/timeline';
 import Typography from 'antd/es/typography';
+import theme from 'antd/es/theme';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useState } from 'react';
@@ -64,6 +65,7 @@ function getErrorMessage(error: unknown, fallback: string): string {
 }
 
 export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalProps) {
+  const { token } = theme.useToken();
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
   const [actionType, setActionType] = useState<ActionType>('FREEZE');
@@ -153,9 +155,9 @@ export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalPro
     <Modal
       title={
         <Space>
-          <ClockCircleOutlined style={{ color: 'var(--ant-color-primary)' }} />
+          <ClockCircleOutlined style={{ color: token.colorPrimary }} />
           <span>订单权益调整与冻结记录</span>
-          <span style={{ fontSize: 13, color: 'var(--ant-color-text-secondary)', fontWeight: 'normal' }}>
+          <span style={{ fontSize: 13, color: token.colorTextSecondary, fontWeight: 'normal' }}>
             ({order.orderCode})
           </span>
         </Space>
@@ -188,7 +190,7 @@ export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalPro
             {formatDateTime(order.benefitStart)}
           </Descriptions.Item>
           <Descriptions.Item label="权益结束时间" span={2}>
-            <Text strong style={{ color: 'var(--ant-color-primary-active)' }}>
+            <Text strong style={{ color: token.colorPrimaryActive }}>
               {formatDateTime(order.benefitEnd)}
             </Text>
           </Descriptions.Item>
@@ -331,7 +333,7 @@ export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalPro
                     <Space>
                       {getAdjustmentTag(item.type)}
                       {item.days > 0 && <Tag>{`调整 ${item.days} 天`}</Tag>}
-                      <span style={{ fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>
+                      <span style={{ fontSize: 12, color: token.colorTextTertiary }}>
                         {dayjs(item.createdAt).format('YYYY-MM-DD HH:mm:ss')}
                       </span>
                     </Space>
@@ -339,15 +341,15 @@ export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalPro
                       <Text type="secondary">到期日变动：</Text>
                       <Text delete>{formatDateTime(item.beforeEnd)}</Text>
                       <span style={{ margin: '0 6px' }}>➔</span>
-                      <Text strong style={{ color: 'var(--ant-color-primary-active)' }}>
+                      <Text strong style={{ color: token.colorPrimaryActive }}>
                         {formatDateTime(item.afterEnd)}
                       </Text>
                     </div>
                     {item.reason && (
-                      <div style={{ fontSize: 13, color: 'var(--ant-color-text-secondary)' }}>原因：{item.reason}</div>
+                      <div style={{ fontSize: 13, color: token.colorTextSecondary }}>原因：{item.reason}</div>
                     )}
                     {item.operator?.name && (
-                      <div style={{ fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>
+                      <div style={{ fontSize: 12, color: token.colorTextTertiary }}>
                         操作人：{item.operator.name}
                       </div>
                     )}
