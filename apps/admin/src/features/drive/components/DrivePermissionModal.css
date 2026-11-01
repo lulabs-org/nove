@@ -26,7 +26,6 @@
   font-size: 22px;
   background: linear-gradient(135deg, var(--ant-blue-1) 0%, var(--ant-blue-2) 100%);
   color: var(--ant-color-primary);
-  /* 描边跟随同组装饰渐变，留在阶段二 */
   border: 1px solid var(--ant-geekblue-2);
 }
 
