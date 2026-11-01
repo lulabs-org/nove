@@ -13,6 +13,7 @@ import {
   Popover,
   Checkbox,
 } from 'antd';
+import theme from 'antd/es/theme';
 import {
   LineChartOutlined,
   BarChartOutlined,
@@ -61,6 +62,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
   onMonthsCountChange,
   onSelectMemberForDrilldown,
 }) => {
+  const { token } = theme.useToken();
   const [chartSubMode, setChartSubMode] = useState<'LINES' | 'BARS'>('LINES');
   // 快速对比预设: 'TOP5' | 'TOP10' | 'HAS_PROFIT' | 'CUSTOM'
   const [scopePreset, setScopePreset] = useState<'TOP5' | 'TOP10' | 'HAS_PROFIT' | 'CUSTOM'>(
@@ -222,7 +224,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                 opacity: isCurrentlyCompared ? 1 : 0.25,
               }}
             />
-            <span style={{ fontWeight: 600, color: '#1e293b' }}>{r.memberName}</span>
+            <span style={{ fontWeight: 600, color: token.colorText }}>{r.memberName}</span>
             {isCurrentlyCompared && (
               <Tag color="orange" style={{ fontSize: 10, lineHeight: '18px', padding: '0 4px' }}>
                 对比中
@@ -232,7 +234,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
               {r.memberRole || '员工'}
             </Tag>
             {r.departmentName && (
-              <span style={{ fontSize: 12, color: '#94a3b8' }}>{r.departmentName}</span>
+              <span style={{ fontSize: 12, color: token.colorTextTertiary }}>{r.departmentName}</span>
             )}
           </Space>
         );
@@ -249,7 +251,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
             style={{
               fontSize: 12,
               fontWeight: val > 0 ? 600 : 400,
-              color: val > 0 ? '#1e293b' : '#cbd5e1',
+              color: val > 0 ? token.colorText : token.colorTextQuaternary,
               fontFamily: 'monospace',
             }}
           >
@@ -273,7 +275,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
       sorter: (a: MemberHistoricalSeries, b: MemberHistoricalSeries) =>
         a.avgMonthlyGross - b.avgMonthlyGross,
       render: (_: unknown, r: MemberHistoricalSeries) => (
-        <span style={{ color: '#52c41a', fontWeight: 600, fontFamily: 'monospace' }}>
+        <span style={{ color: token.colorSuccess, fontWeight: 600, fontFamily: 'monospace' }}>
           ¥{(r.avgMonthlyGross / 100).toFixed(2)}
         </span>
       ),
@@ -309,7 +311,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
       >
         {/* 左侧：智能预设分流与自选设置 */}
         <Space size="middle" align="center" wrap>
-          <span style={{ fontWeight: 600, color: '#1e293b', fontSize: 13 }}>对比范围：</span>
+          <span style={{ fontWeight: 600, color: token.colorText, fontSize: 13 }}>对比范围：</span>
           <Segmented
             value={scopePreset}
             onChange={handlePresetChange}
@@ -331,7 +333,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
                   <span style={{ fontSize: 13, fontWeight: 600 }}>选择对比人员</span>
-                  <span style={{ fontSize: 11, color: '#94a3b8' }}>
+                  <span style={{ fontSize: 11, color: token.colorTextTertiary }}>
                     已选 {effectiveMemberIds.length} 人
                   </span>
                 </div>
@@ -340,7 +342,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                 <div style={{ width: 280, padding: '4px 0' }}>
                   <Input
                     placeholder="搜索成员姓名 / 角色..."
-                    prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+                    prefix={<SearchOutlined style={{ color: token.colorTextTertiary }} />}
                     size="small"
                     allowClear
                     value={popoverSearch}
@@ -363,10 +365,10 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                         onChange={() => handleToggleMember(m.memberId)}
                         style={{ margin: 0, padding: '4px 6px', borderRadius: 4 }}
                       >
-                        <span style={{ fontSize: 12, fontWeight: 500, color: '#1e293b' }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: token.colorText }}>
                           {m.memberName}
                         </span>
-                        <span style={{ fontSize: 11, color: '#94a3b8', marginLeft: 4 }}>
+                        <span style={{ fontSize: 11, color: token.colorTextTertiary, marginLeft: 4 }}>
                           {m.memberRole ? `(${m.memberRole})` : ''} - ¥
                           {(m.totalGrossAmount / 100).toFixed(0)}
                         </span>
@@ -379,7 +381,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                       justifyContent: 'space-between',
                       marginTop: 8,
                       paddingTop: 8,
-                      borderTop: '1px solid #f1f5f9',
+                      borderTop: `1px solid ${token.colorBorderSecondary}`,
                     }}
                   >
                     <Button size="small" type="link" onClick={handleSelectAll}>
@@ -402,7 +404,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
         {/* 右侧：对比周期与图表展示模式 */}
         <Space size="middle" align="center" wrap>
           <Space size="small">
-            <span style={{ fontSize: 12, color: '#64748b' }}>周期：</span>
+            <span style={{ fontSize: 12, color: token.colorTextSecondary }}>周期：</span>
             <Segmented
               size="small"
               value={monthsCount}
@@ -443,7 +445,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                 💡 <strong>防过密清晰机制</strong>：企业共有 <strong>{memberSeries.length}</strong>{' '}
                 名成员。当前聚焦对比 <strong>{activeSeries.length}</strong> 位核心成员。
               </span>
-              <span style={{ color: '#64748b' }}>您可在下方表格中随时勾选任意人员实时增减对比</span>
+              <span style={{ color: token.colorTextSecondary }}>您可在下方表格中随时勾选任意人员实时增减对比</span>
             </div>
           }
           type="info"
@@ -457,7 +459,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Space size="middle">
-              <span style={{ fontWeight: 600, color: '#1e293b' }}>
+              <span style={{ fontWeight: 600, color: token.colorText }}>
                 {chartSubMode === 'LINES'
                   ? `核心成员月度实发薪资多曲线对比走势 (${activeSeries.length} 位对比中)`
                   : `核心成员周期内累计实发薪资天梯排行榜 (${activeSeries.length} 位对比中)`}
@@ -491,14 +493,14 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                       y1={y}
                       x2={chartWidth - paddingX}
                       y2={y}
-                      stroke="#e2e8f0"
+                      style={{ stroke: token.colorBorderSecondary }}
                       strokeDasharray="4 4"
                     />
                     <text
                       x={paddingX - 10}
                       y={y + 4}
                       textAnchor="end"
-                      fill="#94a3b8"
+                      style={{ fill: token.colorTextTertiary }}
                       fontSize="11"
                       fontFamily="monospace"
                     >
@@ -522,7 +524,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                         y1={paddingY}
                         x2={x}
                         y2={paddingY + innerHeight}
-                        stroke="#1677ff"
+                        style={{ stroke: token.colorPrimary }}
                         strokeWidth="1.5"
                         strokeDasharray="3 3"
                       />
@@ -532,7 +534,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                       y={paddingY + innerHeight + 20}
                       textAnchor="middle"
                       fontSize="12"
-                      fill={isHoveredCol ? '#1677ff' : '#64748b'}
+                      style={{ fill: isHoveredCol ? token.colorPrimary : token.colorTextSecondary }}
                       fontWeight={isHoveredCol ? 700 : 500}
                     >
                       {m.label}
@@ -579,10 +581,9 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                           cx={p.x}
                           cy={p.y}
                           r={isPtHovered ? 5.5 : 3.5}
-                          fill={isPtHovered ? s.color : '#ffffff'}
                           stroke={s.color}
                           strokeWidth={2}
-                          style={{ cursor: 'pointer', transition: 'all 0.15s' }}
+                          style={{ fill: isPtHovered ? s.color : token.colorBgContainer, cursor: 'pointer', transition: 'all 0.15s' }}
                           onMouseEnter={() => {
                             setHoveredMonthIndex(pIdx);
                             setHoveredMemberId(s.memberId);
@@ -648,7 +649,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                           padding: '2px 4px',
                           borderRadius: 4,
                           background:
-                            hoveredMemberId === member.memberId ? '#eff6ff' : 'transparent',
+                            hoveredMemberId === member.memberId ? token.colorPrimaryBg : 'transparent',
                           fontWeight: hoveredMemberId === member.memberId ? 700 : 400,
                         }}
                       >
@@ -671,13 +672,13 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                               flexShrink: 0,
                             }}
                           />
-                          <span style={{ color: '#94a3b8', fontSize: 11, width: 14 }}>
+                          <span style={{ color: token.colorTextTertiary, fontSize: 11, width: 14 }}>
                             {rank + 1}.
                           </span>
-                          <span style={{ color: '#334155' }}>{member.memberName}</span>
+                          <span style={{ color: token.colorTextSecondary }}>{member.memberName}</span>
                         </span>
                         <span
-                          style={{ fontFamily: 'monospace', fontWeight: 600, color: '#1e293b' }}
+                          style={{ fontFamily: 'monospace', fontWeight: 600, color: token.colorText }}
                         >
                           ¥{(amount / 100).toFixed(2)}
                         </span>
@@ -710,7 +711,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                     cursor: 'pointer',
                     padding: '8px 12px',
                     borderRadius: 8,
-                    background: isHovered ? '#f8fafc' : 'transparent',
+                    background: isHovered ? token.colorBgLayout : 'transparent',
                     transition: 'background 0.2s',
                   }}
                   onMouseEnter={() => setHoveredMemberId(s.memberId)}
@@ -728,20 +729,20 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                   >
                     <Space size="middle">
                       <span className={`profit-rank-badge ${rankClass}`}>{idx + 1}</span>
-                      <span style={{ fontWeight: 600, color: '#1e293b' }}>{s.memberName}</span>
+                      <span style={{ fontWeight: 600, color: token.colorText }}>{s.memberName}</span>
                       <Tag color="geekblue">{s.memberRole || '员工'}</Tag>
                       {s.departmentName && (
-                        <span style={{ color: '#94a3b8', fontSize: 12 }}>{s.departmentName}</span>
+                        <span style={{ color: token.colorTextTertiary, fontSize: 12 }}>{s.departmentName}</span>
                       )}
                     </Space>
                     <Space size="large">
-                      <span style={{ color: '#64748b', fontSize: 12 }}>
+                      <span style={{ color: token.colorTextSecondary, fontSize: 12 }}>
                         月均: ¥{(s.avgMonthlyGross / 100).toFixed(2)}
                       </span>
                       <span
                         style={{
                           fontWeight: 700,
-                          color: '#1677ff',
+                          color: token.colorPrimary,
                           fontSize: 15,
                           fontFamily: 'monospace',
                         }}
@@ -754,7 +755,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                   <div
                     style={{
                       width: '100%',
-                      background: '#f1f5f9',
+                      background: token.colorFillTertiary,
                       height: 10,
                       borderRadius: 9999,
                       overflow: 'hidden',
@@ -791,10 +792,10 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
             }}
           >
             <Space size="middle">
-              <span style={{ fontWeight: 600, color: '#1e293b' }}>
+              <span style={{ fontWeight: 600, color: token.colorText }}>
                 全员各月实发薪资横向对比明细表
               </span>
-              <span style={{ fontSize: 12, color: '#94a3b8' }}>
+              <span style={{ fontSize: 12, color: token.colorTextTertiary }}>
                 （在表格左侧勾选复选框，可直接加入上方图表对比）
               </span>
             </Space>
@@ -811,7 +812,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
               </Button>
               <Input
                 placeholder="搜索成员姓名 / 部门 / 角色"
-                prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+                prefix={<SearchOutlined style={{ color: token.colorTextTertiary }} />}
                 size="small"
                 allowClear
                 value={searchKeyword}
@@ -821,7 +822,7 @@ export const MultiMemberCompareView: React.FC<MultiMemberCompareViewProps> = ({
                 }}
                 style={{ width: 220 }}
               />
-              <span style={{ fontSize: 12, color: '#94a3b8' }}>
+              <span style={{ fontSize: 12, color: token.colorTextTertiary }}>
                 共 {filteredMemberSeries.length} 名成员
               </span>
             </Space>

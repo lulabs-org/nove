@@ -1,13 +1,13 @@
 .org-role-page {
   min-height: calc(100vh - 148px);
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .org-role-shell {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   min-height: calc(100vh - 206px);
-  border-top: 1px solid #eff0f1;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .org-role-list-pane {
@@ -16,7 +16,7 @@
   gap: 16px;
   min-width: 0;
   padding: 20px 16px 16px 0;
-  border-right: 1px solid #eff0f1;
+  border-right: 1px solid var(--ant-color-border-secondary);
 }
 
 .org-role-search {
@@ -38,12 +38,12 @@
   margin-bottom: 4px;
   padding: 0 8px;
   border-radius: 4px;
-  color: #1f2329;
+  color: var(--ant-color-text);
 }
 
 .org-role-item:hover,
 .org-role-item.is-active {
-  background: #f0f5ff;
+  background: var(--ant-color-primary-bg);
 }
 
 .org-role-item-main {
@@ -74,7 +74,7 @@
 }
 
 .org-role-item-menu {
-  color: #646a73;
+  color: var(--ant-color-text-secondary);
 }
 
 .org-role-new-button {
@@ -114,7 +114,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #8f959e;
+  color: var(--ant-color-text-tertiary);
   font-size: 14px;
   white-space: nowrap;
 }
@@ -153,8 +153,8 @@
 }
 
 .org-role-page .ant-table-thead > tr > th {
-  background: #f2f3f5;
-  color: #646a73;
+  background: var(--ant-color-bg-layout);
+  color: var(--ant-color-text-secondary);
   font-weight: 600;
 }
 
@@ -172,8 +172,8 @@
 .org-role-form-section {
   margin: 4px 0 18px;
   padding-left: 10px;
-  border-left: 3px solid #3370ff;
-  color: #1f2329;
+  border-left: 3px solid var(--ant-color-primary);
+  color: var(--ant-color-text);
   font-weight: 600;
 }
 
@@ -202,17 +202,17 @@
   grid-template-columns: 210px minmax(0, 1fr);
   min-height: 420px;
   overflow: hidden;
-  border: 1px solid #e5e6eb;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 8px;
-  background: #fff;
+  background: var(--ant-color-bg-container);
 }
 
 .org-role-permission-groups {
   max-height: 460px;
   overflow: auto;
   padding: 8px;
-  border-right: 1px solid #eff0f1;
-  background: #f7f8fa;
+  border-right: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-fill-tertiary);
 }
 
 .org-role-permission-group {
@@ -226,19 +226,19 @@
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: #4e5969;
+  color: var(--ant-color-text-secondary);
   font-size: 13px;
   text-align: left;
   cursor: pointer;
 }
 
 .org-role-permission-group:hover {
-  background: #eef1f5;
+  background: var(--ant-color-fill-secondary);
 }
 
 .org-role-permission-group.is-active {
-  background: #e8f1ff;
-  color: #1664ff;
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
   font-weight: 600;
 }
 
@@ -254,7 +254,7 @@
 
 .org-role-permission-group > span:last-child {
   flex: none;
-  color: #8f959e;
+  color: var(--ant-color-text-tertiary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -268,7 +268,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  border-bottom: 1px solid #eff0f1;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
 .org-role-permission-tree {
@@ -287,12 +287,12 @@
   align-items: center;
   min-height: 52px;
   padding: 6px 16px;
-  border-bottom: 1px solid #f2f3f5;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
   cursor: pointer;
 }
 
 .org-role-permission-node-main:hover {
-  background: #f7f8fa;
+  background: var(--ant-color-fill-tertiary);
 }
 
 .org-role-permission-copy {
@@ -304,7 +304,7 @@
 
 .org-role-permission-name {
   overflow: hidden;
-  color: #1f2329;
+  color: var(--ant-color-text);
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -312,7 +312,7 @@
 
 .org-role-permission-code {
   overflow: hidden;
-  color: #646a73;
+  color: var(--ant-color-text-secondary);
   font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -327,7 +327,7 @@
     max-height: 360px;
     padding-right: 0;
     border-right: 0;
-    border-bottom: 1px solid #eff0f1;
+    border-bottom: 1px solid var(--ant-color-border-secondary);
   }
 
   .org-role-content {
@@ -358,7 +358,7 @@
     overflow-x: auto;
     padding: 8px;
     border-right: 0;
-    border-bottom: 1px solid #eff0f1;
+    border-bottom: 1px solid var(--ant-color-border-secondary);
   }
 
   .org-role-permission-group {
@@ -380,19 +380,19 @@
 .org-role-data-rule-card {
   padding: 12px 14px;
   border-radius: 6px;
-  border: 1px solid #e5e6eb;
-  background: #ffffff;
+  border: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-bg-container);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .org-role-data-rule-card:hover {
-  border-color: #1677ff;
-  background: #fafcff;
+  border-color: var(--ant-color-primary);
+  background: var(--ant-color-fill-quaternary);
 }
 
 .org-role-data-rule-card.is-selected {
-  border-color: #1677ff;
-  background: #f0f7ff;
-  box-shadow: 0 1px 3px rgba(22, 119, 255, 0.12);
+  border-color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ant-color-primary) 12%, transparent);
 }

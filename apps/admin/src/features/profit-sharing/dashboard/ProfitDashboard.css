@@ -8,17 +8,17 @@
   flex-direction: column;
   gap: 20px;
   padding: 24px;
-  background-color: #f8fafc;
+  background-color: var(--ant-color-bg-layout);
   min-height: calc(100vh - 64px);
 }
 
 /* Header Banner */
 .profit-dashboard-header {
-  background: #ffffff;
+  background: var(--ant-color-bg-container);
   border-radius: 10px;
   padding: 10px 18px;
-  border: 1px solid #edf2f7;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--ant-color-border-secondary);
+  box-shadow: var(--ant-box-shadow-tertiary);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -35,10 +35,10 @@
 
 /* 精致轻量级现代 Segmented 胶囊导航 (Compact & Refined) */
 .profit-view-segmented {
-  background: #f1f5f9 !important;
+  background: var(--ant-color-fill-tertiary) !important;
   padding: 3px !important;
   border-radius: 8px !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid var(--ant-color-border-secondary) !important;
 }
 
 .profit-view-segmented .ant-segmented-group {
@@ -48,26 +48,24 @@
 .profit-view-segmented .ant-segmented-item {
   border-radius: 6px !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  color: #64748b !important;
+  color: var(--ant-color-text-secondary) !important;
   font-size: 13px !important;
   padding: 4px 12px !important;
 }
 
 .profit-view-segmented .ant-segmented-item:hover:not(.ant-segmented-item-selected) {
-  color: #1e293b !important;
+  color: var(--ant-color-text) !important;
 }
 
 .profit-view-segmented .ant-segmented-item-selected {
-  background: #ffffff !important;
-  color: #2563eb !important;
+  background: var(--ant-color-bg-container) !important;
+  color: var(--ant-color-primary) !important;
   font-weight: 600 !important;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.06),
-    0 1px 1px rgba(0, 0, 0, 0.03) !important;
+  box-shadow: var(--ant-box-shadow-tertiary) !important;
 }
 
 .profit-view-segmented .ant-segmented-item-selected .anticon {
-  color: #2563eb !important;
+  color: var(--ant-color-primary) !important;
 }
 
 .profit-view-segmented .anticon {
@@ -81,24 +79,24 @@
   border-radius: 6px !important;
   padding: 0 12px !important;
   font-size: 12.5px !important;
-  color: #475569 !important;
-  border: 1px solid #e2e8f0 !important;
-  background: #ffffff !important;
+  color: var(--ant-color-text-secondary) !important;
+  border: 1px solid var(--ant-color-border-secondary) !important;
+  background: var(--ant-color-bg-container) !important;
   transition: all 0.2s ease !important;
 }
 
 .profit-dashboard-refresh-btn:hover {
-  border-color: #cbd5e1 !important;
-  color: #2563eb !important;
-  background: #f8fafc !important;
+  border-color: var(--ant-color-border) !important;
+  color: var(--ant-color-primary) !important;
+  background: var(--ant-color-bg-layout) !important;
 }
 
 /* KPI Cards */
 .profit-kpi-card {
   border-radius: 10px !important;
-  border: 1px solid #edf2f7 !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
-  background: #ffffff;
+  border: 1px solid var(--ant-color-border-secondary) !important;
+  box-shadow: var(--ant-box-shadow-tertiary) !important;
+  background: var(--ant-color-bg-container);
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -106,52 +104,52 @@
 
 .profit-kpi-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: var(--ant-box-shadow) !important;
 }
 
 .profit-kpi-card-blue {
-  background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%) !important;
-  border-color: #dbeafe !important;
+  background: linear-gradient(135deg, var(--ant-blue-1) 0%, var(--ant-color-bg-container) 100%) !important;
+  border-color: var(--ant-blue-2) !important;
 }
 
 .profit-kpi-card-green {
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important;
-  border-color: #dcfce7 !important;
+  background: linear-gradient(135deg, var(--ant-green-1) 0%, var(--ant-color-bg-container) 100%) !important;
+  border-color: var(--ant-green-2) !important;
 }
 
 .profit-kpi-card-amber {
-  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%) !important;
-  border-color: #fef3c7 !important;
+  background: linear-gradient(135deg, var(--ant-gold-1) 0%, var(--ant-color-bg-container) 100%) !important;
+  border-color: var(--ant-gold-2) !important;
 }
 
 .profit-kpi-card-purple {
-  background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%) !important;
-  border-color: #f3e8ff !important;
+  background: linear-gradient(135deg, var(--ant-purple-1) 0%, var(--ant-color-bg-container) 100%) !important;
+  border-color: var(--ant-purple-2) !important;
 }
 
 .profit-kpi-card-red {
-  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%) !important;
-  border-color: #fee2e2 !important;
+  background: linear-gradient(135deg, var(--ant-red-1) 0%, var(--ant-color-bg-container) 100%) !important;
+  border-color: var(--ant-red-2) !important;
 }
 
 .profit-kpi-subtext {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--ant-color-text-tertiary);
   margin-top: 4px;
 }
 
 /* Section Toolbar Cards */
 .profit-toolbar-card {
-  background: #ffffff;
+  background: var(--ant-color-bg-container);
   border-radius: 10px;
   padding: 16px 20px;
-  border: 1px solid #edf2f7;
+  border: 1px solid var(--ant-color-border-secondary);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--ant-box-shadow-tertiary);
 }
 
 .profit-filter-pills {
@@ -161,7 +159,7 @@
   gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .profit-filter-pill {
@@ -177,7 +175,7 @@
 .profit-chart-container {
   position: relative;
   width: 100%;
-  background: #fafbfc;
+  background: var(--ant-color-fill-quaternary);
   border-radius: 8px;
   padding: 16px 8px;
 }
@@ -197,7 +195,7 @@
   gap: 20px;
   padding-top: 16px;
   margin-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 /* Tooltip Card */
@@ -205,12 +203,12 @@
   position: absolute;
   top: 16px;
   right: 16px;
-  background: rgba(255, 255, 255, 0.98);
+  background: var(--ant-color-bg-elevated);
   backdrop-filter: blur(8px);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 10px;
   padding: 12px 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--ant-box-shadow);
   font-size: 12px;
   z-index: 50;
   min-width: 220px;
@@ -219,8 +217,8 @@
 
 .profit-tooltip-header {
   font-weight: 700;
-  color: #1e293b;
-  border-bottom: 1px solid #f1f5f9;
+  color: var(--ant-color-text);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
   padding-bottom: 8px;
   margin-bottom: 8px;
   display: flex;
@@ -233,7 +231,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 2px 0;
-  color: #475569;
+  color: var(--ant-color-text-secondary);
 }
 
 /* Structure Card (Right Column) */
@@ -260,17 +258,17 @@
 }
 
 .profit-structure-amount {
-  color: #334155;
+  color: var(--ant-color-text-secondary);
   font-family: monospace;
 }
 
 .profit-structure-insight {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--ant-color-bg-layout);
+  border: 1px solid var(--ant-color-border-secondary);
   border-radius: 8px;
   padding: 12px;
   font-size: 12px;
-  color: #64748b;
+  color: var(--ant-color-text-secondary);
   line-height: 1.5;
   margin-top: 8px;
 }
@@ -283,7 +281,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--ant-color-text-light-solid);
   font-size: 11px;
   font-weight: 700;
 }
@@ -306,6 +304,6 @@
 
 .profit-amount-bold {
   font-weight: 700;
-  color: #2563eb;
+  color: var(--ant-color-primary);
   font-family: monospace;
 }

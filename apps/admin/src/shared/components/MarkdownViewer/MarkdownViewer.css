@@ -1,5 +1,5 @@
 .markdown-viewer {
-  color: #1f2329;
+  color: var(--ant-color-text);
   font-size: 14px;
   line-height: 1.75;
   overflow-wrap: anywhere;
@@ -9,7 +9,7 @@
 .markdown-viewer-empty {
   display: block;
   padding: 16px 0;
-  color: #8c939d;
+  color: var(--ant-color-text-secondary);
   font-size: 13px;
   font-style: italic;
   text-align: center;
@@ -30,20 +30,20 @@
 .markdown-viewer h5,
 .markdown-viewer h6 {
   margin: 16px 0 8px;
-  color: #1f2329;
+  color: var(--ant-color-text);
   font-weight: 600;
   line-height: 1.4;
 }
 
 .markdown-viewer h1 {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e5e6eb;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
   font-size: 20px;
 }
 
 .markdown-viewer h2 {
   padding-bottom: 6px;
-  border-bottom: 1px solid #f2f3f5;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
   font-size: 17px;
 }
 
@@ -78,17 +78,17 @@
 .markdown-viewer blockquote {
   margin: 10px 0;
   padding: 8px 14px;
-  border-left: 3px solid #1677ff;
+  border-left: 3px solid var(--ant-color-primary);
   border-radius: 0 4px 4px 0;
-  background: #f4f8ff;
-  color: #4e5969;
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-text-secondary);
 }
 
 .markdown-viewer code {
   padding: 2px 6px;
   border-radius: 4px;
-  background: #f2f3f5;
-  color: #eb2f96;
+  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-magenta);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.9em;
 }
@@ -97,8 +97,8 @@
   overflow-x: auto;
   padding: 12px 14px;
   border-radius: 6px;
-  background: #1e1e24;
-  color: #f6f7f9;
+  background: var(--ant-color-bg-spotlight);
+  color: var(--ant-color-text-light-solid);
 }
 
 .markdown-viewer pre code {
@@ -117,17 +117,17 @@
 .markdown-viewer th,
 .markdown-viewer td {
   padding: 6px 10px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid var(--ant-color-border-secondary);
   text-align: left;
 }
 
 .markdown-viewer th {
-  background: #f8f9fb;
+  background: var(--ant-color-fill-tertiary);
   font-weight: 600;
 }
 
 .markdown-viewer a {
-  color: #1677ff;
+  color: var(--ant-color-primary);
   text-decoration: none;
 }
 
@@ -144,5 +144,5 @@
 .markdown-viewer hr {
   margin: 16px 0;
   border: 0;
-  border-top: 1px solid #e5e6eb;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }
