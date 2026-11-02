@@ -150,14 +150,20 @@ export class ProfitSharingPayslipService {
   /**
    * 获取月度工资条列表及月度总览看板
    */
-  async getPayslips(query: { month?: string; keyword?: string }) {
+  async getPayslips(query: {
+    month?: string;
+    keyword?: string;
+    memberId?: string;
+  }) {
     const { month, start, end } = this.getMonthRange(query.month);
+    const memberId = query.memberId?.trim();
 
     // 查询该月份所有有效分润流水（不包含取消与软删除记录）
     const records = await this.prisma.profitShareRecord.findMany({
       where: {
         status: { not: ProfitShareRecordStatus.CANCELLED },
         deletedAt: null,
+        ...(memberId ? { memberId } : {}),
         OR: [
           { periodMonth: month },
           {

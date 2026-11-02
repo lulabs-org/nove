@@ -17,8 +17,9 @@ export class ProfitSharingPayslipController {
   async getPayslips(
     @Query('month') month?: string,
     @Query('keyword') keyword?: string,
+    @Query('memberId') memberId?: string,
   ) {
-    return this.payslipService.getPayslips({ month, keyword });
+    return this.payslipService.getPayslips({ month, keyword, memberId });
   }
 
   @Get('export')

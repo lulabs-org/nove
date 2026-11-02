@@ -152,6 +152,7 @@ export interface HistoricalSalaryStatsResponse {
 export interface GetPayslipsOptions {
   month?: string;
   keyword?: string;
+  memberId?: string;
 }
 
 /**

@@ -23,6 +23,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { HistoricalMonthPoint } from '../../payslips/types';
+import { buildPayslipPath, getStructureInsight } from './singleMemberDrilldownUtils';
 
 const { Text } = Typography;
 
@@ -189,12 +190,14 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
     {
       title: '操作',
       key: 'action',
-      render: () => (
+      render: (_: unknown, record: HistoricalMonthPoint) => (
         <Button
           type="link"
           size="small"
           icon={<ArrowRightOutlined />}
-          onClick={() => navigate(`/profit-sharing/payslips`)}
+          onClick={() =>
+            navigate(buildPayslipPath(record.month, selectedMemberId, selectedMember?.name))
+          }
         >
           查看工资条
         </Button>
@@ -667,9 +670,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
 
               <div className="profit-structure-insight">
                 💡 <strong>结构洞察</strong>：
-                {commPercent > basePercent
-                  ? '该员工提成贡献占比高于固定底薪，属于高绩效、高产出的业绩驱动型收益结构。'
-                  : '该员工固定课酬/底薪贡献占比较高，属于高稳定性、底薪课酬保障型收益结构。'}
+                {getStructureInsight(totalPositive, commPercent, basePercent)}
               </div>
             </div>
           </Card>
