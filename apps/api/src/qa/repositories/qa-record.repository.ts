@@ -112,6 +112,9 @@ export class QARecordRepository {
     return this.prisma.qARecord.update({
       where: { id, session: { orgId, deletedAt: null } },
       data: {
+        ...(data.sessionId !== undefined
+          ? { session: { connect: { id: data.sessionId } } }
+          : {}),
         ...(data.question !== undefined
           ? { question: data.question.trim() }
           : {}),
@@ -119,9 +122,12 @@ export class QARecordRepository {
         ...(data.generatedBy !== undefined
           ? { generatedBy: data.generatedBy }
           : {}),
-        ...(data.aiModel !== undefined
-          ? { aiModel: data.aiModel?.trim() || null }
-          : {}),
+        ...(data.generatedBy !== undefined &&
+        data.generatedBy !== QAGeneratedBy.AI
+          ? { aiModel: null }
+          : data.aiModel !== undefined
+            ? { aiModel: data.aiModel?.trim() || null }
+            : {}),
         ...(data.promptTokens !== undefined
           ? { promptTokens: data.promptTokens }
           : {}),
@@ -181,7 +187,10 @@ export class QARecordRepository {
       question: data.question.trim(),
       answer: data.answer.trim(),
       generatedBy: data.generatedBy ?? QAGeneratedBy.AI,
-      aiModel: data.aiModel?.trim() || null,
+      aiModel:
+        (data.generatedBy ?? QAGeneratedBy.AI) === QAGeneratedBy.AI
+          ? data.aiModel?.trim() || null
+          : null,
       promptTokens: data.promptTokens,
       completionTokens: data.completionTokens,
       totalTokens: data.totalTokens,

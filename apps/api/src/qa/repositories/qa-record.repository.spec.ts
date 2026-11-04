@@ -5,13 +5,13 @@ import { QARecordRepository } from './qa-record.repository';
 describe('QARecordRepository', () => {
   let repository: QARecordRepository;
   let prisma: {
-    qARecord: { create: jest.Mock };
+    qARecord: { create: jest.Mock; update: jest.Mock };
     $transaction: jest.Mock;
   };
 
   beforeEach(() => {
     prisma = {
-      qARecord: { create: jest.fn() },
+      qARecord: { create: jest.fn(), update: jest.fn() },
       $transaction: jest.fn(),
     };
     repository = new QARecordRepository(prisma as unknown as PrismaService);
@@ -71,5 +71,24 @@ describe('QARecordRepository', () => {
       { operation: 1 },
       { operation: 2 },
     ]);
+  });
+
+  it('moves a record by reconnecting it to the destination session', async () => {
+    prisma.qARecord.update.mockResolvedValue({
+      id: 'record-1',
+      sessionId: 'session-2',
+    });
+
+    await repository.update('record-1', 'org-1', {
+      sessionId: 'session-2',
+    });
+
+    expect(prisma.qARecord.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          session: { connect: { id: 'session-2' } },
+        }),
+      }),
+    );
   });
 });

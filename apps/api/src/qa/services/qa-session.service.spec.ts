@@ -20,8 +20,9 @@ describe('QASessionService', () => {
   };
   let minuteService: { getById: jest.Mock };
   let prisma: {
-    project: { findFirst: jest.Mock };
-    driveFile: { findFirst: jest.Mock };
+    project: { findFirst: jest.Mock; findMany: jest.Mock };
+    minute: { findMany: jest.Mock };
+    driveFile: { findFirst: jest.Mock; findMany: jest.Mock };
   };
 
   beforeEach(() => {
@@ -34,8 +35,9 @@ describe('QASessionService', () => {
     };
     minuteService = { getById: jest.fn() };
     prisma = {
-      project: { findFirst: jest.fn() },
-      driveFile: { findFirst: jest.fn() },
+      project: { findFirst: jest.fn(), findMany: jest.fn() },
+      minute: { findMany: jest.fn() },
+      driveFile: { findFirst: jest.fn(), findMany: jest.fn() },
     };
     service = new QASessionService(
       sessions as unknown as QASessionRepository,
@@ -142,6 +144,23 @@ describe('QASessionService', () => {
       }),
     );
     expect(result.totalPages).toBe(3);
+  });
+
+  it('returns selectable project targets from the current organization', async () => {
+    prisma.project.findMany.mockResolvedValue([
+      { id: 'project-1', title: 'Nove 项目', code: 'NOVE' },
+    ]);
+
+    await expect(
+      service.findTargetOptions('org-1', QATargetType.PROJECT, ' Nove '),
+    ).resolves.toEqual([
+      { id: 'project-1', label: 'Nove 项目', description: 'NOVE' },
+    ]);
+    expect(prisma.project.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ orgId: 'org-1', deletedAt: null }),
+      }),
+    );
   });
 
   it('throws when a session is not owned by the current user', async () => {

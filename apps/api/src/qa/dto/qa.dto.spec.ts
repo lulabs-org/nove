@@ -66,6 +66,7 @@ describe('QA DTO validation', () => {
     });
     const record = plainToInstance(UpdateQARecordDto, {
       answer: 'Updated answer',
+      sessionId: 'session-2',
       citations: [],
     });
 

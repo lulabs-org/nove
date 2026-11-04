@@ -131,6 +131,32 @@ describe('QARecordService', () => {
     });
   });
 
+  it('validates the destination session before moving a record', async () => {
+    records.findById.mockResolvedValue({ id: 'record-1' });
+    sessions.findById.mockResolvedValue({ id: 'session-2' });
+    records.update.mockResolvedValue({
+      id: 'record-1',
+      sessionId: 'session-2',
+    });
+
+    await service.update('org-1', 'record-1', { sessionId: 'session-2' });
+
+    expect(sessions.findById).toHaveBeenCalledWith('session-2', 'org-1');
+    expect(records.update).toHaveBeenCalledWith('record-1', 'org-1', {
+      sessionId: 'session-2',
+    });
+  });
+
+  it('rejects moving a record to a session outside the organization', async () => {
+    records.findById.mockResolvedValue({ id: 'record-1' });
+    sessions.findById.mockResolvedValue(null);
+
+    await expect(
+      service.update('org-1', 'record-1', { sessionId: 'session-2' }),
+    ).rejects.toThrow(NotFoundException);
+    expect(records.update).not.toHaveBeenCalled();
+  });
+
   it('rejects deleting a record from another organization', async () => {
     records.findById.mockResolvedValue(null);
 

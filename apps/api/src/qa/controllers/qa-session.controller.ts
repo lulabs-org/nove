@@ -1,6 +1,7 @@
 import { RequirePermissions } from '@/admin/permission/decorators/permissions.decorator';
 import { Auth, CurrentOrg } from '@/auth/decorators';
 import { CuidPipe } from '@/common/pipes/cuid.pipe';
+import { QATargetType } from '@/generated/prisma/client';
 import {
   Body,
   Controller,
@@ -9,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseEnumPipe,
   Patch,
   Post,
   Query,
@@ -65,6 +67,18 @@ export class QASessionController {
       this.sessions.requireUserId(userId),
       query,
     );
+  }
+
+  @Get('targets/:targetType')
+  @RequirePermissions('qa:session:read')
+  @ApiOperation({ summary: '获取会话可关联的业务对象' })
+  findTargetOptions(
+    @Param('targetType', new ParseEnumPipe(QATargetType))
+    targetType: QATargetType,
+    @Query('keyword') keyword: string | undefined,
+    @CurrentOrg() orgId: string,
+  ) {
+    return this.sessions.findTargetOptions(orgId, targetType, keyword);
   }
 
   @Get(':id')

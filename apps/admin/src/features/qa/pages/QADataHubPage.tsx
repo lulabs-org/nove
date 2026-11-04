@@ -30,13 +30,16 @@ import {
   type QAFeedbackRating,
   type QARecord,
   type QASession,
+  type QATargetOption,
+  type QATargetType,
   type UpdateRecordInput,
   type UpdateSessionInput,
 } from '../api/qaApi';
 import './QADataHubPage.css';
 
 interface RecordFormValues extends CreateRecordInput {
-  citationSourceType?: string;
+  sessionId: string;
+  citationSourceType?: Exclude<QATargetType, 'GLOBAL'>;
   citationSourceId?: string;
   citationTitle?: string;
   citationSnippet?: string;
@@ -49,12 +52,34 @@ const targetTypeOptions = [
   { value: 'DRIVE_FILE', label: '云盘文件' },
 ];
 
+const targetLabels: Record<QATargetType, string> = {
+  GLOBAL: '全局',
+  PROJECT: '项目',
+  MINUTE: '妙记',
+  DRIVE_FILE: '云盘文件',
+};
+
+function toSelectOptions(items?: QATargetOption[]) {
+  return items?.map((item) => ({
+    value: item.id,
+    label: item.description ? `${item.label}（${item.description}）` : item.label,
+  }));
+}
+
+function normalizeCitationType(sourceType?: string) {
+  const value = sourceType?.toUpperCase();
+  if (value === 'TRANSCRIPT') return 'MINUTE';
+  if (value === 'PROJECT' || value === 'MINUTE' || value === 'DRIVE_FILE') return value;
+  return undefined;
+}
+
 export function QADataHubPage() {
   const queryClient = useQueryClient();
   const [sessionForm] = Form.useForm<CreateSessionInput>();
   const [recordForm] = Form.useForm<RecordFormValues>();
   const [sessionModalOpen, setSessionModalOpen] = useState(false);
   const [recordModalOpen, setRecordModalOpen] = useState(false);
+  const [creatingSessionForRecord, setCreatingSessionForRecord] = useState(false);
   const [editingSessionId, setEditingSessionId] = useState<string>();
   const [editingRecord, setEditingRecord] = useState<QARecord>();
   const [selectedSessionId, setSelectedSessionId] = useState<string>();
@@ -62,6 +87,10 @@ export function QADataHubPage() {
   const [rating, setRating] = useState<QAFeedbackRating>();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const sessionTargetType = Form.useWatch('targetType', sessionForm) ?? 'GLOBAL';
+  const recordSessionId = Form.useWatch('sessionId', recordForm);
+  const generatedBy = Form.useWatch('generatedBy', recordForm) ?? 'HUMAN';
+  const citationSourceType = Form.useWatch('citationSourceType', recordForm);
 
   const sessionsQuery = useQuery({
     queryKey: ['qa-sessions'],
@@ -74,9 +103,22 @@ export function QADataHubPage() {
     queryFn: () => qaApi.listRecords(recordParams),
   });
 
+  const sessionTargetOptionsQuery = useQuery({
+    queryKey: ['qa-target-options', sessionTargetType],
+    queryFn: () => qaApi.listTargetOptions(sessionTargetType),
+    enabled: sessionModalOpen && sessionTargetType !== 'GLOBAL',
+  });
+
+  const citationOptionsQuery = useQuery({
+    queryKey: ['qa-target-options', citationSourceType],
+    queryFn: () => qaApi.listTargetOptions(citationSourceType!),
+    enabled: recordModalOpen && Boolean(citationSourceType),
+  });
+
   const selectedSession = sessionsQuery.data?.items.find(
     (session) => session.id === selectedSessionId
   );
+  const recordSession = sessionsQuery.data?.items.find((session) => session.id === recordSessionId);
 
   const createSessionMutation = useMutation({
     mutationFn: qaApi.createSession,
@@ -84,7 +126,12 @@ export function QADataHubPage() {
       message.success('会话创建成功');
       setSessionModalOpen(false);
       sessionForm.resetFields();
-      setSelectedSessionId(session.id);
+      if (creatingSessionForRecord) {
+        recordForm.setFieldValue('sessionId', session.id);
+        setCreatingSessionForRecord(false);
+      } else {
+        setSelectedSessionId(session.id);
+      }
       queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
     },
     onError: () => message.error('会话创建失败'),
@@ -106,6 +153,14 @@ export function QADataHubPage() {
     onSuccess: (_, deletedId) => {
       message.success('会话已删除');
       if (selectedSessionId === deletedId) setSelectedSessionId(undefined);
+      if (recordForm.getFieldValue('sessionId') === deletedId) {
+        recordForm.setFieldValue('sessionId', undefined);
+      }
+      if (editingRecord?.sessionId === deletedId) {
+        setRecordModalOpen(false);
+        setEditingRecord(undefined);
+        recordForm.resetFields();
+      }
       queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
       queryClient.invalidateQueries({ queryKey: ['qa-records'] });
     },
@@ -159,11 +214,13 @@ export function QADataHubPage() {
   const closeSessionModal = () => {
     setSessionModalOpen(false);
     setEditingSessionId(undefined);
+    setCreatingSessionForRecord(false);
     sessionForm.resetFields();
   };
 
-  const openCreateSession = () => {
+  const openCreateSession = (forRecord = false) => {
     setEditingSessionId(undefined);
+    setCreatingSessionForRecord(forRecord);
     sessionForm.setFieldsValue({ title: '', targetType: 'GLOBAL', targetId: undefined });
     setSessionModalOpen(true);
   };
@@ -194,23 +251,34 @@ export function QADataHubPage() {
 
   const openCreateRecord = () => {
     setEditingRecord(undefined);
-    recordForm.setFieldsValue({ generatedBy: 'HUMAN' });
+    const citationType =
+      selectedSession?.targetType && selectedSession.targetType !== 'GLOBAL'
+        ? selectedSession.targetType
+        : undefined;
+    recordForm.setFieldsValue({
+      sessionId: selectedSessionId,
+      generatedBy: 'HUMAN',
+      citationSourceType: citationType,
+      citationSourceId: citationType ? (selectedSession?.targetId ?? undefined) : undefined,
+    });
     setRecordModalOpen(true);
   };
 
   const openEditRecord = useCallback(
     (record: QARecord) => {
       const citation = record.citations[0];
+      const citationType = normalizeCitationType(citation?.sourceType);
       setEditingRecord(record);
       recordForm.setFieldsValue({
+        sessionId: record.sessionId,
         question: record.question,
         answer: record.answer,
         generatedBy: record.generatedBy,
         aiModel: record.aiModel ?? undefined,
-        citationSourceType: citation?.sourceType,
-        citationSourceId: citation?.sourceId,
-        citationTitle: citation?.title ?? undefined,
-        citationSnippet: citation?.snippet,
+        citationSourceType: citationType,
+        citationSourceId: citationType ? citation?.sourceId : undefined,
+        citationTitle: citationType ? (citation?.title ?? undefined) : undefined,
+        citationSnippet: citationType ? citation?.snippet : undefined,
       });
       setRecordModalOpen(true);
     },
@@ -218,21 +286,30 @@ export function QADataHubPage() {
   );
 
   const submitRecord = (values: RecordFormValues) => {
-    if (!selectedSessionId && !editingRecord) return;
-    const { citationSourceType, citationSourceId, citationTitle, citationSnippet, ...record } =
-      values;
+    const {
+      sessionId,
+      citationSourceType,
+      citationSourceId,
+      citationTitle,
+      citationSnippet,
+      ...record
+    } = values;
     const normalizedSourceId = citationSourceId?.trim();
     const normalizedSnippet = citationSnippet?.trim();
-    const hasCitation = Boolean(normalizedSourceId && normalizedSnippet);
+    const hasCitation = Boolean(citationSourceType && normalizedSourceId && normalizedSnippet);
+    const selectedCitationSource = citationOptionsQuery.data?.find(
+      (item) => item.id === normalizedSourceId
+    );
 
     const data: CreateRecordInput = {
       ...record,
+      aiModel: record.generatedBy === 'AI' ? record.aiModel?.trim() || undefined : undefined,
       citations: hasCitation
         ? [
             {
-              sourceType: citationSourceType?.trim() || 'manual',
+              sourceType: citationSourceType!,
               sourceId: normalizedSourceId!,
-              title: citationTitle?.trim() || undefined,
+              title: citationTitle?.trim() || selectedCitationSource?.label,
               snippet: normalizedSnippet!,
             },
           ]
@@ -242,10 +319,10 @@ export function QADataHubPage() {
     };
 
     if (editingRecord) {
-      updateRecordMutation.mutate({ id: editingRecord.id, data });
+      updateRecordMutation.mutate({ id: editingRecord.id, data: { ...data, sessionId } });
       return;
     }
-    createRecordMutation.mutate({ sessionId: selectedSessionId!, data });
+    createRecordMutation.mutate({ sessionId, data });
   };
 
   const columns = useMemo<TableProps<QARecord>['columns']>(
@@ -397,10 +474,10 @@ export function QADataHubPage() {
           }}
         />
         <div className="qa-session-controls">
-          <Typography.Text>会话</Typography.Text>
+          <Typography.Text>会话筛选</Typography.Text>
           <Select
             allowClear
-            placeholder="选择会话"
+            placeholder="全部会话"
             loading={sessionsQuery.isLoading}
             value={selectedSessionId}
             onChange={(value) => {
@@ -412,30 +489,6 @@ export function QADataHubPage() {
               label: session.title,
             }))}
           />
-          <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              disabled={!selectedSession}
-              aria-label="编辑会话"
-              onClick={() => selectedSession && openEditSession(selectedSession)}
-            />
-          </Perm>
-          <Perm permission={PERMISSIONS.QA.SESSION_DELETE}>
-            <Popconfirm
-              title="确定删除这个会话及其问答记录吗？"
-              disabled={!selectedSession}
-              onConfirm={() => selectedSession && deleteSessionMutation.mutate(selectedSession.id)}
-            >
-              <Button
-                danger
-                type="text"
-                icon={<DeleteOutlined />}
-                disabled={!selectedSession}
-                aria-label="删除会话"
-              />
-            </Popconfirm>
-          </Perm>
         </div>
         <Select
           allowClear
@@ -451,18 +504,8 @@ export function QADataHubPage() {
           ]}
         />
         <div className="qa-data-hub-actions">
-          <Perm permission={PERMISSIONS.QA.SESSION_CREATE}>
-            <Button icon={<PlusOutlined />} onClick={openCreateSession}>
-              新建会话
-            </Button>
-          </Perm>
           <Perm permission={PERMISSIONS.QA.RECORD_CREATE}>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              disabled={!selectedSessionId}
-              onClick={openCreateRecord}
-            >
+            <Button type="primary" icon={<PlusOutlined />} onClick={openCreateRecord}>
               录入问答
             </Button>
           </Perm>
@@ -505,11 +548,27 @@ export function QADataHubPage() {
             <Input placeholder="例如：产品会议问答" maxLength={200} />
           </Form.Item>
           <Form.Item name="targetType" label="关联类型">
-            <Select options={targetTypeOptions} />
+            <Select
+              options={targetTypeOptions}
+              onChange={() => sessionForm.setFieldValue('targetId', undefined)}
+            />
           </Form.Item>
-          <Form.Item name="targetId" label="关联对象 ID">
-            <Input placeholder="全局会话可不填写" />
-          </Form.Item>
+          {sessionTargetType !== 'GLOBAL' ? (
+            <Form.Item
+              name="targetId"
+              label={`关联${targetLabels[sessionTargetType]}`}
+              rules={[{ required: true, message: `请选择${targetLabels[sessionTargetType]}` }]}
+              extra="系统仍保存对象 ID，但你可以直接按名称选择。"
+            >
+              <Select
+                showSearch
+                optionFilterProp="label"
+                loading={sessionTargetOptionsQuery.isLoading}
+                placeholder={`请选择${targetLabels[sessionTargetType]}`}
+                options={toSelectOptions(sessionTargetOptionsQuery.data)}
+              />
+            </Form.Item>
+          ) : null}
         </Form>
       </Modal>
 
@@ -533,9 +592,59 @@ export function QADataHubPage() {
           <Form.Item name="answer" label="回答" rules={[{ required: true }]}>
             <Input.TextArea rows={4} />
           </Form.Item>
+          <Form.Item
+            name="sessionId"
+            label={
+              <Space size={4}>
+                <span>所属会话</span>
+                <Perm permission={PERMISSIONS.QA.SESSION_CREATE}>
+                  <Button type="link" size="small" onClick={() => openCreateSession(true)}>
+                    新建会话
+                  </Button>
+                </Perm>
+                <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
+                  <Button
+                    type="link"
+                    size="small"
+                    disabled={!recordSession}
+                    onClick={() => recordSession && openEditSession(recordSession)}
+                  >
+                    编辑会话
+                  </Button>
+                </Perm>
+                <Perm permission={PERMISSIONS.QA.SESSION_DELETE}>
+                  <Popconfirm
+                    title="确定删除这个会话及其全部问答记录吗？"
+                    disabled={!recordSession}
+                    onConfirm={() =>
+                      recordSession && deleteSessionMutation.mutate(recordSession.id)
+                    }
+                  >
+                    <Button danger type="link" size="small" disabled={!recordSession}>
+                      删除会话
+                    </Button>
+                  </Popconfirm>
+                </Perm>
+              </Space>
+            }
+            rules={[{ required: true }]}
+          >
+            <Select
+              showSearch
+              optionFilterProp="label"
+              placeholder="选择保存到哪个会话"
+              options={sessionsQuery.data?.items.map((session) => ({
+                value: session.id,
+                label: session.title,
+              }))}
+            />
+          </Form.Item>
           <Space className="qa-record-meta" align="start">
             <Form.Item name="generatedBy" label="生成方式">
               <Select
+                onChange={(value) => {
+                  if (value !== 'AI') recordForm.setFieldValue('aiModel', undefined);
+                }}
                 options={[
                   { value: 'HUMAN', label: '人工' },
                   { value: 'AI', label: 'AI' },
@@ -543,25 +652,64 @@ export function QADataHubPage() {
                 ]}
               />
             </Form.Item>
-            <Form.Item name="aiModel" label="AI 模型">
-              <Input placeholder="例如 gpt-4o" />
-            </Form.Item>
+            {generatedBy === 'AI' ? (
+              <Form.Item name="aiModel" label="AI 模型">
+                <Input placeholder="例如 gpt-4o" />
+              </Form.Item>
+            ) : null}
           </Space>
-          <Typography.Title level={5}>引用（可选）</Typography.Title>
+          <Typography.Title level={5}>答案依据（可选）</Typography.Title>
+          <Typography.Paragraph type="secondary">
+            选择答案来自哪个业务对象，并填写真正支持这个答案的原文片段。
+          </Typography.Paragraph>
           <Space className="qa-record-meta" align="start">
             <Form.Item name="citationSourceType" label="来源类型">
-              <Input placeholder="例如 transcript" />
+              <Select
+                allowClear
+                placeholder="选择来源类型"
+                options={targetTypeOptions.filter((option) => option.value !== 'GLOBAL')}
+                onChange={() => {
+                  recordForm.setFieldValue('citationSourceId', undefined);
+                  recordForm.setFieldValue('citationTitle', undefined);
+                }}
+              />
             </Form.Item>
-            <Form.Item name="citationSourceId" label="来源 ID">
-              <Input />
-            </Form.Item>
+            {citationSourceType ? (
+              <Form.Item
+                name="citationSourceId"
+                label="来源对象"
+                rules={[{ required: true, message: '请选择来源对象' }]}
+              >
+                <Select
+                  allowClear
+                  showSearch
+                  optionFilterProp="label"
+                  loading={citationOptionsQuery.isLoading}
+                  placeholder={`选择${targetLabels[citationSourceType]}`}
+                  options={toSelectOptions(citationOptionsQuery.data)}
+                  onChange={(value) => {
+                    const option = citationOptionsQuery.data?.find((item) => item.id === value);
+                    recordForm.setFieldValue('citationTitle', option?.label);
+                  }}
+                />
+              </Form.Item>
+            ) : null}
           </Space>
-          <Form.Item name="citationTitle" label="来源标题">
-            <Input />
-          </Form.Item>
-          <Form.Item name="citationSnippet" label="引用片段">
-            <Input.TextArea rows={2} />
-          </Form.Item>
+          {citationSourceType ? (
+            <>
+              <Form.Item name="citationTitle" label="来源标题">
+                <Input placeholder="选择来源对象后自动填写，也可以修改" />
+              </Form.Item>
+              <Form.Item
+                name="citationSnippet"
+                label="依据原文"
+                rules={[{ required: true, message: '请填写支持答案的原文片段' }]}
+                extra="例如会议原话、项目说明或文档原文，用来说明答案从哪里得出。"
+              >
+                <Input.TextArea rows={3} />
+              </Form.Item>
+            </>
+          ) : null}
         </Form>
       </Modal>
     </div>

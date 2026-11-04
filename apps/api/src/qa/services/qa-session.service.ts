@@ -95,6 +95,92 @@ export class QASessionService {
     await this.sessions.softDelete(id, orgId, userId);
   }
 
+  async findTargetOptions(
+    orgId: string,
+    targetType: QATargetType,
+    keyword?: string,
+  ) {
+    const search = keyword?.trim();
+    if (targetType === QATargetType.GLOBAL) return [];
+
+    if (targetType === QATargetType.PROJECT) {
+      const projects = await this.prisma.project.findMany({
+        where: {
+          orgId,
+          deletedAt: null,
+          ...(search
+            ? {
+                OR: [
+                  { title: { contains: search, mode: 'insensitive' } },
+                  { code: { contains: search, mode: 'insensitive' } },
+                ],
+              }
+            : {}),
+        },
+        select: { id: true, title: true, code: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 50,
+      });
+      return projects.map((project) => ({
+        id: project.id,
+        label: project.title,
+        description: project.code,
+      }));
+    }
+
+    if (targetType === QATargetType.MINUTE) {
+      const minutes = await this.prisma.minute.findMany({
+        where: {
+          deletedAt: null,
+          meeting: {
+            orgId,
+            deletedAt: null,
+            ...(search
+              ? { title: { contains: search, mode: 'insensitive' } }
+              : {}),
+          },
+        },
+        select: {
+          id: true,
+          externalId: true,
+          meeting: { select: { title: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: 50,
+      });
+      return minutes.map((minute) => ({
+        id: minute.id,
+        label: minute.meeting?.title || minute.externalId || minute.id,
+        description: minute.externalId,
+      }));
+    }
+
+    const files = await this.prisma.driveFile.findMany({
+      where: {
+        node: {
+          is: {
+            deletedAt: null,
+            space: { orgId, deletedAt: null },
+            ...(search
+              ? { name: { contains: search, mode: 'insensitive' } }
+              : {}),
+          },
+        },
+      },
+      select: {
+        id: true,
+        node: { select: { name: true, space: { select: { name: true } } } },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 50,
+    });
+    return files.map((file) => ({
+      id: file.id,
+      label: file.node?.name || file.id,
+      description: file.node?.space.name,
+    }));
+  }
+
   private async assertTarget(
     targetType: QATargetType,
     targetId: string | null,

@@ -51,6 +51,12 @@ export interface CreateSessionInput {
   targetId?: string;
 }
 
+export interface QATargetOption {
+  id: string;
+  label: string;
+  description: string | null;
+}
+
 export type UpdateSessionInput = Partial<CreateSessionInput>;
 
 export interface CreateRecordInput {
@@ -66,7 +72,7 @@ export interface CreateRecordInput {
   }>;
 }
 
-export type UpdateRecordInput = Partial<CreateRecordInput>;
+export type UpdateRecordInput = Partial<CreateRecordInput> & { sessionId?: string };
 
 export interface RecordListParams {
   page?: number;
@@ -82,6 +88,14 @@ export const qaApi = {
       url: '/api/v1/qa/sessions',
       method: 'GET',
       params: { page: 1, pageSize: 100 },
+    });
+  },
+
+  listTargetOptions(type: QATargetType, keyword?: string): Promise<QATargetOption[]> {
+    return mutator({
+      url: `/api/v1/qa/sessions/targets/${type}`,
+      method: 'GET',
+      params: { keyword: keyword?.trim() || undefined },
     });
   },
 

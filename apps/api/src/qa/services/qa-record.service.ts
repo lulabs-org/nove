@@ -33,6 +33,9 @@ export class QARecordService {
 
   async update(orgId: string, recordId: string, dto: UpdateQARecordDto) {
     await this.assertRecord(recordId, orgId);
+    if (dto.sessionId !== undefined) {
+      await this.assertSession(dto.sessionId, orgId);
+    }
     return this.records.update(recordId, orgId, dto);
   }
 
