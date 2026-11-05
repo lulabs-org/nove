@@ -9,6 +9,7 @@
 - 完成分片后，API 只校验扩展名、MIME、Magic Bytes、OpenXML 包结构和大小；需要杀毒的文件以 `VERIFYING` 状态入库并交给 BullMQ Worker。
 - Worker 扫描通过后才切换为 `ACTIVE`；扫描命中、超时或 Provider 错误均失败关闭，`VERIFYING/REJECTED` 文件不能下载。
 - SVG 和 HTML 始终以附件方式下载，不以内联方式执行。
+- 在线预览只开放图片、视频、PDF 和 `.docx`：四类都返回原文件的内联签名地址，预览不记录下载审计。`.docx` 由前端 file-viewer 在浏览器本地解析渲染，文档内容不经过第三方服务，私有化或内网部署同样可用。
 - 生产默认使用阿里云云安全中心恶意文件检测；本地或专用扫描节点可选择 ClamAV。
 - PDF、Office、文本、HTML/SVG 和图片强制扫描。音视频经过格式、大小和来源校验，但不做整文件杀毒，避免 2–20 GiB 媒体穿过 API 或扫描服务器。
 - Personal Space 仅所有者和超级管理员可访问；组织空间要求 ACTIVE 成员身份和组织一致。
@@ -22,7 +23,7 @@
 - `GET /spaces`、`GET /spaces/:spaceId/nodes`
 - `POST /folders`、`PATCH /nodes/:nodeId`、`POST /nodes/:nodeId/move`
 - `POST /upload-sessions`、`POST /upload-sessions/:id/parts`、`POST /upload-sessions/:id/complete`
-- `GET /files/:fileId`、`POST /files/:fileId/download-url`、`GET /files/:fileId/bindings`
+- `GET /files/:fileId`、`POST /files/:fileId/preview-url`、`POST /files/:fileId/download-url`、`GET /files/:fileId/bindings`
 - 节点及空间授权接口、节点审计接口、回收站与恢复接口
 
 Minute 文件使用 `GET/POST /minutes/:minuteId/files`。上传普通组织文件后再关联 Minute，服务会将其标记为系统文件并移动到 `/会议资料/{year}/{month}/{meetingId}/`。

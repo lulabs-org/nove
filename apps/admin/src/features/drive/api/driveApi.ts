@@ -1,5 +1,6 @@
 import { mutator } from '../../../shared/lib/api/mutator';
 import type { DriveNode, DriveNodePage, DriveSpace, UploadSession } from '../model/types';
+import type { DriveFileUrlResult } from '../lib/drivePreview';
 
 const CONTENT_TYPES: Record<string, string> = {
   jpg: 'image/jpeg',
@@ -136,14 +137,16 @@ export const driveApi = {
       method: 'DELETE',
     }),
 
+  /** 预览地址：contentDisposition 固定为 inline，调用方只能内嵌渲染，不得做页面跳转 */
   createPreviewUrl: (fileId: string) =>
-    mutator<{ url: string; expiresInSeconds: number }>({
+    mutator<DriveFileUrlResult>({
       url: `/drive/files/${fileId}/preview-url`,
       method: 'POST',
     }),
 
+  /** 下载地址：contentDisposition 固定为 attachment，由调用方主动跳转触发下载 */
   createDownloadUrl: (fileId: string) =>
-    mutator<{ url: string; expiresInSeconds: number }>({
+    mutator<DriveFileUrlResult>({
       url: `/drive/files/${fileId}/download-url`,
       method: 'POST',
     }),

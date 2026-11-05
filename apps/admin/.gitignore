@@ -34,6 +34,11 @@ dist-ssr
 # Orval generated API
 src/shared/lib/api/orval
 
+# @file-viewer/vite-plugin 在 dev/build 时从 node_modules 拷贝到 publicDir 的渲染资产（含本机绝对路径与时间戳），
+# 完全可复现，不入库；生产构建由 closeBundle 拷进 dist
+public/vendor
+public/flyfish-viewer-assets.json
+
 # Test results and coverage
 test-results
 playwright-report
