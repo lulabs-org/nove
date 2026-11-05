@@ -74,4 +74,74 @@ export class WecomClientService {
 
     return data;
   }
+
+  /**
+   * 给 Workbuddy 会话中的同学发送文本回复。
+   * 未配置 agentId 时不发送，避免在缺少企业微信应用凭据时反复重试。
+   */
+  async sendWorkbuddyText(
+    toUser: string,
+    content: string,
+  ): Promise<{ sent: boolean; reason?: string }> {
+    let agentId = '';
+    try {
+      const { value } = await this.integrationsService.getEffectiveConfig(
+        this.orgContext.getOrgId(),
+        'wecom',
+      );
+      agentId = String(value.agentId ?? '').trim();
+    } catch (error) {
+      this.logger.warn(
+        `Workbuddy reply skipped: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return { sent: false, reason: '企业微信配置不可用' };
+    }
+
+    if (!/^\d+$/.test(agentId)) {
+      this.logger.warn('Workbuddy agentId 未配置，跳过企业微信回复');
+      return { sent: false, reason: 'Workbuddy agentId 未配置' };
+    }
+
+    const accessToken = await this.wecomTokenService.getAccessToken();
+    const baseUrl = await this.getApiBaseUrl();
+    const { data } = await firstValueFrom(
+      this.httpService.post<{ errcode: number; errmsg: string }>(
+        `${baseUrl}/cgi-bin/message/send`,
+        {
+          touser: toUser,
+          msgtype: 'text',
+          agentid: Number(agentId),
+          text: { content: truncateUtf8(content, 2048) },
+        },
+        { params: { access_token: accessToken } },
+      ),
+    ).catch((error: AxiosError) => {
+      this.logger.error('WeCom API error (sendWorkbuddyText):', error.message);
+      throw new ServiceUnavailableException(
+        `WeCom API request failed: ${error.response?.status}`,
+      );
+    });
+
+    if (data.errcode !== 0) {
+      this.logger.error(
+        `Workbuddy reply failed: ${data.errcode} ${data.errmsg}`,
+      );
+      return { sent: false, reason: data.errmsg };
+    }
+
+    return { sent: true };
+  }
+}
+
+function truncateUtf8(content: string, maxBytes: number): string {
+  if (Buffer.byteLength(content) <= maxBytes) return content;
+  let size = 0;
+  let result = '';
+  for (const char of content) {
+    const next = size + Buffer.byteLength(char);
+    if (next > maxBytes) break;
+    result += char;
+    size = next;
+  }
+  return result;
 }

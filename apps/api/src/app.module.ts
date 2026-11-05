@@ -25,6 +25,7 @@ import { PermissionGuard } from '@/admin/permission/guards/permission.guard';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { MeetingModule } from './meeting/meeting.module';
+import { MeetingPlaybackModule } from './meeting-playback/meeting-playback.module';
 import { MinuteModule } from './minute/minute.module';
 
 import { TMeetModule } from './tmeet/tmeet.module';
@@ -125,6 +126,7 @@ import { SkillModule } from './skill/skill.module';
     AuthModule,
     UserModule,
     MeetingModule,
+    MeetingPlaybackModule,
     MinuteModule,
 
     TMeetModule,

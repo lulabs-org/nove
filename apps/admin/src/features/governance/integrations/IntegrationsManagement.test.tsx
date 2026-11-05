@@ -141,6 +141,7 @@ describe('IntegrationsManagement', () => {
             webhookToken: '********',
             encodingAesKey: '********',
             apiBaseUrl: 'https://qyapi.weixin.qq.com',
+            agentId: '1000002',
           },
           storage: {
             provider: 'OSS',
@@ -289,6 +290,8 @@ describe('IntegrationsManagement', () => {
     await userEvent.click(screen.getByText('企业微信'));
     expect(await screen.findByText('企业凭证')).toBeInTheDocument();
     expect(screen.getByText('ww123456789')).toBeInTheDocument();
+    expect(screen.getByText('Workbuddy 应用 AgentId')).toBeInTheDocument();
+    expect(screen.getByText('1000002')).toBeInTheDocument();
     expect(screen.getAllByText('已配置（不可查看）').length).toBeGreaterThan(0);
   }, 15_000);
 

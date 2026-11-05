@@ -13,6 +13,7 @@ import { Module } from '@nestjs/common';
 import { McpModule } from '@rekog/mcp-nest';
 import { RoleModule } from '@/admin/role/role.module';
 import { MeetingModule } from '@/meeting/meeting.module';
+import { MeetingPlaybackModule } from '@/meeting-playback/meeting-playback.module';
 import { MinuteModule } from '@/minute/minute.module';
 import { SpeakerSummaryRepository } from '@/minute/repositories';
 
@@ -21,6 +22,7 @@ import {
   UserInfoTool,
   UserSearchTool,
   MeetingStatsTool,
+  MeetingPlaybackTool,
 } from './tools';
 import { MeetingStatsRepository, PlatformUserRepository } from './repositories';
 import { UserModule } from '@/user/user.module';
@@ -41,6 +43,7 @@ import { SseController, StreamableHttpController } from './controllers';
     }),
     RoleModule,
     MeetingModule,
+    MeetingPlaybackModule,
     MinuteModule,
     UserModule,
   ],
@@ -50,6 +53,7 @@ import { SseController, StreamableHttpController } from './controllers';
     UserInfoTool,
     UserSearchTool,
     MeetingStatsTool,
+    MeetingPlaybackTool,
     MeetingStatsRepository,
     PlatformUserRepository,
     SpeakerSummaryRepository,

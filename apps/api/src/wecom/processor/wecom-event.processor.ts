@@ -1,14 +1,22 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
+import { SingleOrgContextService } from '@/admin/org';
+import { MeetingPlaybackService } from '@/meeting-playback/meeting-playback.service';
 
 import { WecomCustomerService } from '../service/wecom-customer.service';
+import { WecomClientService } from '../service/wecom-client.service';
 
 @Processor('wecom-event')
 export class WecomEventProcessor extends WorkerHost {
   private readonly logger = new Logger(WecomEventProcessor.name);
 
-  constructor(private readonly wecomCustomerService: WecomCustomerService) {
+  constructor(
+    private readonly wecomCustomerService: WecomCustomerService,
+    private readonly wecomClientService: WecomClientService,
+    private readonly playbackService: MeetingPlaybackService,
+    private readonly orgContext: SingleOrgContextService,
+  ) {
     super();
   }
 
@@ -24,6 +32,26 @@ export class WecomEventProcessor extends WorkerHost {
           throw new Error('Missing externalUserId in job data');
         }
         await this.wecomCustomerService.syncExternalContact(externalUserId);
+      } else if (job.name === 'workbuddy_text') {
+        const { wecomUserId, content } = job.data as {
+          wecomUserId: string;
+          content: string;
+        };
+        if (!wecomUserId || !content) {
+          throw new Error('Missing Workbuddy text payload');
+        }
+        const result = await this.playbackService.answerForWecomUser(
+          this.orgContext.getOrgId(),
+          wecomUserId,
+          content,
+        );
+        const delivery = await this.wecomClientService.sendWorkbuddyText(
+          wecomUserId,
+          result.replyText,
+        );
+        this.logger.log(
+          `Workbuddy reply for ${wecomUserId}: sent=${delivery.sent} authorized=${result.authorized} matched=${result.matched}`,
+        );
       } else {
         this.logger.warn(`Unknown job name: ${job.name}`);
       }

@@ -7,6 +7,7 @@
 - [会议核心模块 (Meeting)](./meeting/overview.md)：多平台会议元数据管理、参会人详情与组织数据隔离。
   - [会议组织归属基础](./meeting/organization-foundation.md)：多租户隔离与历史数据归属回填指南。
 - [会议纪要与 AI 总结 (Minute)](./meeting/minute.md)：转写文本沉淀、AI 全文总结、参会发言人洞察与发言检索。
+- [会议回放与 Workbuddy 补课](./meeting/playback.md)：按同学授权回放，并让企业微信 Workbuddy 返回入口、摘要和补看顺序。
 - [追踪报告 (Tracking Reports)](./meeting/tracking-report.md)：多周期会议与待办履约数字化追踪报表。
 
 ## 🔐 身份认证与权限管理 (IAM & Access Control)

@@ -81,6 +81,7 @@ export interface WecomConfig {
   webhookToken?: string;
   encodingAesKey?: string;
   apiBaseUrl?: string;
+  agentId?: string;
 }
 
 export interface DriveConfig {

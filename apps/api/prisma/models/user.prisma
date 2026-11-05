@@ -72,7 +72,9 @@ model User {
   projectMembers  ProjectMember[] // 参与的项目成员关系
 
   // 平台与存储相关关联
-  platformUsers          PlatformUser[] // 平台用户关联
+  platformUsers           PlatformUser[] // 平台用户关联
+  meetingPlaybackGrants   MeetingPlaybackGrant[] @relation("PlaybackGrantStudent")
+  grantedMeetingPlaybacks MeetingPlaybackGrant[] @relation("PlaybackGrantGrantedBy")
   uploadedStorageObjects StorageObject[]
   personalDriveSpaces    DriveSpace[]    @relation("DrivePersonalOwner")
   createdDriveNodes      DriveNode[]     @relation("DriveNodeCreator")
