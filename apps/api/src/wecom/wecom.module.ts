@@ -13,10 +13,12 @@ import { WecomEventProcessor } from './processor/wecom-event.processor';
 import { WecomRepository } from './repositories';
 import { WecomTesterService } from './wecom.tester';
 import { PrismaModule } from '@/prisma/prisma.module';
+import { MeetingPlaybackModule } from '@/meeting-playback/meeting-playback.module';
 
 @Module({
   imports: [
     PrismaModule,
+    MeetingPlaybackModule,
     HttpModule,
     IntegrationsModule,
     BullModule.registerQueue({ name: 'wecom-event' }),

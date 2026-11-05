@@ -124,6 +124,7 @@ $$\text{代码默认值 (兜底)} \to \text{数据库加密存储值 (最高优)
 | `webhookToken` | string | 否 (敏感) | - | 回调 URL 校验 Token |
 | `encodingAesKey` | string | 否 (敏感) | - | 消息加解密密钥 (EncodingAESKey) |
 | `apiBaseUrl` | string | 否 | `https://qyapi.weixin.qq.com` | 企微 API 网关地址 |
+| `agentId` | string | 否 | - | Workbuddy 自建应用 AgentId。配置后，同学发来的文本会收到回放补课回复；不配置时仍可在 API / MCP 中查询 |
 
 ---
 

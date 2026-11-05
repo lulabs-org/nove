@@ -39,6 +39,26 @@ export class WecomEventService {
 
       this.logger.debug(`Received WeCom event: ${JSON.stringify(eventData)}`);
 
+      const textMessage = readWorkbuddyTextMessage(eventData);
+      if (textMessage) {
+        await this.wecomEventQueue
+          .add('workbuddy_text', textMessage, {
+            removeOnComplete: true,
+            removeOnFail: false,
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 2000 },
+          })
+          .catch((error: Error) => {
+            this.logger.error(
+              `Failed to enqueue Workbuddy text: ${error.message}`,
+            );
+          });
+        this.logger.log(
+          `Queued Workbuddy text from ${textMessage.wecomUserId}, length=${textMessage.content.length}`,
+        );
+        return;
+      }
+
       const eventType = String(eventData.Event);
 
       switch (eventType) {
@@ -119,4 +139,22 @@ export class WecomEventService {
     // TODO: 具体的客户标签变更业务逻辑
     await Promise.resolve();
   }
+}
+
+export function readWorkbuddyTextMessage(
+  eventData: Record<string, unknown>,
+): { wecomUserId: string; content: string } | null {
+  if (textValue(eventData.MsgType) !== 'text') return null;
+  const wecomUserId = textValue(eventData.FromUserName).trim();
+  const content = textValue(eventData.Content).trim();
+  if (!wecomUserId || !content) return null;
+  return { wecomUserId, content };
+}
+
+function textValue(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+  return '';
 }

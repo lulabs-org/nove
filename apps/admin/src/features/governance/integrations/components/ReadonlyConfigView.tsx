@@ -176,6 +176,16 @@ const READONLY_SECTIONS: Record<IntegrationModule, ReadonlySection[]> = {
       ],
     },
     {
+      title: 'Workbuddy',
+      fields: [
+        {
+          key: 'agentId',
+          label: 'Workbuddy 应用 AgentId',
+          fullWidth: true,
+        },
+      ],
+    },
+    {
       title: 'API 地址',
       fields: [{ key: 'apiBaseUrl', label: 'API Base URL', fullWidth: true }],
     },

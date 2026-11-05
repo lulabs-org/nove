@@ -48,8 +48,10 @@ model Project {
   updater User?    @relation("ProjectUpdater", fields: [updatedById], references: [id], onDelete: SetNull)
   product Product? @relation("ProjectProduct", fields: [productId], references: [id], onDelete: SetNull)
 
-  curriculums Curriculum[] // 项目包含的阶段/大纲
-  members     ProjectMember[] // 项目成员（导师、助教、学员）
+  curriculums           Curriculum[] // 项目包含的阶段/大纲
+  members               ProjectMember[] // 项目成员（导师、助教、学员）
+  meetings              Meeting[]
+  meetingPlaybackGrants MeetingPlaybackGrant[]
 
   // 系统审计时间
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)

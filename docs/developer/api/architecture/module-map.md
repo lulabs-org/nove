@@ -48,7 +48,7 @@
 
 - `src/tmeet`：腾讯会议主动 OpenAPI 封装、Webhook 回调验签与事件处理 (`/webhooks/tmeet`)。
 - `src/lark`：飞书多维表格同步与事件队列 (`/webhooks/lark`)。
-- `src/wecom`：企业微信与 Hermes 通信网关、回调验签解密 (`/webhooks/wecom/events`)、机器人消息推送。
+- `src/wecom`：企业微信通信网关、回调验签解密 (`/webhooks/wecom/events`)，以及 Workbuddy 文本消息的回放补课回复。
 - `src/mail`、`src/sms`：SMTP 邮件池与阿里云短信验证码发送。
 - `src/admin/integrations`：管理邮件、AI、腾讯会议、飞书、微信小店、企业微信配置，负责敏感字段 AES-256-GCM 加密和运行时热更新。
 

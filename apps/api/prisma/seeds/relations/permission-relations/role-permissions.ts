@@ -39,6 +39,16 @@ const MANAGER_PERMISSIONS = [
   'drive:update',
   'drive:delete',
   'drive:manage-acl',
+  'meeting-playback:read',
+  'meeting-playback:grant',
+  'mcp-tool:meeting-playback',
+];
+
+// 班主任可为同学开通回放，并配置 Workbuddy 查询凭据
+const HEAD_TEACHER_PERMISSIONS = [
+  'meeting-playback:read',
+  'meeting-playback:grant',
+  'mcp-tool:meeting-playback',
 ];
 
 // 财务角色权限列表
@@ -151,6 +161,20 @@ export async function assignRolePermissions(
     customerServiceRoleId,
     customerServicePermissions,
   );
+
+  const headTeacherRoleId = roles.find(
+    (role) => role.code === 'HEAD_TEACHER',
+  )?.id;
+  if (headTeacherRoleId) {
+    const headTeacherPermissions = permissions.filter((p) =>
+      HEAD_TEACHER_PERMISSIONS.includes(p.code),
+    );
+    await assignPermissionsToRole(
+      prisma,
+      headTeacherRoleId,
+      headTeacherPermissions,
+    );
+  }
 
   const userRoleId = roles.find((role) => role.code === 'USER')?.id || '';
   const userPermissions = permissions.filter((p) =>

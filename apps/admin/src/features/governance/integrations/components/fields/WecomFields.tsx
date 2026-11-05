@@ -28,6 +28,14 @@ export function WecomFields({ form }: { form: ReturnType<typeof Form.useForm<Wec
       <Form.Item label="Encoding AES Key" name="encodingAesKey">
         <SecretInput placeholder="输入新 Encoding AES Key 以替换" />
       </Form.Item>
+      <Divider titlePlacement="start">Workbuddy</Divider>
+      <Form.Item
+        label="Workbuddy 应用 AgentId"
+        name="agentId"
+        extra="用于把回放补课回复发给正在对话的同学。未填写时只生成回复，不主动下发。"
+      >
+        <Input placeholder="1000002" />
+      </Form.Item>
       <Divider titlePlacement="start">API 地址</Divider>
       <Form.Item label="API Base URL" name="apiBaseUrl" rules={[{ required: true, type: 'url' }]}>
         <Input placeholder="https://qyapi.weixin.qq.com" />

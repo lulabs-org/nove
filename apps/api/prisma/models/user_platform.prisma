@@ -32,7 +32,9 @@ model PlatformUser {
   actions             MeetingUserAction[]  @relation("UserActions")
   minutes             Minute[]             @relation("RecordingUser")
   meetingParticipants MeetingParticipant[] @relation("ParticipantUser")
-  speakerSummaries    SpeakerSummary[]     @relation("SpeakerSummaries")
+  speakerSummaries          SpeakerSummary[]           @relation("SpeakerSummaries")
+  meetingPlaybackGrants     MeetingPlaybackGrant[]     @relation("PlaybackGrantWecomIdentity")
+  meetingPlaybackGrantHosts MeetingPlaybackGrantHost[] @relation("PlaybackGrantHost")
 
   // 系统字段及时间
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)

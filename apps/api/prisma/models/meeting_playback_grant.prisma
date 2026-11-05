@@ -1,0 +1,51 @@
+// 同学的会议回放查看授权。
+// 每条授权绑定该同学的本地用户，以及企业微信 Workbuddy 会话使用的企微身份。
+enum MeetingPlaybackScopeType {
+  ORGANIZATION // 组织内已有回放的会议
+  PROJECT // 仅限关联到指定项目/训练营的会议
+  HOSTS // 仅限指定老师主持的会议
+}
+
+model MeetingPlaybackGrant {
+  id                  String                   @id @default(cuid())
+  orgId               String                   @map("org_id")
+  org                 Org                      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  studentUserId       String                   @map("student_user_id")
+  student             User                     @relation("PlaybackGrantStudent", fields: [studentUserId], references: [id], onDelete: Cascade)
+  wecomPlatformUserId String                   @map("wecom_platform_user_id")
+  wecomPlatformUser   PlatformUser             @relation("PlaybackGrantWecomIdentity", fields: [wecomPlatformUserId], references: [id], onDelete: Restrict)
+  scopeType           MeetingPlaybackScopeType @map("scope_type")
+  projectId           String?                  @map("project_id")
+  project             Project?                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  boundApiKeyId       String?                  @map("bound_api_key_id")
+  boundApiKey         ApiKey?                  @relation(fields: [boundApiKeyId], references: [id], onDelete: SetNull)
+  active              Boolean                  @default(true)
+  note                String?                  @db.VarChar(500)
+  grantedById         String?                  @map("granted_by_id")
+  grantedBy           User?                    @relation("PlaybackGrantGrantedBy", fields: [grantedById], references: [id], onDelete: SetNull)
+  createdAt           DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+  revokedAt           DateTime?                @map("revoked_at") @db.Timestamptz(6)
+
+  hosts MeetingPlaybackGrantHost[]
+
+  @@index([orgId, active])
+  @@index([studentUserId, active])
+  @@index([wecomPlatformUserId, active])
+  @@index([projectId])
+  @@index([boundApiKeyId])
+  @@map("meeting_playback_grants")
+}
+
+model MeetingPlaybackGrantHost {
+  id                 String               @id @default(cuid())
+  grantId            String               @map("grant_id")
+  grant              MeetingPlaybackGrant @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  hostPlatformUserId String?              @map("host_platform_user_id")
+  hostPlatformUser   PlatformUser?        @relation("PlaybackGrantHost", fields: [hostPlatformUserId], references: [id], onDelete: SetNull)
+  hostName           String               @map("host_name") @db.VarChar(100)
+
+  @@index([grantId])
+  @@index([hostPlatformUserId])
+  @@map("meeting_playback_grant_hosts")
+}

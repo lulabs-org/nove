@@ -856,6 +856,14 @@ const MCP_TOOL_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
     action: 'userid-search',
     type: PermissionType.API,
   },
+  {
+    name: '使用会议回放补课工具',
+    code: 'mcp-tool:meeting-playback',
+    description: 'Workbuddy 通过 MCP 按企业微信身份查询授权回放并生成补课引导',
+    resource: 'mcp-tool',
+    action: 'meeting-playback',
+    type: PermissionType.API,
+  },
 ];
 
 // ========== API Key 管理 ==========
@@ -962,6 +970,26 @@ const SYSTEM_CONFIG_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
     description: '修改系统配置信息',
     resource: 'system',
     action: 'config:write',
+    type: PermissionType.API,
+  },
+];
+
+// ========== 会议回放（同学补课 / Workbuddy） ==========
+const MEETING_PLAYBACK_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
+  {
+    name: '查看会议回放',
+    code: 'meeting-playback:read',
+    description: '查询当前身份被授权的会议回放、纪要摘要与补课引导',
+    resource: 'meeting-playback',
+    action: 'read',
+    type: PermissionType.API,
+  },
+  {
+    name: '开通会议回放',
+    code: 'meeting-playback:grant',
+    description: '按同学开通、调整或收回会议回放查看权限，并绑定企业微信身份',
+    resource: 'meeting-playback',
+    action: 'grant',
     type: PermissionType.API,
   },
 ];
@@ -1184,6 +1212,7 @@ export const REAL_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
   ...API_KEY_PERMISSION_CONFIGS,
   ...TRACKING_REPORT_PERMISSION_CONFIGS,
   ...SYSTEM_CONFIG_PERMISSION_CONFIGS,
+  ...MEETING_PLAYBACK_PERMISSION_CONFIGS,
   ...MEETING_PERMISSION_CONFIGS,
   ...MINUTE_PERMISSION_CONFIGS,
   ...MINUTE_SUMMARY_PERMISSION_CONFIGS,

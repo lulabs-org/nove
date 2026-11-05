@@ -10,6 +10,7 @@
  */
 
 export * from './greeting.tool';
+export * from './meeting-playback.tool';
 export * from './meeting-stats.tool';
 export * from './user-info.tool';
 export * from './userid-search.tool';

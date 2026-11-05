@@ -1,4 +1,5 @@
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsOptional, IsString, IsUrl, Matches } from 'class-validator';
 import { defineIntegrationConfig } from '../utils';
 
 export class UpdateWecomConfigDto {
@@ -22,6 +23,15 @@ export class UpdateWecomConfigDto {
   @IsString()
   @IsUrl({ require_tld: false })
   apiBaseUrl?: string;
+
+  @IsOptional()
+  @Transform(({ value }: { value: unknown }): string | undefined => {
+    if (typeof value !== 'string' || value === '') return undefined;
+    return value;
+  })
+  @IsString()
+  @Matches(/^\d+$/)
+  agentId?: string;
 }
 
 export const wecomConfig = defineIntegrationConfig(UpdateWecomConfigDto, {
