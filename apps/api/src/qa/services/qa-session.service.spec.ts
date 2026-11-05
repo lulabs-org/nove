@@ -1,4 +1,4 @@
-import { QATargetType } from '@/generated/prisma/client';
+import { Prisma, QATargetType } from '@/generated/prisma/client';
 import { MinuteService } from '@/minute/services/minute.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
@@ -20,7 +20,13 @@ describe('QASessionService', () => {
   };
   let minuteService: { getById: jest.Mock };
   let prisma: {
-    project: { findFirst: jest.Mock; findMany: jest.Mock };
+    project: {
+      findFirst: jest.Mock;
+      findMany: jest.Mock<
+        Promise<Array<{ id: string; title: string; code: string | null }>>,
+        [Prisma.ProjectFindManyArgs]
+      >;
+    };
     minute: { findMany: jest.Mock };
     driveFile: { findFirst: jest.Mock; findMany: jest.Mock };
   };
@@ -35,7 +41,13 @@ describe('QASessionService', () => {
     };
     minuteService = { getById: jest.fn() };
     prisma = {
-      project: { findFirst: jest.fn(), findMany: jest.fn() },
+      project: {
+        findFirst: jest.fn(),
+        findMany: jest.fn<
+          Promise<Array<{ id: string; title: string; code: string | null }>>,
+          [Prisma.ProjectFindManyArgs]
+        >(),
+      },
       minute: { findMany: jest.fn() },
       driveFile: { findFirst: jest.fn(), findMany: jest.fn() },
     };
@@ -156,11 +168,11 @@ describe('QASessionService', () => {
     ).resolves.toEqual([
       { id: 'project-1', label: 'Nove 项目', description: 'NOVE' },
     ]);
-    expect(prisma.project.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({ orgId: 'org-1', deletedAt: null }),
-      }),
-    );
+    const findManyArgs = prisma.project.findMany.mock.calls[0]?.[0];
+    expect(findManyArgs?.where).toMatchObject({
+      orgId: 'org-1',
+      deletedAt: null,
+    });
   });
 
   it('throws when a session is not owned by the current user', async () => {

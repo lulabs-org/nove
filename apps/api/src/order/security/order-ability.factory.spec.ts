@@ -3,6 +3,7 @@ import { subject } from '@casl/ability';
 import { OrderAbilityFactory } from './order-ability.factory';
 import { resolveRuleCondition } from '@/auth/utils/rule-condition.util';
 import { AuthContext } from '@/auth/types/auth-context.interface';
+import type { Order } from '@/generated/prisma/client';
 
 describe('OrderAbilityFactory with Dynamic Data Rules', () => {
   let factory: OrderAbilityFactory;
@@ -339,7 +340,7 @@ describe('OrderAbilityFactory with Dynamic Data Rules', () => {
       expect(
         ability.can(
           'create',
-          subject('Order', { currentOwnerId: 'usr_rep_1' } as any),
+          subject('Order', { currentOwnerId: 'usr_rep_1' } as Order),
         ),
       ).toBe(true);
 
@@ -347,7 +348,7 @@ describe('OrderAbilityFactory with Dynamic Data Rules', () => {
       expect(
         ability.can(
           'create',
-          subject('Order', { currentOwnerId: 'usr_rep_2' } as any),
+          subject('Order', { currentOwnerId: 'usr_rep_2' } as Order),
         ),
       ).toBe(false);
     });
@@ -374,7 +375,7 @@ describe('OrderAbilityFactory with Dynamic Data Rules', () => {
       expect(
         ability.can(
           'create',
-          subject('Order', { currentOwnerId: 'any_user' } as any),
+          subject('Order', { currentOwnerId: 'any_user' } as Order),
         ),
       ).toBe(true);
     });
