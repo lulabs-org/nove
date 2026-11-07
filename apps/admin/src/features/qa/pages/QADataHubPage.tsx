@@ -1,8 +1,8 @@
 import {
+  ArrowLeftOutlined,
   DeleteOutlined,
   DislikeOutlined,
   EditOutlined,
-  FileTextOutlined,
   LikeOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
@@ -13,705 +13,462 @@ import Input from 'antd/es/input';
 import message from 'antd/es/message';
 import Modal from 'antd/es/modal';
 import Popconfirm from 'antd/es/popconfirm';
-import Popover from 'antd/es/popover';
-import Select from 'antd/es/select';
 import Space from 'antd/es/space';
 import Table from 'antd/es/table';
 import Tag from 'antd/es/tag';
 import Typography from 'antd/es/typography';
 import type { TableProps } from 'antd/es/table';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Perm } from '../../../app/guards/Perm';
 import { PERMISSIONS } from '../../../shared/utils/permissions';
-import {
-  qaApi,
-  type CreateRecordInput,
-  type CreateSessionInput,
-  type QAFeedbackRating,
-  type QARecord,
-  type QASession,
-  type QATargetOption,
-  type QATargetType,
-  type UpdateRecordInput,
-  type UpdateSessionInput,
-} from '../api/qaApi';
+import { qaApi, type QAFeedbackRating, type QARecord, type QASession } from '../api/qaApi';
 import './QADataHubPage.css';
 
-interface RecordFormValues extends CreateRecordInput {
-  sessionId: string;
-  citationSourceType?: Exclude<QATargetType, 'GLOBAL'>;
-  citationSourceId?: string;
-  citationTitle?: string;
-  citationSnippet?: string;
+interface DatasetFormValues {
+  title: string;
 }
 
-const targetTypeOptions = [
-  { value: 'GLOBAL', label: '全局' },
-  { value: 'PROJECT', label: '项目' },
-  { value: 'MINUTE', label: '妙记' },
-  { value: 'DRIVE_FILE', label: '云盘文件' },
-];
-
-const targetLabels: Record<QATargetType, string> = {
-  GLOBAL: '全局',
-  PROJECT: '项目',
-  MINUTE: '妙记',
-  DRIVE_FILE: '云盘文件',
-};
-
-function toSelectOptions(items?: QATargetOption[]) {
-  return items?.map((item) => ({
-    value: item.id,
-    label: item.description ? `${item.label}（${item.description}）` : item.label,
-  }));
+interface RecordFormValues {
+  question: string;
+  answer: string;
 }
 
-function normalizeCitationType(sourceType?: string) {
-  const value = sourceType?.toUpperCase();
-  if (value === 'TRANSCRIPT') return 'MINUTE';
-  if (value === 'PROJECT' || value === 'MINUTE' || value === 'DRIVE_FILE') return value;
-  return undefined;
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value));
 }
 
 export function QADataHubPage() {
   const queryClient = useQueryClient();
-  const [sessionForm] = Form.useForm<CreateSessionInput>();
+  const [datasetForm] = Form.useForm<DatasetFormValues>();
   const [recordForm] = Form.useForm<RecordFormValues>();
-  const [sessionModalOpen, setSessionModalOpen] = useState(false);
-  const [recordModalOpen, setRecordModalOpen] = useState(false);
-  const [creatingSessionForRecord, setCreatingSessionForRecord] = useState(false);
-  const [editingSessionId, setEditingSessionId] = useState<string>();
+  const [activeDatasetId, setActiveDatasetId] = useState<string>();
+  const [editingDataset, setEditingDataset] = useState<QASession>();
   const [editingRecord, setEditingRecord] = useState<QARecord>();
-  const [selectedSessionId, setSelectedSessionId] = useState<string>();
+  const [datasetModalOpen, setDatasetModalOpen] = useState(false);
+  const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [keyword, setKeyword] = useState<string>();
-  const [rating, setRating] = useState<QAFeedbackRating>();
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const sessionTargetType = Form.useWatch('targetType', sessionForm) ?? 'GLOBAL';
-  const recordSessionId = Form.useWatch('sessionId', recordForm);
-  const generatedBy = Form.useWatch('generatedBy', recordForm) ?? 'HUMAN';
-  const citationSourceType = Form.useWatch('citationSourceType', recordForm);
+  const pageSize = 20;
 
-  const sessionsQuery = useQuery({
-    queryKey: ['qa-sessions'],
-    queryFn: qaApi.listSessions,
-  });
-
-  const recordParams = { page, pageSize, keyword, rating, sessionId: selectedSessionId };
+  const sessionsQuery = useQuery({ queryKey: ['qa-sessions'], queryFn: qaApi.listSessions });
+  const recordParams = { page, pageSize, keyword, sessionId: activeDatasetId };
   const recordsQuery = useQuery({
     queryKey: ['qa-records', recordParams],
     queryFn: () => qaApi.listRecords(recordParams),
+    enabled: Boolean(activeDatasetId),
   });
+  const blankDatasets =
+    sessionsQuery.data?.items.filter((item) => item.targetType === 'GLOBAL') ?? [];
+  const activeDataset = blankDatasets.find((item) => item.id === activeDatasetId);
 
-  const sessionTargetOptionsQuery = useQuery({
-    queryKey: ['qa-target-options', sessionTargetType],
-    queryFn: () => qaApi.listTargetOptions(sessionTargetType),
-    enabled: sessionModalOpen && sessionTargetType !== 'GLOBAL',
-  });
-
-  const citationOptionsQuery = useQuery({
-    queryKey: ['qa-target-options', citationSourceType],
-    queryFn: () => qaApi.listTargetOptions(citationSourceType!),
-    enabled: recordModalOpen && Boolean(citationSourceType),
-  });
-
-  const selectedSession = sessionsQuery.data?.items.find(
-    (session) => session.id === selectedSessionId
-  );
-  const recordSession = sessionsQuery.data?.items.find((session) => session.id === recordSessionId);
-
-  const createSessionMutation = useMutation({
-    mutationFn: qaApi.createSession,
-    onSuccess: (session) => {
-      message.success('会话创建成功');
-      setSessionModalOpen(false);
-      sessionForm.resetFields();
-      if (creatingSessionForRecord) {
-        recordForm.setFieldValue('sessionId', session.id);
-        setCreatingSessionForRecord(false);
-      } else {
-        setSelectedSessionId(session.id);
-      }
-      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
-    },
-    onError: () => message.error('会话创建失败'),
-  });
-
-  const updateSessionMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateSessionInput }) =>
-      qaApi.updateSession(id, data),
-    onSuccess: () => {
-      message.success('会话修改成功');
-      closeSessionModal();
-      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
-    },
-    onError: () => message.error('会话修改失败'),
-  });
-
-  const deleteSessionMutation = useMutation({
-    mutationFn: qaApi.deleteSession,
-    onSuccess: (_, deletedId) => {
-      message.success('会话已删除');
-      if (selectedSessionId === deletedId) setSelectedSessionId(undefined);
-      if (recordForm.getFieldValue('sessionId') === deletedId) {
-        recordForm.setFieldValue('sessionId', undefined);
-      }
-      if (editingRecord?.sessionId === deletedId) {
-        setRecordModalOpen(false);
-        setEditingRecord(undefined);
-        recordForm.resetFields();
-      }
-      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
-      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
-    },
-    onError: () => message.error('会话删除失败'),
-  });
-
-  const createRecordMutation = useMutation({
-    mutationFn: ({ sessionId, data }: { sessionId: string; data: CreateRecordInput }) =>
-      qaApi.createRecord(sessionId, data),
-    onSuccess: () => {
-      message.success('问答记录已保存');
-      setRecordModalOpen(false);
-      recordForm.resetFields();
-      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
-    },
-    onError: () => message.error('问答记录保存失败'),
-  });
-
-  const updateRecordMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateRecordInput }) =>
-      qaApi.updateRecord(id, data),
-    onSuccess: () => {
-      message.success('问答记录修改成功');
-      closeRecordModal();
-      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
-    },
-    onError: () => message.error('问答记录修改失败'),
-  });
-
-  const deleteRecordMutation = useMutation({
-    mutationFn: qaApi.deleteRecord,
-    onSuccess: () => {
-      message.success('问答记录已删除');
-      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
-    },
-    onError: () => message.error('问答记录删除失败'),
-  });
-
-  const feedbackMutation = useMutation({
-    mutationFn: ({
-      recordId,
-      nextRating,
-    }: {
-      recordId: string;
-      nextRating: QAFeedbackRating | null;
-    }) => qaApi.submitFeedback(recordId, nextRating),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['qa-records'] }),
-    onError: () => message.error('反馈提交失败'),
-  });
-
-  const closeSessionModal = () => {
-    setSessionModalOpen(false);
-    setEditingSessionId(undefined);
-    setCreatingSessionForRecord(false);
-    sessionForm.resetFields();
+  const closeDatasetModal = () => {
+    setDatasetModalOpen(false);
+    setEditingDataset(undefined);
+    datasetForm.resetFields();
   };
-
-  const openCreateSession = (forRecord = false) => {
-    setEditingSessionId(undefined);
-    setCreatingSessionForRecord(forRecord);
-    sessionForm.setFieldsValue({ title: '', targetType: 'GLOBAL', targetId: undefined });
-    setSessionModalOpen(true);
+  const openCreateDataset = () => {
+    setEditingDataset(undefined);
+    datasetForm.resetFields();
+    setDatasetModalOpen(true);
   };
-
-  const openEditSession = (session: QASession) => {
-    setEditingSessionId(session.id);
-    sessionForm.setFieldsValue({
-      title: session.title,
-      targetType: session.targetType,
-      targetId: session.targetId ?? undefined,
-    });
-    setSessionModalOpen(true);
+  const openEditDataset = (dataset: QASession) => {
+    setEditingDataset(dataset);
+    datasetForm.setFieldsValue({ title: dataset.title });
+    setDatasetModalOpen(true);
   };
-
-  const submitSession = (values: CreateSessionInput) => {
-    if (editingSessionId) {
-      updateSessionMutation.mutate({ id: editingSessionId, data: values });
-      return;
-    }
-    createSessionMutation.mutate(values);
-  };
-
   const closeRecordModal = () => {
     setRecordModalOpen(false);
     setEditingRecord(undefined);
     recordForm.resetFields();
   };
-
   const openCreateRecord = () => {
     setEditingRecord(undefined);
-    const citationType =
-      selectedSession?.targetType && selectedSession.targetType !== 'GLOBAL'
-        ? selectedSession.targetType
-        : undefined;
-    recordForm.setFieldsValue({
-      sessionId: selectedSessionId,
-      generatedBy: 'HUMAN',
-      citationSourceType: citationType,
-      citationSourceId: citationType ? (selectedSession?.targetId ?? undefined) : undefined,
-    });
+    recordForm.resetFields();
     setRecordModalOpen(true);
   };
-
   const openEditRecord = useCallback(
     (record: QARecord) => {
-      const citation = record.citations[0];
-      const citationType = normalizeCitationType(citation?.sourceType);
       setEditingRecord(record);
-      recordForm.setFieldsValue({
-        sessionId: record.sessionId,
-        question: record.question,
-        answer: record.answer,
-        generatedBy: record.generatedBy,
-        aiModel: record.aiModel ?? undefined,
-        citationSourceType: citationType,
-        citationSourceId: citationType ? citation?.sourceId : undefined,
-        citationTitle: citationType ? (citation?.title ?? undefined) : undefined,
-        citationSnippet: citationType ? citation?.snippet : undefined,
-      });
+      recordForm.setFieldsValue({ question: record.question, answer: record.answer });
       setRecordModalOpen(true);
     },
     [recordForm]
   );
 
-  const submitRecord = (values: RecordFormValues) => {
-    const {
-      sessionId,
-      citationSourceType,
-      citationSourceId,
-      citationTitle,
-      citationSnippet,
-      ...record
-    } = values;
-    const normalizedSourceId = citationSourceId?.trim();
-    const normalizedSnippet = citationSnippet?.trim();
-    const hasCitation = Boolean(citationSourceType && normalizedSourceId && normalizedSnippet);
-    const selectedCitationSource = citationOptionsQuery.data?.find(
-      (item) => item.id === normalizedSourceId
-    );
+  const createDatasetMutation = useMutation({
+    mutationFn: (values: DatasetFormValues) =>
+      qaApi.createSession({ title: values.title.trim(), targetType: 'GLOBAL' }),
+    onSuccess: (dataset) => {
+      message.success('空白数据集创建成功');
+      closeDatasetModal();
+      setActiveDatasetId(dataset.id);
+      setPage(1);
+      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
+    },
+    onError: () => message.error('空白数据集创建失败'),
+  });
+  const updateDatasetMutation = useMutation({
+    mutationFn: ({ id, title }: { id: string; title: string }) =>
+      qaApi.updateSession(id, { title: title.trim() }),
+    onSuccess: () => {
+      message.success('数据集名称已更新');
+      closeDatasetModal();
+      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
+    },
+    onError: () => message.error('数据集修改失败'),
+  });
+  const deleteDatasetMutation = useMutation({
+    mutationFn: qaApi.deleteSession,
+    onSuccess: (_, deletedId) => {
+      message.success('数据集已删除');
+      if (activeDatasetId === deletedId) setActiveDatasetId(undefined);
+      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
+    },
+    onError: () => message.error('数据集删除失败'),
+  });
+  const createRecordMutation = useMutation({
+    mutationFn: (values: RecordFormValues) =>
+      qaApi.createRecord(activeDatasetId!, {
+        question: values.question.trim(),
+        answer: values.answer.trim(),
+        generatedBy: 'HUMAN',
+      }),
+    onSuccess: () => {
+      message.success('问答数据已插入');
+      closeRecordModal();
+      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
+    },
+    onError: () => message.error('问答数据保存失败'),
+  });
+  const updateRecordMutation = useMutation({
+    mutationFn: ({ id, values }: { id: string; values: RecordFormValues }) =>
+      qaApi.updateRecord(id, {
+        question: values.question.trim(),
+        answer: values.answer.trim(),
+      }),
+    onSuccess: () => {
+      message.success('问答数据已更新');
+      closeRecordModal();
+      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
+    },
+    onError: () => message.error('问答数据修改失败'),
+  });
+  const deleteRecordMutation = useMutation({
+    mutationFn: qaApi.deleteRecord,
+    onSuccess: () => {
+      message.success('问答数据已删除');
+      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
+    },
+    onError: () => message.error('问答数据删除失败'),
+  });
+  const feedbackMutation = useMutation({
+    mutationFn: ({ recordId, rating }: { recordId: string; rating: QAFeedbackRating | null }) =>
+      qaApi.submitFeedback(recordId, rating),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['qa-records'] }),
+    onError: () => message.error('反馈提交失败'),
+  });
 
-    const data: CreateRecordInput = {
-      ...record,
-      aiModel: record.generatedBy === 'AI' ? record.aiModel?.trim() || undefined : undefined,
-      citations: hasCitation
-        ? [
-            {
-              sourceType: citationSourceType!,
-              sourceId: normalizedSourceId!,
-              title: citationTitle?.trim() || selectedCitationSource?.label,
-              snippet: normalizedSnippet!,
-            },
-          ]
-        : editingRecord
-          ? []
-          : undefined,
-    };
-
-    if (editingRecord) {
-      updateRecordMutation.mutate({ id: editingRecord.id, data: { ...data, sessionId } });
-      return;
+  const submitDataset = (values: DatasetFormValues) => {
+    if (editingDataset) {
+      updateDatasetMutation.mutate({ id: editingDataset.id, title: values.title });
+    } else {
+      createDatasetMutation.mutate(values);
     }
-    createRecordMutation.mutate({ sessionId, data });
+  };
+  const submitRecord = (values: RecordFormValues) => {
+    if (editingRecord) {
+      updateRecordMutation.mutate({ id: editingRecord.id, values });
+    } else {
+      createRecordMutation.mutate(values);
+    }
   };
 
-  const columns = useMemo<TableProps<QARecord>['columns']>(
-    () => [
-      {
-        title: '问题',
-        dataIndex: 'question',
-        width: 230,
-        ellipsis: true,
-      },
-      {
-        title: '回答',
-        dataIndex: 'answer',
-        ellipsis: true,
-      },
-      {
-        title: '会话',
-        dataIndex: 'session',
-        width: 160,
-        ellipsis: true,
-        render: (session: QARecord['session'], record) => session?.title ?? record.sessionId,
-      },
-      {
-        title: '来源',
-        dataIndex: 'citations',
-        width: 100,
-        render: (citations: QARecord['citations']) =>
-          citations.length ? (
-            <Popover
-              title="引用内容"
-              content={
-                <div className="qa-citation-list">
-                  {citations.map((citation) => (
-                    <div key={citation.id}>
-                      <strong>{citation.title || citation.sourceId}</strong>
-                      <div>{citation.snippet}</div>
-                    </div>
-                  ))}
-                </div>
-              }
-            >
-              <Button type="link" size="small" icon={<FileTextOutlined />}>
-                {citations.length} 条
-              </Button>
-            </Popover>
-          ) : (
-            '-'
-          ),
-      },
-      {
-        title: '生成方式',
-        dataIndex: 'generatedBy',
-        width: 120,
-        render: (value: QARecord['generatedBy'], record) => (
-          <Space size={4}>
-            <Tag color={value === 'AI' ? 'processing' : 'default'}>{value}</Tag>
-            {record.aiModel ? (
-              <Typography.Text type="secondary">{record.aiModel}</Typography.Text>
-            ) : null}
-          </Space>
-        ),
-      },
-      {
-        title: '反馈',
-        dataIndex: 'rating',
-        width: 120,
-        render: (value: QARecord['rating'], record) => (
-          <Perm permission={PERMISSIONS.QA.FEEDBACK_CREATE} fallback={value || '-'}>
-            <Space size={0}>
-              <Button
-                type={value === 'LIKE' ? 'primary' : 'text'}
-                icon={<LikeOutlined />}
-                aria-label="满意"
-                onClick={() =>
-                  feedbackMutation.mutate({
-                    recordId: record.id,
-                    nextRating: value === 'LIKE' ? null : 'LIKE',
-                  })
-                }
-              />
-              <Button
-                danger={value === 'DISLIKE'}
-                type={value === 'DISLIKE' ? 'primary' : 'text'}
-                icon={<DislikeOutlined />}
-                aria-label="不满意"
-                onClick={() =>
-                  feedbackMutation.mutate({
-                    recordId: record.id,
-                    nextRating: value === 'DISLIKE' ? null : 'DISLIKE',
-                  })
-                }
-              />
-            </Space>
+  const datasetColumns: TableProps<QASession>['columns'] = [
+    {
+      title: '数据集名称',
+      dataIndex: 'title',
+      render: (title: string) => (
+        <Space>
+          <span className="qa-dataset-icon">Q</span>
+          <Typography.Text strong>{title}</Typography.Text>
+        </Space>
+      ),
+    },
+    { title: '数据来源', width: 150, render: () => '空白数据集' },
+    { title: '创建时间', dataIndex: 'createdAt', width: 190, render: formatDate },
+    { title: '更新时间', dataIndex: 'updatedAt', width: 190, render: formatDate },
+    { title: '状态', width: 110, render: () => <Tag color="success">已就绪</Tag> },
+    {
+      title: '操作',
+      width: 110,
+      render: (_, dataset) => (
+        <Space onClick={(event) => event.stopPropagation()}>
+          <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              aria-label="编辑数据集"
+              onClick={() => openEditDataset(dataset)}
+            />
           </Perm>
-        ),
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'createdAt',
-        width: 180,
-        render: (value: string) => new Date(value).toLocaleString('zh-CN'),
-      },
-      {
-        title: '操作',
-        key: 'actions',
-        width: 110,
-        fixed: 'right',
-        render: (_, record) => (
-          <Space size={0}>
-            <Perm permission={PERMISSIONS.QA.RECORD_UPDATE}>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                aria-label="编辑问答记录"
-                onClick={() => openEditRecord(record)}
-              />
-            </Perm>
-            <Perm permission={PERMISSIONS.QA.RECORD_DELETE}>
-              <Popconfirm
-                title="确定删除这条问答记录吗？"
-                onConfirm={() => deleteRecordMutation.mutate(record.id)}
-              >
-                <Button danger type="text" icon={<DeleteOutlined />} aria-label="删除问答记录" />
-              </Popconfirm>
-            </Perm>
-          </Space>
-        ),
-      },
-    ],
-    [deleteRecordMutation, feedbackMutation, openEditRecord]
+          <Perm permission={PERMISSIONS.QA.SESSION_DELETE}>
+            <Popconfirm
+              title="确定删除这个数据集及其全部问答吗？"
+              onConfirm={() => deleteDatasetMutation.mutate(dataset.id)}
+            >
+              <Button danger type="text" icon={<DeleteOutlined />} aria-label="删除数据集" />
+            </Popconfirm>
+          </Perm>
+        </Space>
+      ),
+    },
+  ];
+
+  const datasetModal = (
+    <Modal
+      title={editingDataset ? '编辑数据集' : '新建空白数据集'}
+      open={datasetModalOpen}
+      okText={editingDataset ? '保存' : '创建'}
+      confirmLoading={createDatasetMutation.isPending || updateDatasetMutation.isPending}
+      onCancel={closeDatasetModal}
+      onOk={() => datasetForm.submit()}
+    >
+      <Form form={datasetForm} layout="vertical" onFinish={submitDataset}>
+        <Form.Item
+          name="title"
+          label="数据集名称"
+          rules={[{ required: true, whitespace: true, message: '请输入数据集名称' }]}
+        >
+          <Input maxLength={200} placeholder="例如：产品常见问题" />
+        </Form.Item>
+        {!editingDataset ? (
+          <Typography.Text type="secondary">
+            将创建一个空白数据集，之后可以手动插入问题和答案。
+          </Typography.Text>
+        ) : null}
+      </Form>
+    </Modal>
   );
 
-  return (
-    <div className="qa-data-hub-page">
-      <div className="qa-data-hub-toolbar">
-        <Input.Search
-          className="qa-data-hub-search"
-          allowClear
-          placeholder="搜索问题或回答"
-          onSearch={(value) => {
-            setKeyword(value.trim() || undefined);
-            setPage(1);
-          }}
-          onChange={(event) => {
-            if (!event.target.value) {
-              setKeyword(undefined);
-              setPage(1);
-            }
-          }}
-        />
-        <div className="qa-session-controls">
-          <Typography.Text>会话筛选</Typography.Text>
-          <Select
-            allowClear
-            placeholder="全部会话"
-            loading={sessionsQuery.isLoading}
-            value={selectedSessionId}
-            onChange={(value) => {
-              setSelectedSessionId(value);
-              setPage(1);
-            }}
-            options={sessionsQuery.data?.items.map((session) => ({
-              value: session.id,
-              label: session.title,
-            }))}
-          />
-        </div>
-        <Select
-          allowClear
-          placeholder="反馈状态"
-          value={rating}
-          onChange={(value) => {
-            setRating(value);
-            setPage(1);
-          }}
-          options={[
-            { value: 'LIKE', label: '满意' },
-            { value: 'DISLIKE', label: '不满意' },
-          ]}
-        />
-        <div className="qa-data-hub-actions">
-          <Perm permission={PERMISSIONS.QA.RECORD_CREATE}>
-            <Button type="primary" icon={<PlusOutlined />} onClick={openCreateRecord}>
-              录入问答
+  if (!activeDatasetId || !activeDataset) {
+    return (
+      <div className="qa-dataset-page">
+        <div className="qa-dataset-list-header">
+          <div>
+            <Typography.Title level={3}>问答知识库</Typography.Title>
+            <Typography.Text type="secondary">使用空白数据集整理和维护问答内容</Typography.Text>
+          </div>
+          <Perm permission={PERMISSIONS.QA.SESSION_CREATE}>
+            <Button type="primary" icon={<PlusOutlined />} onClick={openCreateDataset}>
+              新建空白数据集
             </Button>
           </Perm>
         </div>
+        <Table
+          rowKey="id"
+          columns={datasetColumns}
+          dataSource={blankDatasets}
+          loading={sessionsQuery.isLoading}
+          pagination={false}
+          rowClassName="qa-dataset-row"
+          onRow={(dataset) => ({
+            onClick: () => {
+              setActiveDatasetId(dataset.id);
+              setKeyword(undefined);
+              setPage(1);
+            },
+          })}
+        />
+        {datasetModal}
       </div>
+    );
+  }
 
-      <Table
-        rowKey="id"
-        columns={columns}
-        dataSource={recordsQuery.data?.items ?? []}
-        loading={recordsQuery.isLoading}
-        scroll={{ x: 1210 }}
-        pagination={{
-          current: page,
-          pageSize,
-          total: recordsQuery.data?.total ?? 0,
-          showSizeChanger: true,
-          showTotal: (total) => `共 ${total} 条`,
-        }}
-        onChange={(pagination) => {
-          setPage(pagination.current ?? 1);
-          setPageSize(pagination.pageSize ?? 20);
-        }}
-      />
-
-      <Modal
-        title={editingSessionId ? '编辑问答会话' : '新建问答会话'}
-        open={sessionModalOpen}
-        confirmLoading={createSessionMutation.isPending || updateSessionMutation.isPending}
-        onCancel={closeSessionModal}
-        onOk={() => sessionForm.submit()}
-      >
-        <Form
-          form={sessionForm}
-          layout="vertical"
-          initialValues={{ targetType: 'GLOBAL' }}
-          onFinish={submitSession}
-        >
-          <Form.Item name="title" label="会话标题" rules={[{ required: true }]}>
-            <Input placeholder="例如：产品会议问答" maxLength={200} />
-          </Form.Item>
-          <Form.Item name="targetType" label="关联类型">
-            <Select
-              options={targetTypeOptions}
-              onChange={() => sessionForm.setFieldValue('targetId', undefined)}
-            />
-          </Form.Item>
-          {sessionTargetType !== 'GLOBAL' ? (
-            <Form.Item
-              name="targetId"
-              label={`关联${targetLabels[sessionTargetType]}`}
-              rules={[{ required: true, message: `请选择${targetLabels[sessionTargetType]}` }]}
-              extra="系统仍保存对象 ID，但你可以直接按名称选择。"
+  return (
+    <div className="qa-dataset-detail-page">
+      <main className="qa-dataset-main">
+        <div className="qa-dataset-detail-header">
+          <div>
+            <Button
+              type="text"
+              icon={<ArrowLeftOutlined />}
+              onClick={() => {
+                setActiveDatasetId(undefined);
+                setKeyword(undefined);
+                setPage(1);
+              }}
             >
-              <Select
-                showSearch
-                optionFilterProp="label"
-                loading={sessionTargetOptionsQuery.isLoading}
-                placeholder={`请选择${targetLabels[sessionTargetType]}`}
-                options={toSelectOptions(sessionTargetOptionsQuery.data)}
-              />
-            </Form.Item>
+              返回
+            </Button>
+            <div className="qa-dataset-title-row">
+              <span className="qa-dataset-icon">Q</span>
+              <Typography.Title level={3}>{activeDataset.title}</Typography.Title>
+            </div>
+          </div>
+          <Space>
+            <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
+              <Button icon={<EditOutlined />} onClick={() => openEditDataset(activeDataset)}>
+                编辑数据集
+              </Button>
+            </Perm>
+            <Perm permission={PERMISSIONS.QA.RECORD_CREATE}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={openCreateRecord}>
+                插入
+              </Button>
+            </Perm>
+          </Space>
+        </div>
+
+        <div className="qa-dataset-summary">
+          <Space>
+            <Typography.Text>{recordsQuery.data?.total ?? 0} 组数据</Typography.Text>
+            <Tag color="success">已就绪</Tag>
+          </Space>
+          <Input.Search
+            className="qa-dataset-search"
+            allowClear
+            placeholder="搜索相关数据"
+            onSearch={(value) => {
+              setKeyword(value.trim() || undefined);
+              setPage(1);
+            }}
+            onChange={(event) => {
+              if (!event.target.value) {
+                setKeyword(undefined);
+                setPage(1);
+              }
+            }}
+          />
+        </div>
+
+        <div className="qa-record-card-list">
+          {recordsQuery.data?.items.map((record) => (
+            <article
+              className="qa-record-card"
+              key={record.id}
+              onClick={() => openEditRecord(record)}
+            >
+              <div className="qa-record-card-topline">
+                <Typography.Text strong>{record.question}</Typography.Text>
+                <Tag color="success">已索引</Tag>
+              </div>
+              <Typography.Paragraph>{record.answer}</Typography.Paragraph>
+              <div className="qa-record-card-actions" onClick={(event) => event.stopPropagation()}>
+                <Perm permission={PERMISSIONS.QA.FEEDBACK_CREATE} fallback={record.rating || '-'}>
+                  <Button
+                    type={record.rating === 'LIKE' ? 'primary' : 'text'}
+                    icon={<LikeOutlined />}
+                    aria-label="满意"
+                    onClick={() =>
+                      feedbackMutation.mutate({
+                        recordId: record.id,
+                        rating: record.rating === 'LIKE' ? null : 'LIKE',
+                      })
+                    }
+                  />
+                  <Button
+                    danger={record.rating === 'DISLIKE'}
+                    type={record.rating === 'DISLIKE' ? 'primary' : 'text'}
+                    icon={<DislikeOutlined />}
+                    aria-label="不满意"
+                    onClick={() =>
+                      feedbackMutation.mutate({
+                        recordId: record.id,
+                        rating: record.rating === 'DISLIKE' ? null : 'DISLIKE',
+                      })
+                    }
+                  />
+                </Perm>
+                <Perm permission={PERMISSIONS.QA.RECORD_DELETE}>
+                  <Popconfirm
+                    title="确定删除这条问答吗？"
+                    onConfirm={() => deleteRecordMutation.mutate(record.id)}
+                  >
+                    <Button danger type="text" icon={<DeleteOutlined />} aria-label="删除问答" />
+                  </Popconfirm>
+                </Perm>
+              </div>
+            </article>
+          ))}
+          {!recordsQuery.isLoading && !recordsQuery.data?.items.length ? (
+            <div className="qa-dataset-empty">
+              <Typography.Text type="secondary">当前数据集还没有问答数据</Typography.Text>
+              <Perm permission={PERMISSIONS.QA.RECORD_CREATE}>
+                <Button type="link" onClick={openCreateRecord}>
+                  插入第一条问答
+                </Button>
+              </Perm>
+            </div>
           ) : null}
-        </Form>
-      </Modal>
+        </div>
+
+        {(recordsQuery.data?.total ?? 0) > pageSize ? (
+          <div className="qa-dataset-pagination">
+            <Button disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>
+              上一页
+            </Button>
+            <Typography.Text>第 {page} 页</Typography.Text>
+            <Button
+              disabled={page >= (recordsQuery.data?.totalPages ?? 1)}
+              onClick={() => setPage((value) => value + 1)}
+            >
+              下一页
+            </Button>
+          </div>
+        ) : null}
+      </main>
+
+      <aside className="qa-dataset-metadata">
+        <Typography.Title level={4}>元数据</Typography.Title>
+        <dl>
+          <dt>数据集 ID</dt>
+          <dd>{activeDataset.id}</dd>
+          <dt>数据来源</dt>
+          <dd>空白数据集</dd>
+          <dt>数据集名称</dt>
+          <dd>{activeDataset.title}</dd>
+          <dt>创建时间</dt>
+          <dd>{formatDate(activeDataset.createdAt)}</dd>
+          <dt>更新时间</dt>
+          <dd>{formatDate(activeDataset.updatedAt)}</dd>
+        </dl>
+      </aside>
 
       <Modal
-        title={editingRecord ? '编辑问答记录' : '录入问答记录'}
+        title={activeDataset.title}
         open={recordModalOpen}
-        width={680}
+        width={600}
+        okText={editingRecord ? '更新数据' : '插入数据'}
         confirmLoading={createRecordMutation.isPending || updateRecordMutation.isPending}
         onCancel={closeRecordModal}
         onOk={() => recordForm.submit()}
       >
-        <Form
-          form={recordForm}
-          layout="vertical"
-          initialValues={{ generatedBy: 'HUMAN' }}
-          onFinish={submitRecord}
-        >
-          <Form.Item name="question" label="问题" rules={[{ required: true }]}>
-            <Input.TextArea rows={2} />
-          </Form.Item>
-          <Form.Item name="answer" label="回答" rules={[{ required: true }]}>
-            <Input.TextArea rows={4} />
+        <div className="qa-record-mode-title">QA 模式</div>
+        <Form form={recordForm} layout="vertical" onFinish={submitRecord}>
+          <Form.Item
+            name="question"
+            label="问题"
+            rules={[{ required: true, whitespace: true, message: '请输入问题' }]}
+          >
+            <Input.TextArea rows={3} placeholder="输入问题" />
           </Form.Item>
           <Form.Item
-            name="sessionId"
-            label={
-              <Space size={4}>
-                <span>所属会话</span>
-                <Perm permission={PERMISSIONS.QA.SESSION_CREATE}>
-                  <Button type="link" size="small" onClick={() => openCreateSession(true)}>
-                    新建会话
-                  </Button>
-                </Perm>
-                <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
-                  <Button
-                    type="link"
-                    size="small"
-                    disabled={!recordSession}
-                    onClick={() => recordSession && openEditSession(recordSession)}
-                  >
-                    编辑会话
-                  </Button>
-                </Perm>
-                <Perm permission={PERMISSIONS.QA.SESSION_DELETE}>
-                  <Popconfirm
-                    title="确定删除这个会话及其全部问答记录吗？"
-                    disabled={!recordSession}
-                    onConfirm={() =>
-                      recordSession && deleteSessionMutation.mutate(recordSession.id)
-                    }
-                  >
-                    <Button danger type="link" size="small" disabled={!recordSession}>
-                      删除会话
-                    </Button>
-                  </Popconfirm>
-                </Perm>
-              </Space>
-            }
-            rules={[{ required: true }]}
+            name="answer"
+            label="答案"
+            rules={[{ required: true, whitespace: true, message: '请输入答案' }]}
           >
-            <Select
-              showSearch
-              optionFilterProp="label"
-              placeholder="选择保存到哪个会话"
-              options={sessionsQuery.data?.items.map((session) => ({
-                value: session.id,
-                label: session.title,
-              }))}
-            />
+            <Input.TextArea rows={5} placeholder="输入答案" />
           </Form.Item>
-          <Space className="qa-record-meta" align="start">
-            <Form.Item name="generatedBy" label="生成方式">
-              <Select
-                onChange={(value) => {
-                  if (value !== 'AI') recordForm.setFieldValue('aiModel', undefined);
-                }}
-                options={[
-                  { value: 'HUMAN', label: '人工' },
-                  { value: 'AI', label: 'AI' },
-                  { value: 'SYSTEM', label: '系统' },
-                ]}
-              />
-            </Form.Item>
-            {generatedBy === 'AI' ? (
-              <Form.Item name="aiModel" label="AI 模型">
-                <Input placeholder="例如 gpt-4o" />
-              </Form.Item>
-            ) : null}
-          </Space>
-          <Typography.Title level={5}>答案依据（可选）</Typography.Title>
-          <Typography.Paragraph type="secondary">
-            选择答案来自哪个业务对象，并填写真正支持这个答案的原文片段。
-          </Typography.Paragraph>
-          <Space className="qa-record-meta" align="start">
-            <Form.Item name="citationSourceType" label="来源类型">
-              <Select
-                allowClear
-                placeholder="选择来源类型"
-                options={targetTypeOptions.filter((option) => option.value !== 'GLOBAL')}
-                onChange={() => {
-                  recordForm.setFieldValue('citationSourceId', undefined);
-                  recordForm.setFieldValue('citationTitle', undefined);
-                }}
-              />
-            </Form.Item>
-            {citationSourceType ? (
-              <Form.Item
-                name="citationSourceId"
-                label="来源对象"
-                rules={[{ required: true, message: '请选择来源对象' }]}
-              >
-                <Select
-                  allowClear
-                  showSearch
-                  optionFilterProp="label"
-                  loading={citationOptionsQuery.isLoading}
-                  placeholder={`选择${targetLabels[citationSourceType]}`}
-                  options={toSelectOptions(citationOptionsQuery.data)}
-                  onChange={(value) => {
-                    const option = citationOptionsQuery.data?.find((item) => item.id === value);
-                    recordForm.setFieldValue('citationTitle', option?.label);
-                  }}
-                />
-              </Form.Item>
-            ) : null}
-          </Space>
-          {citationSourceType ? (
-            <>
-              <Form.Item name="citationTitle" label="来源标题">
-                <Input placeholder="选择来源对象后自动填写，也可以修改" />
-              </Form.Item>
-              <Form.Item
-                name="citationSnippet"
-                label="依据原文"
-                rules={[{ required: true, message: '请填写支持答案的原文片段' }]}
-                extra="例如会议原话、项目说明或文档原文，用来说明答案从哪里得出。"
-              >
-                <Input.TextArea rows={3} />
-              </Form.Item>
-            </>
-          ) : null}
         </Form>
       </Modal>
+      {datasetModal}
     </div>
   );
 }
