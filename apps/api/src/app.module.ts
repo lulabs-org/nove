@@ -65,6 +65,7 @@ import { WecomModule } from './wecom/wecom.module';
 import { StripeModule } from './stripe/stripe.module';
 import { SmsModule } from './sms';
 import { SkillModule } from './skill/skill.module';
+import { QAModule } from './qa/qa.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -154,6 +155,7 @@ import { SkillModule } from './skill/skill.module';
     StripeModule,
     SmsModule,
     SkillModule,
+    QAModule,
   ],
   controllers: [AppController],
   providers: [
