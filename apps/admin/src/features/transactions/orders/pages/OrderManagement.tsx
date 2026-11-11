@@ -67,6 +67,7 @@ interface OrderFormValues {
   orderCode?: string;
   orderNumber?: string;
   externalId?: string;
+  tags?: string[];
   productId?: string;
   productName?: string;
   purchaserId?: string;
@@ -150,6 +151,7 @@ function buildPayload(values: OrderFormValues): CreateOrder {
     orderCode: cleanString(values.orderCode),
     orderNumber: cleanString(values.orderNumber),
     externalId: cleanString(values.externalId),
+    tags: [...new Set((values.tags ?? []).map((tag) => tag.trim()).filter(Boolean))],
     productId: cleanString(values.productId),
     productName: cleanString(values.productName),
     purchaserId: cleanString(values.purchaserId),
@@ -281,6 +283,7 @@ export function OrderManagement() {
       orderCode: '',
       orderNumber: '',
       externalId: '',
+      tags: [],
       productId: '',
       productName: '',
       purchaserId: '',
@@ -314,6 +317,7 @@ export function OrderManagement() {
       orderCode: record.orderCode,
       orderNumber: record.orderNumber,
       externalId: record.externalId ?? '',
+      tags: record.tags ?? [],
       productId: record.productId ?? '',
       productName: record.productName ?? record.product?.name ?? '',
       purchaserId: record.purchaserId ?? '',
@@ -438,6 +442,25 @@ export function OrderManagement() {
       key: 'channel',
       width: 140,
       render: (_: unknown, record) => record.channel?.name || record.channelId || '-',
+    },
+    {
+      title: '标签',
+      dataIndex: 'tags',
+      key: 'tags',
+      width: 160,
+      render: (tags: string[] | undefined) =>
+        tags?.length ? (
+          <Space size={[0, 4]} wrap>
+            {tags.slice(0, 3).map((tag) => (
+              <Tag key={tag} color="blue">
+                {tag}
+              </Tag>
+            ))}
+            {tags.length > 3 && <Tag>+{tags.length - 3}</Tag>}
+          </Space>
+        ) : (
+          '-'
+        ),
     },
     {
       title: '权益周期',
@@ -591,6 +614,15 @@ export function OrderManagement() {
           style={{ width: 140 }}
           options={PAYMENT_PROVIDER_OPTIONS}
           onChange={(value) => handleFilterChange('paymentProvider', value)}
+        />
+        <Search
+          allowClear
+          placeholder="按标签筛选"
+          style={{ width: 180 }}
+          onSearch={(value) => handleFilterChange('tag', value.trim())}
+          onChange={(event) => {
+            if (!event.target.value) handleFilterChange('tag', undefined);
+          }}
         />
         <RangePicker onChange={handlePaidRangeChange} />
         <Perm permission={PERMISSIONS.ORDER.CREATE}>
@@ -774,6 +806,17 @@ export function OrderManagement() {
             <Col span={8}>
               <Form.Item name="benefitEnd" label="权益结束">
                 <DatePicker showTime placeholder="留空自动推算" style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item name="tags" label="订单标签">
+                <Select
+                  mode="tags"
+                  tokenSeparators={[',', '，']}
+                  placeholder="输入标签后按回车添加"
+                />
               </Form.Item>
             </Col>
           </Row>

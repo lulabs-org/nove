@@ -9,6 +9,9 @@ model Order {
   // 外部平台订单号（建议按渠道维度做唯一）
   externalId String? @map("external_order_id")
 
+  /// 订单运营与业务标签（如：急需跟进、高客单、定制需求、已开票等）
+  tags String[] @default([]) @map("tags")
+
   // 可变/非核心字段（AI输出/实验字段等）
   metadata Json? @db.JsonB
 
@@ -102,6 +105,8 @@ model Order {
   @@index([productId, createdAt], map: "idx_orders_product_created_at")
   // 软删除过滤（常用）
   @@index([deletedAt], map: "idx_orders_deleted_at")
+  // 标签筛选
+  @@index([tags], map: "idx_orders_tags")
   @@map("orders")
 }
 

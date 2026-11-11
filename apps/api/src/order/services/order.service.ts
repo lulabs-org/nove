@@ -108,6 +108,7 @@ export class OrderService {
       orderNumber,
       externalId: this.trimNullable(dto.externalId),
       metadata: dto.metadata as Prisma.InputJsonValue | undefined,
+      tags: this.normalizeTags(dto.tags) ?? [],
       productName,
       email: this.trimNullable(dto.email),
       phone: this.trimNullable(dto.phone),
@@ -232,6 +233,7 @@ export class OrderService {
       orderNumber: this.trimNullable(dto.orderNumber),
       externalId: this.trimNullable(dto.externalId),
       metadata: dto.metadata as Prisma.InputJsonValue | undefined,
+      tags: this.normalizeTags(dto.tags),
       productName,
       email: this.trimNullable(dto.email),
       phone: this.trimNullable(dto.phone),
@@ -603,6 +605,11 @@ export class OrderService {
       ];
     }
 
+    const tag = query.tag?.trim();
+    if (tag) {
+      where.tags = { has: tag };
+    }
+
     if (query.status) where.status = query.status;
     if (query.currency) where.currency = query.currency;
     if (query.paymentProvider) where.paymentProvider = query.paymentProvider;
@@ -649,6 +656,12 @@ export class OrderService {
     return sortField ? { [sortField]: direction } : { createdAt: 'desc' };
   }
 
+  // 标签规范化：trim、去空、去重（与 Project 标签规则一致）
+  private normalizeTags(value?: string[]): string[] | undefined {
+    if (value === undefined) return undefined;
+    return [...new Set(value.map((item) => item.trim()).filter(Boolean))];
+  }
+
   private trimNullable(value?: string | null): string | undefined {
     if (value === undefined || value === null) return undefined;
     const trimmed = value.trim();
@@ -692,6 +705,7 @@ export class OrderService {
       orderNumber: order.orderNumber,
       externalId: order.externalId,
       metadata: order.metadata,
+      tags: order.tags,
       productId: order.productId,
       productName: order.productName,
       purchaserId: order.purchaserId,

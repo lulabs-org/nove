@@ -25,6 +25,7 @@ const mockOrder = (
   orderNumber: '2024010110001',
   externalId: null,
   metadata: null,
+  tags: [],
   productId: 'prod-1',
   productName: '年度会员',
   purchaserId: 'user-1',
@@ -124,6 +125,100 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
         'order-1',
         expect.objectContaining({ currentOwner: undefined }),
       );
+    });
+  });
+
+  describe('tags', () => {
+    it('normalizes tags on create: trims, drops blanks and de-duplicates', async () => {
+      repository.findByOrderCode.mockResolvedValue(null);
+      repository.findByOrderNumber.mockResolvedValue(null);
+      repository.create.mockResolvedValue(
+        mockOrder({ tags: ['急需跟进', '大客户'] }),
+      );
+
+      const result = await service.create({
+        amount: 100,
+        tags: [' 急需跟进 ', '大客户', '急需跟进', '  '],
+      });
+
+      expect(repository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ tags: ['急需跟进', '大客户'] }),
+      );
+      expect(result.tags).toEqual(['急需跟进', '大客户']);
+    });
+
+    it('defaults tags to an empty array on create', async () => {
+      repository.findByOrderCode.mockResolvedValue(null);
+      repository.findByOrderNumber.mockResolvedValue(null);
+      repository.create.mockResolvedValue(mockOrder());
+
+      await service.create({ amount: 100 });
+
+      expect(repository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ tags: [] }),
+      );
+    });
+
+    it('replaces tags on update when provided', async () => {
+      repository.findById.mockResolvedValue(mockOrder({ tags: ['旧标签'] }));
+      repository.update.mockResolvedValue(mockOrder({ tags: ['已开发票'] }));
+
+      await service.update('order-1', { tags: ['已开发票', ' 已开发票 '] });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        'order-1',
+        expect.objectContaining({ tags: ['已开发票'] }),
+      );
+    });
+
+    it('clears tags on update when an empty array is provided', async () => {
+      repository.findById.mockResolvedValue(mockOrder({ tags: ['旧标签'] }));
+      repository.update.mockResolvedValue(mockOrder());
+
+      await service.update('order-1', { tags: [] });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        'order-1',
+        expect.objectContaining({ tags: [] }),
+      );
+    });
+
+    it('keeps tags untouched on update when the field is omitted', async () => {
+      repository.findById.mockResolvedValue(mockOrder({ tags: ['旧标签'] }));
+      repository.update.mockResolvedValue(mockOrder({ tags: ['旧标签'] }));
+
+      await service.update('order-1', {});
+
+      expect(repository.update).toHaveBeenCalledWith(
+        'order-1',
+        expect.objectContaining({ tags: undefined }),
+      );
+    });
+
+    it('filters the list by tag', async () => {
+      repository.findMany.mockResolvedValue({ items: [], total: 0 });
+
+      await service.findAll({ tag: ' 急需跟进 ' });
+
+      expect(repository.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            AND: [
+              expect.anything(),
+              expect.objectContaining({ tags: { has: '急需跟进' } }),
+            ],
+          },
+        }),
+      );
+    });
+
+    it('does not filter by tag when the tag is blank', async () => {
+      repository.findMany.mockResolvedValue({ items: [], total: 0 });
+
+      await service.findAll({ tag: '   ' });
+
+      const { where } = repository.findMany.mock.calls[0][0];
+      expect(JSON.stringify(where)).not.toContain('"tags"');
     });
   });
 
