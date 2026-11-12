@@ -72,8 +72,16 @@
   padding: 22px 0 18px;
 }
 
+.qa-dataset-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+}
+
 .qa-dataset-search {
-  width: min(360px, 45%);
+  width: min(260px, 100%);
 }
 
 .qa-record-card-list {

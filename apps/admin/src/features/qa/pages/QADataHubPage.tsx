@@ -104,11 +104,9 @@ export function QADataHubPage() {
   const createDatasetMutation = useMutation({
     mutationFn: (values: DatasetFormValues) =>
       qaApi.createSession({ title: values.title.trim(), targetType: 'GLOBAL' }),
-    onSuccess: (dataset) => {
+    onSuccess: () => {
       message.success('空白数据集创建成功');
       closeDatasetModal();
-      setActiveDatasetId(dataset.id);
-      setPage(1);
       queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
     },
     onError: () => message.error('空白数据集创建失败'),
@@ -201,7 +199,6 @@ export function QADataHubPage() {
         </Space>
       ),
     },
-    { title: '数据来源', width: 150, render: () => '空白数据集' },
     { title: '创建时间', dataIndex: 'createdAt', width: 190, render: formatDate },
     { title: '更新时间', dataIndex: 'updatedAt', width: 190, render: formatDate },
     { title: '状态', width: 110, render: () => <Tag color="success">已就绪</Tag> },
@@ -312,7 +309,22 @@ export function QADataHubPage() {
               <Typography.Title level={3}>{activeDataset.title}</Typography.Title>
             </div>
           </div>
-          <Space>
+          <div className="qa-dataset-detail-actions">
+            <Input.Search
+              className="qa-dataset-search"
+              allowClear
+              placeholder="搜索相关数据"
+              onSearch={(value) => {
+                setKeyword(value.trim() || undefined);
+                setPage(1);
+              }}
+              onChange={(event) => {
+                if (!event.target.value) {
+                  setKeyword(undefined);
+                  setPage(1);
+                }
+              }}
+            />
             <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
               <Button icon={<EditOutlined />} onClick={() => openEditDataset(activeDataset)}>
                 编辑数据集
@@ -323,7 +335,7 @@ export function QADataHubPage() {
                 插入
               </Button>
             </Perm>
-          </Space>
+          </div>
         </div>
 
         <div className="qa-dataset-summary">
@@ -331,21 +343,6 @@ export function QADataHubPage() {
             <Typography.Text>{recordsQuery.data?.total ?? 0} 组数据</Typography.Text>
             <Tag color="success">已就绪</Tag>
           </Space>
-          <Input.Search
-            className="qa-dataset-search"
-            allowClear
-            placeholder="搜索相关数据"
-            onSearch={(value) => {
-              setKeyword(value.trim() || undefined);
-              setPage(1);
-            }}
-            onChange={(event) => {
-              if (!event.target.value) {
-                setKeyword(undefined);
-                setPage(1);
-              }
-            }}
-          />
         </div>
 
         <div className="qa-record-card-list">
@@ -430,8 +427,6 @@ export function QADataHubPage() {
         <dl>
           <dt>数据集 ID</dt>
           <dd>{activeDataset.id}</dd>
-          <dt>数据来源</dt>
-          <dd>空白数据集</dd>
           <dt>数据集名称</dt>
           <dd>{activeDataset.title}</dd>
           <dt>创建时间</dt>
