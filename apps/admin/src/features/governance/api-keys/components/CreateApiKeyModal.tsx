@@ -111,16 +111,13 @@ export function CreateApiKeyModal({
               API Key
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <code
-                style={{
-                  flex: 1,
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  wordBreak: 'break-all',
-                }}
-              >
-                {result.key}
-              </code>
+              <Input.Password
+                readOnly
+                autoComplete="off"
+                value={result.key}
+                aria-label="API Key"
+                style={{ flex: 1, fontFamily: 'monospace' }}
+              />
               <Button
                 type="primary"
                 icon={copied ? <CheckOutlined /> : <CopyOutlined />}

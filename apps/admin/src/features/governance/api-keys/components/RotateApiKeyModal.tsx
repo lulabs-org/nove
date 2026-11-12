@@ -3,6 +3,7 @@ import Button from 'antd/es/button';
 import message from 'antd/es/message';
 import { CopyOutlined } from '@ant-design/icons';
 import type { RotateApiKeyResult } from '../types';
+import Input from 'antd/es/input';
 
 interface RotateApiKeyModalProps {
   open: boolean;
@@ -42,22 +43,13 @@ export function RotateApiKeyModal({
           <div style={{ marginBottom: 16, color: '#ff4d4f', fontWeight: 500 }}>
             ⚠️ 请立即复制您的新 API Key，它只会显示这一次！
           </div>
-          <div
-            style={{
-              padding: 12,
-              backgroundColor: '#f5f5f5',
-              borderRadius: 4,
-              fontFamily: 'monospace',
-              fontSize: 14,
-              wordBreak: 'break-all',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 8,
-            }}
-          >
-            <span>{result.key}</span>
-          </div>
+          <Input.Password
+            readOnly
+            autoComplete="off"
+            value={result.key}
+            aria-label="API Key"
+            style={{ fontFamily: 'monospace' }}
+          />
           <div style={{ marginTop: 16, color: '#666', fontSize: 12 }}>
             <p>• ID: {result.id}</p>
             <p>• 名称: {result.name}</p>
