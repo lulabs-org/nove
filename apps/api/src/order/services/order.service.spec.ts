@@ -90,6 +90,7 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
       channelExists: jest.fn(),
       executeBenefitAdjustment: jest.fn(),
       findBenefitAdjustments: jest.fn(),
+      findTagLists: jest.fn(),
     } as unknown as jest.Mocked<OrderRepository>;
 
     const policyService = new OrderPolicyService(new OrderAbilityFactory());
@@ -219,6 +220,47 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
 
       const { where } = repository.findMany.mock.calls[0][0];
       expect(JSON.stringify(where)).not.toContain('"tags"');
+    });
+  });
+
+  describe('listTagOptions', () => {
+    it('counts each tag once per order and sorts by count then name', async () => {
+      repository.findTagLists.mockResolvedValue([
+        ['急需跟进', '大客户'],
+        ['急需跟进', '急需跟进'],
+        ['已开发票'],
+      ]);
+
+      const result = await service.listTagOptions();
+
+      expect(result.items).toEqual([
+        { tag: '急需跟进', count: 2 },
+        { tag: '大客户', count: 1 },
+        { tag: '已开发票', count: 1 },
+      ]);
+    });
+
+    it('caps the number of returned tags', async () => {
+      repository.findTagLists.mockResolvedValue([
+        Array.from({ length: 250 }, (_, i) => `tag-${i}`),
+      ]);
+
+      const result = await service.listTagOptions();
+
+      expect(result.items).toHaveLength(200);
+    });
+
+    it('only reads non-deleted, tagged orders within the accessible scope', async () => {
+      repository.findTagLists.mockResolvedValue([]);
+
+      await service.listTagOptions();
+
+      expect(repository.findTagLists).toHaveBeenCalledWith({
+        AND: [
+          expect.anything(),
+          { deletedAt: null, NOT: { tags: { isEmpty: true } } },
+        ],
+      });
     });
   });
 

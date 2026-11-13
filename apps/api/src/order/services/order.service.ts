@@ -17,6 +17,7 @@ import {
   OrderDto,
   OrderListResponse,
   OrderRelationDto,
+  OrderTagOptionListResponse,
   QueryOrderDto,
   UnfreezeOrderDto,
   UpdateOrderDto,
@@ -43,6 +44,9 @@ const SORT_FIELD_MAP: Record<
   financialClosedAt: 'financialClosedAt',
   settledAt: 'settledAt',
 };
+
+// 标签候选数量上限：标签是低基数数据，由前端 Select 做本地搜索
+const TAG_OPTIONS_LIMIT = 200;
 
 @Injectable()
 export class OrderService {
@@ -175,6 +179,35 @@ export class OrderService {
       pageSize,
       totalPages: Math.ceil(total / pageSize),
     };
+  }
+
+  /**
+   * 已有标签候选：按使用数量倒序，套用与订单列表相同的数据权限，
+   * 避免通过候选项看到无权查看的订单的标签。
+   */
+  async listTagOptions(
+    auth?: AuthContext | null,
+  ): Promise<OrderTagOptionListResponse> {
+    const where: Prisma.OrderWhereInput = {
+      AND: [
+        this.orderPolicyService.getAccessibleWhere(auth),
+        { deletedAt: null, NOT: { tags: { isEmpty: true } } },
+      ],
+    };
+
+    const counts = new Map<string, number>();
+    for (const tags of await this.orderRepository.findTagLists(where)) {
+      for (const tag of new Set(tags)) {
+        counts.set(tag, (counts.get(tag) ?? 0) + 1);
+      }
+    }
+
+    const items = [...counts.entries()]
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, 'zh-CN'))
+      .slice(0, TAG_OPTIONS_LIMIT);
+
+    return { items };
   }
 
   async findById(id: string, auth?: AuthContext | null): Promise<OrderDto> {

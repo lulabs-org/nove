@@ -66,6 +66,15 @@ export interface OrderChannelOptionList {
   items: OrderChannelOption[];
 }
 
+export interface OrderTagOption {
+  tag: string;
+  count: number;
+}
+
+export interface OrderTagOptionList {
+  items: OrderTagOption[];
+}
+
 export interface Order {
   id: string;
   orderCode: string;

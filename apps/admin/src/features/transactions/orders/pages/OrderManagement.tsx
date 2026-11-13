@@ -16,6 +16,7 @@ import Tooltip from 'antd/es/tooltip';
 import type { TableProps } from 'antd/es/table';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
+import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import {
   ClockCircleOutlined,
@@ -206,6 +207,12 @@ export function OrderManagement() {
     queryKey: 'orders',
     queryFn: (params) => orderApi.list(params),
     params: filters,
+  });
+
+  // 已有标签（订单增删改会使 'orders' 前缀的查询失效，候选随之刷新）
+  const { data: tagOptions, isFetching: tagOptionsLoading } = useQuery({
+    queryKey: ['orders', 'tag-options'],
+    queryFn: () => orderApi.getTagOptions(),
   });
 
   const createMutation = useTableMutation({
@@ -615,14 +622,19 @@ export function OrderManagement() {
           options={PAYMENT_PROVIDER_OPTIONS}
           onChange={(value) => handleFilterChange('paymentProvider', value)}
         />
-        <Search
+        <Select
           allowClear
+          showSearch={{ optionFilterProp: 'value' }}
           placeholder="按标签筛选"
           style={{ width: 180 }}
-          onSearch={(value) => handleFilterChange('tag', value.trim())}
-          onChange={(event) => {
-            if (!event.target.value) handleFilterChange('tag', undefined);
-          }}
+          loading={tagOptionsLoading}
+          value={filters.tag as string | undefined}
+          optionLabelProp="value"
+          options={tagOptions?.items.map(({ tag, count }) => ({
+            value: tag,
+            label: `${tag} (${count})`,
+          }))}
+          onChange={(value) => handleFilterChange('tag', value)}
         />
         <RangePicker onChange={handlePaidRangeChange} />
         <Perm permission={PERMISSIONS.ORDER.CREATE}>

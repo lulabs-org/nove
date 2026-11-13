@@ -26,6 +26,7 @@ import {
   CreateOrderDto,
   OrderDto,
   OrderListResponse,
+  OrderTagOptionListResponse,
   QueryOrderDto,
   UpdateOrderDto,
   UpdateOrderStatusDto,
@@ -71,6 +72,24 @@ export class OrderController {
     @Auth() auth?: AuthContext,
   ): Promise<OrderListResponse> {
     return this.orderService.findAll(query, auth);
+  }
+
+  @Get('tag-options')
+  @RequirePermissions('order:read')
+  @ApiOperation({
+    summary: '订单标签候选',
+    description: '获取当前用户可见订单上已有的标签及使用数量，用于标签筛选下拉',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '已有标签',
+    type: OrderTagOptionListResponse,
+  })
+  @ApiResponse({ status: 401, description: '未授权' })
+  async listTagOptions(
+    @Auth() auth?: AuthContext,
+  ): Promise<OrderTagOptionListResponse> {
+    return this.orderService.listTagOptions(auth);
   }
 
   @Get(':id')
