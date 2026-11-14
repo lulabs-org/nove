@@ -624,16 +624,12 @@ export function OrderManagement() {
         />
         <Select
           allowClear
-          showSearch={{ optionFilterProp: 'value' }}
+          showSearch
           placeholder="按标签筛选"
           style={{ width: 180 }}
           loading={tagOptionsLoading}
           value={filters.tag as string | undefined}
-          optionLabelProp="value"
-          options={tagOptions?.items.map(({ tag, count }) => ({
-            value: tag,
-            label: `${tag} (${count})`,
-          }))}
+          options={tagOptions?.items.map((tag) => ({ value: tag }))}
           onChange={(value) => handleFilterChange('tag', value)}
         />
         <RangePicker onChange={handlePaidRangeChange} />

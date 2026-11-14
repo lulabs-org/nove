@@ -224,7 +224,7 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
   });
 
   describe('listTagOptions', () => {
-    it('counts each tag once per order and sorts by count then name', async () => {
+    it('returns distinct tags sorted by name', async () => {
       repository.findTagLists.mockResolvedValue([
         ['急需跟进', '大客户'],
         ['急需跟进', '急需跟进'],
@@ -233,11 +233,11 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
 
       const result = await service.listTagOptions();
 
-      expect(result.items).toEqual([
-        { tag: '急需跟进', count: 2 },
-        { tag: '大客户', count: 1 },
-        { tag: '已开发票', count: 1 },
-      ]);
+      expect(result.items).toEqual(
+        ['急需跟进', '大客户', '已开发票'].sort((a, b) =>
+          a.localeCompare(b, 'zh-CN'),
+        ),
+      );
     });
 
     it('caps the number of returned tags', async () => {

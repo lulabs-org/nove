@@ -78,7 +78,7 @@ export class OrderController {
   @RequirePermissions('order:read')
   @ApiOperation({
     summary: '订单标签候选',
-    description: '获取当前用户可见订单上已有的标签及使用数量，用于标签筛选下拉',
+    description: '获取当前用户可见订单上已有的标签，用于标签筛选下拉',
   })
   @ApiResponse({
     status: 200,

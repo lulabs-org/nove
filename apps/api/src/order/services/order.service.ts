@@ -182,7 +182,7 @@ export class OrderService {
   }
 
   /**
-   * 已有标签候选：按使用数量倒序，套用与订单列表相同的数据权限，
+   * 已有标签候选：去重后按名称排序，套用与订单列表相同的数据权限，
    * 避免通过候选项看到无权查看的订单的标签。
    */
   async listTagOptions(
@@ -195,16 +195,11 @@ export class OrderService {
       ],
     };
 
-    const counts = new Map<string, number>();
-    for (const tags of await this.orderRepository.findTagLists(where)) {
-      for (const tag of new Set(tags)) {
-        counts.set(tag, (counts.get(tag) ?? 0) + 1);
-      }
-    }
-
-    const items = [...counts.entries()]
-      .map(([tag, count]) => ({ tag, count }))
-      .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, 'zh-CN'))
+    const tags = new Set(
+      (await this.orderRepository.findTagLists(where)).flat(),
+    );
+    const items = [...tags]
+      .sort((a, b) => a.localeCompare(b, 'zh-CN'))
       .slice(0, TAG_OPTIONS_LIMIT);
 
     return { items };
