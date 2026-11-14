@@ -685,8 +685,8 @@ export class OrderService {
   }
 
   // 标签规范化：trim、去空、去重（与 Project 标签规则一致）
-  private normalizeTags(value?: string[]): string[] | undefined {
-    if (value === undefined) return undefined;
+  private normalizeTags(value?: string[] | null): string[] | undefined {
+    if (value === undefined || value === null) return undefined;
     return [...new Set(value.map((item) => item.trim()).filter(Boolean))];
   }
 

@@ -184,6 +184,18 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
       );
     });
 
+    it('treats null tags like an omitted field instead of throwing', async () => {
+      repository.findById.mockResolvedValue(mockOrder({ tags: ['旧标签'] }));
+      repository.update.mockResolvedValue(mockOrder({ tags: ['旧标签'] }));
+
+      await service.update('order-1', { tags: null as unknown as string[] });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        'order-1',
+        expect.objectContaining({ tags: undefined }),
+      );
+    });
+
     it('keeps tags untouched on update when the field is omitted', async () => {
       repository.findById.mockResolvedValue(mockOrder({ tags: ['旧标签'] }));
       repository.update.mockResolvedValue(mockOrder({ tags: ['旧标签'] }));

@@ -106,7 +106,7 @@ model Order {
   // 软删除过滤（常用）
   @@index([deletedAt], map: "idx_orders_deleted_at")
   // 标签筛选
-  @@index([tags], map: "idx_orders_tags")
+  @@index([tags], type: Gin, map: "idx_orders_tags")
   @@map("orders")
 }
 
