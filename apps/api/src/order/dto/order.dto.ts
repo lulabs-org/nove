@@ -37,6 +37,9 @@ export class OrderDto {
   @ApiPropertyOptional({ description: '扩展元数据', nullable: true })
   metadata: Prisma.JsonValue | null;
 
+  @ApiProperty({ description: '订单标签数组', type: [String], default: [] })
+  tags: string[];
+
   @ApiPropertyOptional({ description: '产品 ID', nullable: true })
   productId: string | null;
 

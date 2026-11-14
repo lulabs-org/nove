@@ -66,12 +66,17 @@ export interface OrderChannelOptionList {
   items: OrderChannelOption[];
 }
 
+export interface OrderTagOptionList {
+  items: string[];
+}
+
 export interface Order {
   id: string;
   orderCode: string;
   orderNumber: string;
   externalId: string | null;
   metadata: Record<string, unknown> | null;
+  tags: string[];
   productId: string | null;
   productName: string | null;
   purchaserId: string | null;
@@ -112,6 +117,7 @@ export interface CreateOrder {
   orderCode?: string;
   orderNumber?: string;
   externalId?: string;
+  tags?: string[];
   productId?: string;
   productName?: string;
   purchaserId?: string;
@@ -140,6 +146,7 @@ export type UpdateOrder = Partial<CreateOrder>;
 
 export interface OrderListParams extends TableQueryParams {
   keyword?: string;
+  tag?: string;
   status?: OrderStatus;
   currency?: Currency;
   paymentProvider?: PaymentProvider;

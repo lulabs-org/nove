@@ -143,6 +143,14 @@ export class OrderRepository {
     return { items, total };
   }
 
+  async findTagLists(where: Prisma.OrderWhereInput): Promise<string[][]> {
+    const rows = await this.prisma.order.findMany({
+      where,
+      select: { tags: true },
+    });
+    return rows.map((row) => row.tags);
+  }
+
   async update(
     id: string,
     data: Prisma.OrderUpdateInput,

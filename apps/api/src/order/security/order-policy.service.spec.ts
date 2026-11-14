@@ -19,6 +19,7 @@ describe('OrderPolicyService', () => {
     orderNumber: 'ON001',
     externalId: null,
     metadata: null,
+    tags: [],
     productId: 'prod-1',
     productName: '测试课程',
     purchaserId: 'user-purchaser',
