@@ -11,6 +11,7 @@ describe('createOrderAbility', () => {
     orderNumber: 'ON001',
     externalId: null,
     metadata: null,
+    tags: [],
     productId: 'prod-1',
     productName: 'VIP 课程',
     purchaserId: 'user-purchaser',

@@ -17,6 +17,7 @@ import {
   OrderDto,
   OrderListResponse,
   OrderRelationDto,
+  OrderTagOptionListResponse,
   QueryOrderDto,
   UnfreezeOrderDto,
   UpdateOrderDto,
@@ -43,6 +44,9 @@ const SORT_FIELD_MAP: Record<
   financialClosedAt: 'financialClosedAt',
   settledAt: 'settledAt',
 };
+
+// 标签候选数量上限：标签是低基数数据，由前端 Select 做本地搜索
+const TAG_OPTIONS_LIMIT = 200;
 
 @Injectable()
 export class OrderService {
@@ -108,6 +112,7 @@ export class OrderService {
       orderNumber,
       externalId: this.trimNullable(dto.externalId),
       metadata: dto.metadata as Prisma.InputJsonValue | undefined,
+      tags: this.normalizeTags(dto.tags) ?? [],
       productName,
       email: this.trimNullable(dto.email),
       phone: this.trimNullable(dto.phone),
@@ -176,6 +181,30 @@ export class OrderService {
     };
   }
 
+  /**
+   * 已有标签候选：去重后按名称排序，套用与订单列表相同的数据权限，
+   * 避免通过候选项看到无权查看的订单的标签。
+   */
+  async listTagOptions(
+    auth?: AuthContext | null,
+  ): Promise<OrderTagOptionListResponse> {
+    const where: Prisma.OrderWhereInput = {
+      AND: [
+        this.orderPolicyService.getAccessibleWhere(auth),
+        { deletedAt: null, NOT: { tags: { isEmpty: true } } },
+      ],
+    };
+
+    const tags = new Set(
+      (await this.orderRepository.findTagLists(where)).flat(),
+    );
+    const items = [...tags]
+      .sort((a, b) => a.localeCompare(b, 'zh-CN'))
+      .slice(0, TAG_OPTIONS_LIMIT);
+
+    return { items };
+  }
+
   async findById(id: string, auth?: AuthContext | null): Promise<OrderDto> {
     const order = await this.findActiveOrder(id);
     this.orderPolicyService.assertCanRead(order, auth);
@@ -232,6 +261,7 @@ export class OrderService {
       orderNumber: this.trimNullable(dto.orderNumber),
       externalId: this.trimNullable(dto.externalId),
       metadata: dto.metadata as Prisma.InputJsonValue | undefined,
+      tags: this.normalizeTags(dto.tags),
       productName,
       email: this.trimNullable(dto.email),
       phone: this.trimNullable(dto.phone),
@@ -603,6 +633,11 @@ export class OrderService {
       ];
     }
 
+    const tag = query.tag?.trim();
+    if (tag) {
+      where.tags = { has: tag };
+    }
+
     if (query.status) where.status = query.status;
     if (query.currency) where.currency = query.currency;
     if (query.paymentProvider) where.paymentProvider = query.paymentProvider;
@@ -649,6 +684,12 @@ export class OrderService {
     return sortField ? { [sortField]: direction } : { createdAt: 'desc' };
   }
 
+  // 标签规范化：trim、去空、去重（与 Project 标签规则一致）
+  private normalizeTags(value?: string[] | null): string[] | undefined {
+    if (value === undefined || value === null) return undefined;
+    return [...new Set(value.map((item) => item.trim()).filter(Boolean))];
+  }
+
   private trimNullable(value?: string | null): string | undefined {
     if (value === undefined || value === null) return undefined;
     const trimmed = value.trim();
@@ -692,6 +733,7 @@ export class OrderService {
       orderNumber: order.orderNumber,
       externalId: order.externalId,
       metadata: order.metadata,
+      tags: order.tags,
       productId: order.productId,
       productName: order.productName,
       purchaserId: order.purchaserId,
