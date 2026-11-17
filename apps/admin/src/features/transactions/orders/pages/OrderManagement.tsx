@@ -463,7 +463,11 @@ export function OrderManagement() {
                 {tag}
               </Tag>
             ))}
-            {tags.length > 3 && <Tag>+{tags.length - 3}</Tag>}
+            {tags.length > 3 && (
+              <Tooltip title={tags.slice(3).join('、')}>
+                <Tag style={{ cursor: 'default' }}>+{tags.length - 3}</Tag>
+              </Tooltip>
+            )}
           </Space>
         ) : (
           '-'
