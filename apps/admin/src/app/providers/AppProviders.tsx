@@ -1,16 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
+import { queryClient } from '../../shared/lib/queryClient';
 import { createAppRouter } from '../routes/router';
 import { routes } from '../routes';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,
-      retry: 1,
-    },
-  },
-});
 
 const router = createAppRouter(routes);
 

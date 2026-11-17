@@ -13,8 +13,20 @@ vi.mock('../api/api', () => ({
   logout: apiMocks.logout,
 }));
 
+import { queryClient } from '../../../shared/lib/queryClient';
 import { authService } from '../api/service';
 import { useAuthStore } from './authStore';
+
+const cachedKey = ['orders', 'tag-options'];
+
+function seedQueryCache() {
+  queryClient.setQueryData(cachedKey, ['previous-account-data']);
+}
+
+function expectQueryCacheCleared() {
+  expect(queryClient.getQueryData(cachedKey)).toBeUndefined();
+  expect(queryClient.getQueryCache().getAll()).toHaveLength(0);
+}
 
 const mockUser: User = {
   id: 'user-1',
@@ -42,6 +54,7 @@ describe('useAuthStore', () => {
 
   afterEach(() => {
     localStorage.clear();
+    queryClient.clear();
   });
 
   describe('initialize', () => {
@@ -102,6 +115,39 @@ describe('useAuthStore', () => {
       expect(state.user).toEqual(mockUser);
     });
 
+    it('clears query cache left by a previous account before setting the new user', async () => {
+      seedQueryCache();
+      apiMocks.login.mockResolvedValueOnce({ accessToken: 'new-token' });
+      apiMocks.getMe.mockImplementationOnce(() => {
+        expectQueryCacheCleared();
+        return Promise.resolve(mockUser);
+      });
+
+      await useAuthStore.getState().login({
+        type: 'email_password',
+        email: 'test@proflu.cn',
+        password: 'Password123',
+      });
+
+      expectQueryCacheCleared();
+      expect(useAuthStore.getState().user).toEqual(mockUser);
+    });
+
+    it('keeps query cache when login API fails', async () => {
+      seedQueryCache();
+      apiMocks.login.mockRejectedValueOnce(new Error('Invalid credentials'));
+
+      await expect(
+        useAuthStore.getState().login({
+          type: 'email_password',
+          email: 'test@proflu.cn',
+          password: 'Password123',
+        })
+      ).rejects.toThrow('Invalid credentials');
+
+      expect(queryClient.getQueryData(cachedKey)).toEqual(['previous-account-data']);
+    });
+
     it('clears auth and re-throws error if getMe fails after login', async () => {
       apiMocks.login.mockResolvedValueOnce({ accessToken: 'temp-token' });
       apiMocks.getMe.mockRejectedValueOnce(new Error('Profile fetch failed'));
@@ -122,6 +168,7 @@ describe('useAuthStore', () => {
 
   describe('logout', () => {
     it('calls logout API and clears store & token on success', async () => {
+      seedQueryCache();
       authService.setToken('active-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
       apiMocks.logout.mockResolvedValueOnce(undefined);
@@ -130,22 +177,28 @@ describe('useAuthStore', () => {
 
       expect(apiMocks.logout).toHaveBeenCalled();
       expect(authService.getToken()).toBeNull();
+      expectQueryCacheCleared();
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(false);
       expect(state.user).toBeNull();
     });
 
-    it('preserves auth when logout API throws an error', async () => {
+    it('still clears local auth and query cache when logout API throws', async () => {
+      seedQueryCache();
       authService.setToken('active-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
       apiMocks.logout.mockRejectedValueOnce(new Error('Network error'));
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await useAuthStore.getState().logout();
 
-      expect(authService.getToken()).toBe('active-token');
+      expect(consoleError).toHaveBeenCalledWith('Logout error:', expect.any(Error));
+      consoleError.mockRestore();
+      expect(authService.getToken()).toBeNull();
+      expectQueryCacheCleared();
       const state = useAuthStore.getState();
-      expect(state.isAuthenticated).toBe(true);
-      expect(state.user).toEqual(mockUser);
+      expect(state.isAuthenticated).toBe(false);
+      expect(state.user).toBeNull();
     });
   });
 
@@ -170,24 +223,28 @@ describe('useAuthStore', () => {
 
   describe('clearAuth', () => {
     it('clears token and resets store state', () => {
+      seedQueryCache();
       authService.setToken('sample-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
 
       useAuthStore.getState().clearAuth();
 
       expect(authService.getToken()).toBeNull();
+      expectQueryCacheCleared();
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(false);
       expect(state.user).toBeNull();
     });
 
     it('responds to auth-unauthorized window event', () => {
+      seedQueryCache();
       authService.setToken('expired-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
 
       window.dispatchEvent(new Event('auth-unauthorized'));
 
       expect(authService.getToken()).toBeNull();
+      expectQueryCacheCleared();
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(false);
       expect(state.user).toBeNull();
