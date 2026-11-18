@@ -27,6 +27,8 @@ interface AuthState {
   setUser: (user: User | null) => void;
 }
 
+export const AUTH_STORAGE_KEY = 'auth-storage';
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -70,10 +72,11 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         try {
           await logoutApi();
-          authService.removeToken();
-          set({ user: null, isAuthenticated: false });
         } catch (error) {
           console.error('Logout error:', error);
+        } finally {
+          authService.removeToken();
+          set({ user: null, isAuthenticated: false });
         }
       },
 
@@ -91,7 +94,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: AUTH_STORAGE_KEY,
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
         user: state.user,
@@ -100,8 +103,29 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
+/**
+ * Keeps this tab on the same account as other tabs. zustand's persist only
+ * writes to localStorage; without this, a tab keeps showing the previous
+ * account after another tab logs out or signs in as someone else.
+ * Token refreshes only touch `auth_token`, so they do not trigger this.
+ */
+export function syncAuthFromStorageEvent(event: StorageEvent): void {
+  if (event.storageArea !== localStorage) return;
+
+  // `key === null` means another tab called localStorage.clear().
+  if (event.key === null || (event.key === AUTH_STORAGE_KEY && event.newValue === null)) {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    return;
+  }
+
+  if (event.key === AUTH_STORAGE_KEY) {
+    void useAuthStore.persist.rehydrate();
+  }
+}
+
 if (typeof window !== 'undefined') {
   window.addEventListener('auth-unauthorized', () => {
     useAuthStore.getState().clearAuth();
   });
+  window.addEventListener('storage', syncAuthFromStorageEvent);
 }
