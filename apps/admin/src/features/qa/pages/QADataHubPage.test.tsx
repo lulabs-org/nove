@@ -105,7 +105,7 @@ describe('Organization shared knowledge library', () => {
     state.api.listSessions.mockResolvedValue(page([dataset], 121));
     render(view());
     expect(await screen.findByText(dataset.title)).toBeInTheDocument();
-    expect(screen.getByText('组织共享知识库')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /新建数据集/ })).toBeInTheDocument();
     expect(screen.queryByText('已就绪')).not.toBeInTheDocument();
     fireEvent.click(screen.getByTitle('7'));
     await waitFor(() =>

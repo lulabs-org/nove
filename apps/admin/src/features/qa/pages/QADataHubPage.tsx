@@ -178,11 +178,11 @@ function SharedKnowledgePage() {
     mutationFn: (values: DatasetFormValues) =>
       qaApi.createSession({ title: values.title.trim(), targetType: 'GLOBAL' }),
     onSuccess: () => {
-      message.success('空白数据集创建成功');
+      message.success('数据集创建成功');
       closeDatasetModal();
       void refreshDatasets();
     },
-    onError: () => message.error('空白数据集创建失败'),
+    onError: () => message.error('数据集创建失败'),
   });
   const updateDatasetMutation = useMutation({
     mutationFn: ({ id, title }: { id: string; title: string }) =>
@@ -307,7 +307,7 @@ function SharedKnowledgePage() {
 
   const datasetModal = (
     <Modal
-      title={editingDataset ? '编辑数据集' : '新建空白数据集'}
+      title={editingDataset ? '编辑数据集' : '新建数据集'}
       open={datasetModalOpen}
       okText={editingDataset ? '保存' : '创建'}
       confirmLoading={createDatasetMutation.isPending || updateDatasetMutation.isPending}
@@ -334,47 +334,43 @@ function SharedKnowledgePage() {
   if (!activeDatasetId) {
     return (
       <div className="qa-dataset-page">
-        <div className="qa-dataset-list-header">
-          <div>
-            <Typography.Title level={3}>组织共享知识库</Typography.Title>
-            <Typography.Text type="secondary">组织成员按权限共享和维护问答内容</Typography.Text>
-          </div>
+        <div className="qa-dataset-list-toolbar">
+          <Space wrap>
+            <Input.Search
+              aria-label="搜索数据集"
+              placeholder="搜索数据集名称"
+              allowClear
+              maxLength={200}
+              onSearch={(value) => {
+                setDatasetKeyword(value.trim() || undefined);
+                setDatasetPage(1);
+              }}
+              onChange={(event) => {
+                if (!event.target.value) {
+                  setDatasetKeyword(undefined);
+                  setDatasetPage(1);
+                }
+              }}
+            />
+            <Select<QATargetType>
+              aria-label="数据集类型"
+              placeholder="全部类型"
+              allowClear
+              value={targetType}
+              style={{ width: 150 }}
+              options={Object.entries(targetLabels).map(([value, label]) => ({ value, label }))}
+              onChange={(value) => {
+                setTargetType(value);
+                setDatasetPage(1);
+              }}
+            />
+          </Space>
           <Perm permission={PERMISSIONS.QA.SESSION_CREATE}>
             <Button type="primary" icon={<PlusOutlined />} onClick={openCreateDataset}>
-              新建空白数据集
+              新建数据集
             </Button>
           </Perm>
         </div>
-        <Space wrap className="qa-dataset-list-filters">
-          <Input.Search
-            aria-label="搜索数据集"
-            placeholder="搜索数据集名称"
-            allowClear
-            maxLength={200}
-            onSearch={(value) => {
-              setDatasetKeyword(value.trim() || undefined);
-              setDatasetPage(1);
-            }}
-            onChange={(event) => {
-              if (!event.target.value) {
-                setDatasetKeyword(undefined);
-                setDatasetPage(1);
-              }
-            }}
-          />
-          <Select<QATargetType>
-            aria-label="数据集类型"
-            placeholder="全部类型"
-            allowClear
-            value={targetType}
-            style={{ width: 150 }}
-            options={Object.entries(targetLabels).map(([value, label]) => ({ value, label }))}
-            onChange={(value) => {
-              setTargetType(value);
-              setDatasetPage(1);
-            }}
-          />
-        </Space>
         {sessionsQuery.isError ? (
           <Alert
             type="error"

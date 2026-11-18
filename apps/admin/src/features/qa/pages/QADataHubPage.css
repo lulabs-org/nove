@@ -5,7 +5,7 @@
   border-radius: 12px;
 }
 
-.qa-dataset-list-header,
+.qa-dataset-list-toolbar,
 .qa-dataset-detail-header,
 .qa-dataset-summary {
   display: flex;
@@ -14,12 +14,12 @@
   gap: 20px;
 }
 
-.qa-dataset-list-header {
-  padding: 28px 32px;
-  border-bottom: 1px solid #edf0f5;
+.qa-dataset-list-toolbar {
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 0;
 }
 
-.qa-dataset-list-header h3,
 .qa-dataset-detail-header h3,
 .qa-dataset-title-row h3 {
   margin: 0;
@@ -87,10 +87,6 @@
 .qa-record-card-list {
   display: grid;
   gap: 14px;
-}
-
-.qa-dataset-list-filters {
-  padding: 16px 32px;
 }
 
 .qa-record-citations {
@@ -197,15 +193,13 @@
 }
 
 @media (max-width: 720px) {
-  .qa-dataset-list-header,
   .qa-dataset-detail-header,
   .qa-dataset-summary {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .qa-dataset-main,
-  .qa-dataset-list-header {
+  .qa-dataset-main {
     padding: 20px;
   }
 
