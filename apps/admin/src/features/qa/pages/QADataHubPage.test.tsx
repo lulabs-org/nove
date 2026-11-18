@@ -127,6 +127,15 @@ describe('Organization shared knowledge library', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
+  it('offers dataset editing only in the dataset list', async () => {
+    render(view());
+    const title = await screen.findByText(dataset.title);
+    expect(screen.getByRole('button', { name: '编辑数据集' })).toBeInTheDocument();
+    fireEvent.click(title);
+    await screen.findByText(record.question);
+    expect(screen.queryByRole('button', { name: /编辑数据集/ })).not.toBeInTheDocument();
+  });
+
   it('does not request or display record content without record read permission', async () => {
     state.permissions = new Set([PERMISSIONS.QA.SESSION_READ]);
     render(view('/qa?dataset=dataset-1'));

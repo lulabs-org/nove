@@ -487,11 +487,6 @@ function SharedKnowledgePage() {
                 setPage(1);
               }}
             />
-            <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
-              <Button icon={<EditOutlined />} onClick={() => openEditDataset(activeDataset)}>
-                编辑数据集
-              </Button>
-            </Perm>
             <Perm permission={PERMISSIONS.QA.RECORD_CREATE}>
               <Button type="primary" icon={<PlusOutlined />} onClick={openCreateRecord}>
                 插入
@@ -693,7 +688,6 @@ function SharedKnowledgePage() {
           </Form.Item>
         </Form>
       </Modal>
-      {datasetModal}
     </div>
   );
 }
