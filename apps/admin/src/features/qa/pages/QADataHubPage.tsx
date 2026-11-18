@@ -22,7 +22,7 @@ import Table from 'antd/es/table';
 import Tag from 'antd/es/tag';
 import Typography from 'antd/es/typography';
 import type { TableProps } from 'antd/es/table';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../../shared/hooks/useAuth';
 import { Perm } from '../../../app/guards/Perm';
@@ -31,14 +31,16 @@ import {
   qaApi,
   type QAFeedbackRating,
   type QARecord,
-  type QASession,
   type QASessionListItem,
   type QATargetType,
+  type UpdateSessionInput,
 } from '../api/qaApi';
 import './QADataHubPage.css';
 
 interface DatasetFormValues {
   title: string;
+  targetType?: QATargetType;
+  target?: { value: string; label: string };
 }
 
 interface RecordFormValues {
@@ -62,6 +64,7 @@ const targetLabels: Record<QATargetType, string> = {
   MINUTE: '妙记',
   DRIVE_FILE: '云盘文件',
 };
+const targetTypeOptions = Object.entries(targetLabels).map(([value, label]) => ({ value, label }));
 
 const datasetColors = ['#3155a4', '#176963', '#854375', '#884e22', '#554ba0', '#346482'];
 const titleSegments = new Intl.Segmenter('zh', { granularity: 'grapheme' });
@@ -117,13 +120,28 @@ function SharedKnowledgePage() {
   const queryClient = useQueryClient();
   const [datasetForm] = Form.useForm<DatasetFormValues>();
   const [recordForm] = Form.useForm<RecordFormValues>();
-  const [editingDataset, setEditingDataset] = useState<QASession>();
+  const [editingDataset, setEditingDataset] = useState<QASessionListItem>();
+  const [targetSearch, setTargetSearch] = useState('');
+  const [targetKeyword, setTargetKeyword] = useState('');
   const [editingRecord, setEditingRecord] = useState<QARecord>();
   const [datasetModalOpen, setDatasetModalOpen] = useState(false);
   const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [keyword, setKeyword] = useState<string>();
   const [page, setPage] = useState(1);
   const pageSize = 20;
+  const editingTargetType = Form.useWatch('targetType', datasetForm);
+  const hasTargetField = Boolean(editingTargetType && editingTargetType !== 'GLOBAL');
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setTargetKeyword(targetSearch.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [targetSearch]);
+
+  const targetOptionsQuery = useQuery({
+    queryKey: [...scope, 'target-options', editingTargetType, targetKeyword],
+    queryFn: () => qaApi.listTargetOptions(editingTargetType!, targetKeyword),
+    enabled: datasetModalOpen && Boolean(editingDataset) && hasTargetField,
+  });
 
   const datasetParams = { page: datasetPage, pageSize, keyword: datasetKeyword, targetType };
   const sessionsQuery = useQuery({
@@ -166,15 +184,23 @@ function SharedKnowledgePage() {
     setDatasetModalOpen(false);
     setEditingDataset(undefined);
     datasetForm.resetFields();
+    setTargetSearch('');
+    setTargetKeyword('');
   };
   const openCreateDataset = () => {
     setEditingDataset(undefined);
     datasetForm.resetFields();
     setDatasetModalOpen(true);
   };
-  const openEditDataset = (dataset: QASession) => {
+  const openEditDataset = (dataset: QASessionListItem) => {
     setEditingDataset(dataset);
-    datasetForm.setFieldsValue({ title: dataset.title });
+    datasetForm.setFieldsValue({
+      title: dataset.title,
+      targetType: dataset.targetType,
+      target: dataset.targetId
+        ? { value: dataset.targetId, label: dataset.targetName ?? '原关联对象不可用' }
+        : undefined,
+    });
     setDatasetModalOpen(true);
   };
   const closeRecordModal = () => {
@@ -208,10 +234,10 @@ function SharedKnowledgePage() {
     onError: () => message.error('数据集创建失败'),
   });
   const updateDatasetMutation = useMutation({
-    mutationFn: ({ id, title }: { id: string; title: string }) =>
-      qaApi.updateSession(id, { title: title.trim() }),
+    mutationFn: ({ id, values }: { id: string; values: UpdateSessionInput }) =>
+      qaApi.updateSession(id, values),
     onSuccess: () => {
-      message.success('数据集名称已更新');
+      message.success('数据集已更新');
       closeDatasetModal();
       void refreshDatasets();
     },
@@ -270,7 +296,17 @@ function SharedKnowledgePage() {
 
   const submitDataset = (values: DatasetFormValues) => {
     if (editingDataset) {
-      updateDatasetMutation.mutate({ id: editingDataset.id, title: values.title });
+      const selectedType = values.targetType ?? editingDataset.targetType;
+      const selectedId = selectedType === 'GLOBAL' ? null : (values.target?.value ?? null);
+      const targetChanged =
+        selectedType !== editingDataset.targetType || selectedId !== editingDataset.targetId;
+      updateDatasetMutation.mutate({
+        id: editingDataset.id,
+        values: {
+          title: values.title.trim(),
+          ...(targetChanged ? { targetType: selectedType, targetId: selectedId } : {}),
+        },
+      });
     } else {
       createDatasetMutation.mutate(values);
     }
@@ -355,6 +391,7 @@ function SharedKnowledgePage() {
       title={editingDataset ? '编辑数据集' : '新建数据集'}
       open={datasetModalOpen}
       okText={editingDataset ? '保存' : '创建'}
+      cancelText="取消"
       confirmLoading={createDatasetMutation.isPending || updateDatasetMutation.isPending}
       onCancel={closeDatasetModal}
       onOk={() => datasetForm.submit()}
@@ -367,11 +404,58 @@ function SharedKnowledgePage() {
         >
           <Input maxLength={200} placeholder="例如：产品常见问题" />
         </Form.Item>
-        {!editingDataset ? (
+        {editingDataset ? (
+          <>
+            <Form.Item name="targetType" label="数据集类型" rules={[{ required: true }]}>
+              <Select<QATargetType>
+                options={targetTypeOptions}
+                onChange={() => {
+                  datasetForm.setFieldValue('target', undefined);
+                  setTargetSearch('');
+                  setTargetKeyword('');
+                }}
+              />
+            </Form.Item>
+            {hasTargetField && editingTargetType && (
+              <Form.Item
+                name="target"
+                label="关联对象"
+                preserve={false}
+                rules={[{ required: true, message: '请选择关联对象' }]}
+              >
+                <Select
+                  labelInValue
+                  showSearch={{
+                    filterOption: false,
+                    searchValue: targetSearch,
+                    onSearch: setTargetSearch,
+                  }}
+                  onChange={() => setTargetSearch('')}
+                  loading={targetOptionsQuery.isFetching}
+                  placeholder={`搜索${targetLabels[editingTargetType]}名称`}
+                  options={targetOptionsQuery.data?.map(({ id, label, description }) => ({
+                    value: id,
+                    label: description ? `${label}（${description}）` : label,
+                  }))}
+                  notFoundContent={
+                    targetOptionsQuery.isFetching
+                      ? '正在加载关联对象'
+                      : targetOptionsQuery.isError
+                        ? '加载失败，请关闭下拉框后重试'
+                        : '没有匹配的关联对象'
+                  }
+                  onOpenChange={(open) => {
+                    if (open && targetOptionsQuery.isError) void targetOptionsQuery.refetch();
+                  }}
+                />
+              </Form.Item>
+            )}
+          </>
+        ) : (
           <Typography.Text type="secondary">
             创建后，同组织有权限的成员可查看和维护其中的问题与答案。
           </Typography.Text>
-        ) : null}
+        )}
       </Form>
     </Modal>
   );
@@ -403,7 +487,7 @@ function SharedKnowledgePage() {
               allowClear
               value={targetType}
               style={{ width: 150 }}
-              options={Object.entries(targetLabels).map(([value, label]) => ({ value, label }))}
+              options={targetTypeOptions}
               onChange={(value) => {
                 setTargetType(value);
                 setDatasetPage(1);

@@ -56,7 +56,7 @@ interface PageResult<T> {
 export interface CreateSessionInput {
   title: string;
   targetType?: QATargetType;
-  targetId?: string;
+  targetId?: string | null;
 }
 
 export interface QATargetOption {

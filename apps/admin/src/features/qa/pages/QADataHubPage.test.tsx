@@ -14,6 +14,7 @@ const state = vi.hoisted(() => ({
     listRecords: vi.fn(),
     createSession: vi.fn(),
     updateSession: vi.fn(),
+    listTargetOptions: vi.fn(),
     deleteSession: vi.fn(),
     createRecord: vi.fn(),
     updateRecord: vi.fn(),
@@ -156,6 +157,64 @@ describe('Organization shared knowledge library', () => {
     fireEvent.click(title);
     await screen.findByText(record.question);
     expect(screen.queryByRole('button', { name: /编辑数据集/ })).not.toBeInTheDocument();
+  });
+
+  it('requires an associated object when changing a dataset to a scoped type', async () => {
+    state.api.listTargetOptions.mockResolvedValue([
+      { id: 'project-1', label: '招生项目', description: null },
+    ]);
+    state.api.updateSession.mockResolvedValue(dataset);
+    render(view());
+    fireEvent.click(await screen.findByRole('button', { name: '编辑数据集' }));
+    const dialog = within(await screen.findByRole('dialog'));
+    fireEvent.mouseDown(dialog.getByRole('combobox', { name: '数据集类型' }));
+    fireEvent.click(
+      await screen.findByText('项目', { selector: '.ant-select-item-option-content' })
+    );
+    const target = await dialog.findByRole('combobox', { name: '关联对象' });
+    const save = dialog.getByRole('button', { name: /保\s*存/ });
+    fireEvent.click(save);
+    expect(await dialog.findByText('请选择关联对象')).toBeInTheDocument();
+    expect(state.api.updateSession).not.toHaveBeenCalled();
+    fireEvent.mouseDown(target);
+    fireEvent.click(
+      await screen.findByText('招生项目', { selector: '.ant-select-item-option-content' })
+    );
+    fireEvent.click(save);
+    await waitFor(() =>
+      expect(state.api.updateSession).toHaveBeenCalledWith(dataset.id, {
+        title: dataset.title,
+        targetType: 'PROJECT',
+        targetId: 'project-1',
+      })
+    );
+  });
+
+  it('prefills an existing association and clears it when switching to global', async () => {
+    state.api.listSessions.mockResolvedValue(
+      page([{ ...dataset, targetType: 'PROJECT', targetId: 'project-1', targetName: '招生项目' }])
+    );
+    state.api.listTargetOptions.mockResolvedValue([]);
+    state.api.updateSession.mockResolvedValue(dataset);
+    render(view());
+    fireEvent.click(await screen.findByRole('button', { name: '编辑数据集' }));
+    const dialog = within(await screen.findByRole('dialog'));
+    expect(await dialog.findByText('招生项目')).toBeInTheDocument();
+    fireEvent.mouseDown(dialog.getByRole('combobox', { name: '数据集类型' }));
+    fireEvent.click(
+      await screen.findByText('通用', { selector: '.ant-select-item-option-content' })
+    );
+    await waitFor(() =>
+      expect(dialog.queryByRole('combobox', { name: '关联对象' })).not.toBeInTheDocument()
+    );
+    fireEvent.click(dialog.getByRole('button', { name: /保\s*存/ }));
+    await waitFor(() =>
+      expect(state.api.updateSession).toHaveBeenCalledWith(dataset.id, {
+        title: dataset.title,
+        targetType: 'GLOBAL',
+        targetId: null,
+      })
+    );
   });
 
   it('does not request or display record content without record read permission', async () => {
