@@ -435,31 +435,36 @@ function SharedKnowledgePage() {
   return (
     <div className="qa-dataset-detail-page">
       <main className="qa-dataset-main">
-        <div className="qa-dataset-detail-header">
-          <div>
+        <header className="qa-dataset-detail-header">
+          <div className="qa-dataset-title-row">
             <Button
               type="text"
               icon={<ArrowLeftOutlined />}
-              onClick={() => {
-                setActiveDatasetId(undefined);
-                setKeyword(undefined);
-                setPage(1);
-              }}
-            >
-              返回
-            </Button>
-            <div className="qa-dataset-title-row">
-              <span className="qa-dataset-icon">Q</span>
+              aria-label="返回数据集列表"
+              title="返回数据集列表"
+              onClick={() => setActiveDatasetId(undefined)}
+            />
+            <div>
               <Typography.Title level={3}>{activeDataset.title}</Typography.Title>
+              <div className="qa-dataset-summary">
+                <Tag>组织共享</Tag>
+                <Tag>{targetLabels[activeDataset.targetType]}</Tag>
+                {canReadRecords && (
+                  <Typography.Text type="secondary">
+                    {recordsQuery.data?.total ?? 0} 条问答{keyword || rating ? '（筛选结果）' : ''}
+                  </Typography.Text>
+                )}
+              </div>
             </div>
           </div>
           <div className="qa-dataset-detail-actions">
             <Input.Search
               key={activeDatasetId}
               className="qa-dataset-search"
+              aria-label="搜索问答"
               disabled={!canReadRecords}
               allowClear
-              placeholder="搜索相关数据"
+              placeholder="搜索问答"
               onSearch={(value) => {
                 setKeyword(value.trim() || undefined);
                 setPage(1);
@@ -477,7 +482,7 @@ function SharedKnowledgePage() {
               allowClear
               disabled={!canReadRecords}
               value={rating}
-              style={{ width: 150 }}
+              className="qa-dataset-rating"
               options={[
                 { value: 'LIKE', label: '已认可' },
                 { value: 'DISLIKE', label: '待改进' },
@@ -488,24 +493,17 @@ function SharedKnowledgePage() {
               }}
             />
             <Perm permission={PERMISSIONS.QA.RECORD_CREATE}>
-              <Button type="primary" icon={<PlusOutlined />} onClick={openCreateRecord}>
-                插入
+              <Button
+                className="qa-record-create"
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={openCreateRecord}
+              >
+                插入问答
               </Button>
             </Perm>
           </div>
-        </div>
-
-        <div className="qa-dataset-summary">
-          <Space>
-            {canReadRecords && (
-              <Typography.Text>
-                {recordsQuery.data?.total ?? 0} 条问答{keyword || rating ? '（筛选结果）' : ''}
-              </Typography.Text>
-            )}
-            <Tag>组织共享</Tag>
-            <Tag>{targetLabels[activeDataset.targetType]}</Tag>
-          </Space>
-        </div>
+        </header>
 
         {!canReadRecords ? (
           <Alert type="info" title="你可以查看数据集信息，但没有查看问答内容的权限。" />
