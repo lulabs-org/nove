@@ -334,7 +334,6 @@ function SharedKnowledgePage() {
       ),
     },
     { title: '问答数', dataIndex: 'recordCount', width: '7%', align: 'center' },
-    { title: '创建人', dataIndex: 'creatorName', width: '13%', ellipsis: true },
     {
       title: '关联对象',
       dataIndex: 'targetType',
@@ -350,6 +349,7 @@ function SharedKnowledgePage() {
         </div>
       ),
     },
+    { title: '创建人', dataIndex: 'creatorName', width: '13%', ellipsis: true },
     { title: '创建时间', dataIndex: 'createdAt', width: '14%', render: formatDate },
     { title: '更新时间', dataIndex: 'updatedAt', width: '14%', render: formatDate },
     {
@@ -369,7 +369,12 @@ function SharedKnowledgePage() {
           </Perm>
           <Perm permission={PERMISSIONS.QA.SESSION_DELETE}>
             <Popconfirm
-              title="确定删除这个组织共享数据集吗？组织成员将无法再访问其中的问答。"
+              title="确定删除此数据集吗？"
+              description="删除后，组织成员将无法访问其中的问答。"
+              placement="topRight"
+              okText="删除"
+              cancelText="取消"
+              okButtonProps={{ danger: true }}
               onConfirm={() => deleteDatasetMutation.mutate(dataset.id)}
             >
               <Button
@@ -378,6 +383,9 @@ function SharedKnowledgePage() {
                 size="small"
                 icon={<DeleteOutlined />}
                 aria-label="删除数据集"
+                loading={
+                  deleteDatasetMutation.isPending && deleteDatasetMutation.variables === dataset.id
+                }
               />
             </Popconfirm>
           </Perm>
@@ -575,7 +583,7 @@ function SharedKnowledgePage() {
               title="返回数据集列表"
               onClick={() => setActiveDatasetId(undefined)}
             />
-            <div>
+            <div className="qa-dataset-heading">
               <Typography.Title level={3}>{activeDataset.title}</Typography.Title>
               <div className="qa-dataset-summary">
                 <Tag>组织共享</Tag>
@@ -729,7 +737,12 @@ function SharedKnowledgePage() {
                     </Perm>
                     <Perm permission={PERMISSIONS.QA.RECORD_DELETE}>
                       <Popconfirm
-                        title="确定永久删除这条共享问答吗？此操作无法恢复。"
+                        title="确定删除这条问答吗？"
+                        description="这条共享问答将被永久删除，无法恢复。"
+                        placement="topRight"
+                        okText="删除"
+                        cancelText="取消"
+                        okButtonProps={{ danger: true }}
                         onConfirm={() => deleteRecordMutation.mutate(record.id)}
                       >
                         <Button
@@ -737,6 +750,10 @@ function SharedKnowledgePage() {
                           type="text"
                           icon={<DeleteOutlined />}
                           aria-label="删除问答"
+                          loading={
+                            deleteRecordMutation.isPending &&
+                            deleteRecordMutation.variables === record.id
+                          }
                         />
                       </Popconfirm>
                     </Perm>

@@ -159,6 +159,23 @@ describe('Organization shared knowledge library', () => {
     expect(screen.queryByRole('button', { name: /编辑数据集/ })).not.toBeInTheDocument();
   });
 
+  it('deletes a dataset only after confirming the localized prompt', async () => {
+    state.api.deleteSession.mockResolvedValue(undefined);
+    render(view());
+    const trigger = await screen.findByRole('button', { name: '删除数据集' });
+    fireEvent.click(trigger);
+    const prompt = within(await screen.findByRole('tooltip'));
+    expect(prompt.getByText('删除后，组织成员将无法访问其中的问答。')).toBeInTheDocument();
+    fireEvent.click(prompt.getByRole('button', { name: /取\s*消/ }));
+    expect(state.api.deleteSession).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
+    fireEvent.click(trigger);
+    const confirmation = within(await screen.findByRole('tooltip'));
+    fireEvent.click(confirmation.getByRole('button', { name: /删\s*除/ }));
+    await waitFor(() => expect(state.api.deleteSession).toHaveBeenCalledTimes(1));
+    expect(state.api.deleteSession.mock.calls[0]?.[0]).toBe(dataset.id);
+  });
+
   it('requires an associated object when changing a dataset to a scoped type', async () => {
     state.api.listTargetOptions.mockResolvedValue([
       { id: 'project-1', label: '招生项目', description: null },
