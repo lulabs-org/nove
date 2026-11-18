@@ -11,7 +11,30 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 16px 0;
+  padding: 8px 0 12px;
+}
+
+.qa-dataset-page .ant-table-thead > tr > .ant-table-cell,
+.qa-dataset-page .ant-table-tbody > tr > .ant-table-cell {
+  padding-inline: 8px;
+}
+
+.qa-dataset-cell-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qa-dataset-cell-content > .ant-tag {
+  flex-shrink: 0;
+  margin-inline-end: 0;
+}
+
+.qa-dataset-cell-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .qa-dataset-title-row h3 {
@@ -29,6 +52,7 @@
 
 .qa-dataset-icon {
   display: inline-flex;
+  flex-shrink: 0;
   width: 28px;
   height: 28px;
   align-items: center;
@@ -36,7 +60,7 @@
   color: #fff;
   font-weight: 700;
   border-radius: 6px;
-  background: #3f6df6;
+  font-variant-numeric: tabular-nums;
 }
 
 .qa-dataset-detail-page {

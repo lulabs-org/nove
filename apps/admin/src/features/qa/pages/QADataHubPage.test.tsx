@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { QADataHubPage } from './QADataHubPage';
@@ -35,6 +35,9 @@ const dataset = {
   orgId: 'org-1',
   targetType: 'GLOBAL',
   targetId: null,
+  targetName: null,
+  creatorName: '创建成员',
+  recordCount: 0,
   createdAt: '2026-11-01T00:00:00Z',
   updatedAt: '2026-11-01T00:00:00Z',
 };
@@ -101,10 +104,29 @@ afterEach(async () => {
 });
 
 describe('Organization shared knowledge library', () => {
+  it('distinguishes similarly named datasets with title-based badges', async () => {
+    const titles = ['数据集1', '数据集2', '会话二'];
+    state.api.listSessions.mockResolvedValue(
+      page(titles.map((title) => ({ ...dataset, id: title, title })))
+    );
+    render(view());
+    for (const [title, symbol] of [
+      ['数据集1', '1'],
+      ['数据集2', '2'],
+      ['会话二', '会'],
+    ]) {
+      const row = await screen.findByRole('row', { name: new RegExp(title) });
+      expect(within(row).getByText(symbol)).toHaveAttribute('aria-hidden', 'true');
+    }
+  });
+
   it('shows coworkers datasets and requests server pagination beyond the first hundred', async () => {
     state.api.listSessions.mockResolvedValue(page([dataset], 121));
     render(view());
     expect(await screen.findByText(dataset.title)).toBeInTheDocument();
+    const row = within(screen.getByRole('row', { name: new RegExp(dataset.title) }));
+    expect(row.getByText('创建成员')).toBeInTheDocument();
+    expect(row.getByRole('cell', { name: '0' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /新建数据集/ })).toBeInTheDocument();
     expect(screen.queryByText('已就绪')).not.toBeInTheDocument();
     fireEvent.click(screen.getByTitle('7'));

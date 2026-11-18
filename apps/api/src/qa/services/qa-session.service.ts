@@ -52,8 +52,33 @@ export class QASessionService {
       targetId: query.targetId?.trim(),
       keyword: query.keyword?.trim(),
     });
+    const targetNames = new Map<string, string>();
+    await Promise.all(
+      [QATargetType.PROJECT, QATargetType.MINUTE, QATargetType.DRIVE_FILE].map(
+        async (type) => {
+          const ids = items.flatMap(({ targetType, targetId }) =>
+            targetType === type && targetId ? [targetId] : [],
+          );
+          if (!ids.length) return;
+          const targets = await this.findTargetOptions(
+            orgId,
+            type,
+            undefined,
+            ids,
+          );
+          for (const target of targets)
+            targetNames.set(`${type}:${target.id}`, target.label);
+        },
+      ),
+    );
     return {
-      items,
+      items: items.map(({ user, _count, ...session }) => ({
+        ...session,
+        creatorName: user.profile?.displayName?.trim() || user.username,
+        recordCount: _count.records,
+        targetName:
+          targetNames.get(`${session.targetType}:${session.targetId}`) ?? null,
+      })),
       total,
       page,
       pageSize,
@@ -100,13 +125,17 @@ export class QASessionService {
     orgId: string,
     targetType: QATargetType,
     keyword?: string,
+    ids?: string[],
   ) {
     const search = keyword?.trim();
+    const idFilter = ids ? { id: { in: ids } } : {};
+    const take = ids ? undefined : 50;
     if (targetType === QATargetType.GLOBAL) return [];
 
     if (targetType === QATargetType.PROJECT) {
       const projects = await this.prisma.project.findMany({
         where: {
+          ...idFilter,
           orgId,
           deletedAt: null,
           ...(search
@@ -120,7 +149,7 @@ export class QASessionService {
         },
         select: { id: true, title: true, code: true },
         orderBy: { updatedAt: 'desc' },
-        take: 50,
+        take,
       });
       return projects.map((project) => ({
         id: project.id,
@@ -132,6 +161,7 @@ export class QASessionService {
     if (targetType === QATargetType.MINUTE) {
       const minutes = await this.prisma.minute.findMany({
         where: {
+          ...idFilter,
           deletedAt: null,
           meeting: {
             orgId,
@@ -147,7 +177,7 @@ export class QASessionService {
           meeting: { select: { title: true } },
         },
         orderBy: { updatedAt: 'desc' },
-        take: 50,
+        take,
       });
       return minutes.map((minute) => ({
         id: minute.id,
@@ -158,6 +188,7 @@ export class QASessionService {
 
     const files = await this.prisma.driveFile.findMany({
       where: {
+        ...idFilter,
         node: {
           is: {
             deletedAt: null,
@@ -173,7 +204,7 @@ export class QASessionService {
         node: { select: { name: true, space: { select: { name: true } } } },
       },
       orderBy: { updatedAt: 'desc' },
-      take: 50,
+      take,
     });
     return files.map((file) => ({
       id: file.id,

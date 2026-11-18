@@ -32,6 +32,7 @@ import {
   type QAFeedbackRating,
   type QARecord,
   type QASession,
+  type QASessionListItem,
   type QATargetType,
 } from '../api/qaApi';
 import './QADataHubPage.css';
@@ -61,6 +62,28 @@ const targetLabels: Record<QATargetType, string> = {
   MINUTE: '妙记',
   DRIVE_FILE: '云盘文件',
 };
+
+const datasetColors = ['#3155a4', '#176963', '#854375', '#884e22', '#554ba0', '#346482'];
+const titleSegments = new Intl.Segmenter('zh', { granularity: 'grapheme' });
+
+function DatasetIcon({ title }: { title: string }) {
+  const name = title.trim();
+  const numberSuffix = name.match(/\d{1,2}$/u)?.[0];
+  const initial = titleSegments.segment(name).containing(0)?.segment;
+  let colorIndex = 0;
+  for (const character of name) {
+    colorIndex = (colorIndex * 31 + character.codePointAt(0)!) % datasetColors.length;
+  }
+  return (
+    <span
+      className="qa-dataset-icon"
+      aria-hidden="true"
+      style={{ backgroundColor: datasetColors[colorIndex] }}
+    >
+      {numberSuffix ?? initial ?? '·'}
+    </span>
+  );
+}
 
 export function QADataHubPage() {
   const { user } = useAuth();
@@ -260,33 +283,49 @@ function SharedKnowledgePage() {
     }
   };
 
-  const datasetColumns: TableProps<QASession>['columns'] = [
+  const datasetColumns: TableProps<QASessionListItem>['columns'] = [
     {
       title: '数据集名称',
       dataIndex: 'title',
+      width: '22%',
       render: (title: string) => (
-        <Space>
-          <span className="qa-dataset-icon">Q</span>
-          <Typography.Text strong>{title}</Typography.Text>
-        </Space>
+        <div className="qa-dataset-cell-content">
+          <DatasetIcon title={title} />
+          <Typography.Text className="qa-dataset-cell-label" strong title={title}>
+            {title}
+          </Typography.Text>
+        </div>
       ),
     },
-    { title: '创建时间', dataIndex: 'createdAt', width: 190, render: formatDate },
-    { title: '更新时间', dataIndex: 'updatedAt', width: 190, render: formatDate },
+    { title: '问答数', dataIndex: 'recordCount', width: '7%', align: 'center' },
+    { title: '创建人', dataIndex: 'creatorName', width: '13%', ellipsis: true },
     {
-      title: '类型',
+      title: '关联对象',
       dataIndex: 'targetType',
-      width: 110,
-      render: (value: QATargetType) => <Tag>{targetLabels[value]}</Tag>,
+      width: '22%',
+      render: (value: QATargetType, dataset) => (
+        <div className="qa-dataset-cell-content">
+          <Tag>{targetLabels[value]}</Tag>
+          {value !== 'GLOBAL' && (
+            <span className="qa-dataset-cell-label" title={dataset.targetName ?? undefined}>
+              {dataset.targetName ?? '关联对象不可用'}
+            </span>
+          )}
+        </div>
+      ),
     },
+    { title: '创建时间', dataIndex: 'createdAt', width: '14%', render: formatDate },
+    { title: '更新时间', dataIndex: 'updatedAt', width: '14%', render: formatDate },
     {
       title: '操作',
-      width: 110,
+      width: '8%',
+      align: 'center',
       render: (_, dataset) => (
-        <Space onClick={(event) => event.stopPropagation()}>
+        <Space size={4} onClick={(event) => event.stopPropagation()}>
           <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
             <Button
               type="text"
+              size="small"
               icon={<EditOutlined />}
               aria-label="编辑数据集"
               onClick={() => openEditDataset(dataset)}
@@ -297,7 +336,13 @@ function SharedKnowledgePage() {
               title="确定删除这个组织共享数据集吗？组织成员将无法再访问其中的问答。"
               onConfirm={() => deleteDatasetMutation.mutate(dataset.id)}
             >
-              <Button danger type="text" icon={<DeleteOutlined />} aria-label="删除数据集" />
+              <Button
+                danger
+                type="text"
+                size="small"
+                icon={<DeleteOutlined />}
+                aria-label="删除数据集"
+              />
             </Popconfirm>
           </Perm>
         </Space>
@@ -381,7 +426,9 @@ function SharedKnowledgePage() {
         ) : (
           <Table
             rowKey="id"
+            tableLayout="fixed"
             columns={datasetColumns}
+            scroll={{ x: 920 }}
             dataSource={sessionsQuery.data?.items ?? []}
             loading={sessionsQuery.isLoading}
             pagination={{

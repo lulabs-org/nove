@@ -25,6 +25,12 @@ export interface QACitation {
   relevanceScore: number | null;
 }
 
+export interface QASessionListItem extends QASession {
+  creatorName: string;
+  recordCount: number;
+  targetName: string | null;
+}
+
 export interface QARecord {
   id: string;
   sessionId: string;
@@ -90,7 +96,7 @@ export const qaApi = {
     pageSize: number;
     keyword?: string;
     targetType?: QATargetType;
-  }): Promise<PageResult<QASession>> {
+  }): Promise<PageResult<QASessionListItem>> {
     return mutator({
       url: '/api/v1/qa/sessions',
       method: 'GET',

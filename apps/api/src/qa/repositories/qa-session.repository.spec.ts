@@ -36,6 +36,15 @@ describe('Organization shared datasets', () => {
       },
       skip: 100,
       take: 20,
+      include: {
+        user: {
+          select: {
+            username: true,
+            profile: { select: { displayName: true } },
+          },
+        },
+        _count: { select: { records: true } },
+      },
       orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
     });
     expect(result).toEqual({

@@ -65,8 +65,14 @@ export class QASessionDetailResponseDto extends QASessionResponseDto {
   @ApiProperty({ type: [QARecordResponseDto] }) records: QARecordResponseDto[];
 }
 
+export class QASessionListItemDto extends QASessionResponseDto {
+  @ApiProperty() creatorName: string;
+  @ApiProperty() recordCount: number;
+  @ApiProperty({ type: String, nullable: true }) targetName: string | null;
+}
+
 export class QASessionListResponseDto {
-  @ApiProperty({ type: [QASessionResponseDto] }) items: QASessionResponseDto[];
+  @ApiProperty({ type: [QASessionListItemDto] }) items: QASessionListItemDto[];
   @ApiProperty() total: number;
   @ApiProperty() page: number;
   @ApiProperty() pageSize: number;

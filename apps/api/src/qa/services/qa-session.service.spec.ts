@@ -138,9 +138,27 @@ describe('QASessionService', () => {
 
   it('returns paginated sessions for the current organization', async () => {
     sessions.findMany.mockResolvedValue({
-      items: [{ id: 'session-1' }],
+      items: [
+        {
+          id: 'session-1',
+          targetType: QATargetType.PROJECT,
+          targetId: 'target-1',
+          user: { username: 'creator', profile: { displayName: '创建者' } },
+          _count: { records: 3 },
+        },
+        {
+          id: 'session-2',
+          targetType: QATargetType.PROJECT,
+          targetId: 'removed',
+          user: { username: 'another', profile: null },
+          _count: { records: 0 },
+        },
+      ],
       total: 5,
     });
+    prisma.project.findMany.mockResolvedValue([
+      { id: 'target-1', title: '项目一', code: null },
+    ]);
 
     const result = await service.findAll('org-1', {
       page: 2,
@@ -157,6 +175,21 @@ describe('QASessionService', () => {
       }),
     );
     expect(result.totalPages).toBe(3);
+    expect(result.items).toMatchObject([
+      { creatorName: '创建者', recordCount: 3, targetName: '项目一' },
+      { creatorName: 'another', recordCount: 0, targetName: null },
+    ]);
+    expect(prisma.project.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          orgId: 'org-1',
+          deletedAt: null,
+          id: { in: ['target-1', 'removed'] },
+        },
+      }),
+    );
+    expect(prisma.minute.findMany).not.toHaveBeenCalled();
+    expect(prisma.driveFile.findMany).not.toHaveBeenCalled();
   });
 
   it('returns selectable project targets from the current organization', async () => {

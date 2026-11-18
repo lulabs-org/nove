@@ -40,6 +40,15 @@ export class QASessionRepository {
         where,
         skip: params.skip,
         take: params.take,
+        include: {
+          user: {
+            select: {
+              username: true,
+              profile: { select: { displayName: true } },
+            },
+          },
+          _count: { select: { records: true } },
+        },
         orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
       }),
     ]);
