@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsObject,
   IsOptional,
+  ValidateIf,
   IsString,
   Length,
 } from 'class-validator';
@@ -19,7 +20,7 @@ export class CreateQASessionDto {
   title: string;
 
   @ApiPropertyOptional({ enum: QATargetType, default: QATargetType.GLOBAL })
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsEnum(QATargetType)
   targetType?: QATargetType;
 
@@ -33,7 +34,7 @@ export class CreateQASessionDto {
     additionalProperties: true,
     default: {},
   })
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsObject()
   metadata?: Record<string, unknown>;
 }

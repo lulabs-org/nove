@@ -1,26 +1,31 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PrismaService } from '@/prisma/prisma.service';
 import { QARecordRepository } from './qa-record.repository';
 
 describe('QARecordRepository', () => {
-  let repository: QARecordRepository;
-  let prisma: {
-    qARecord: { create: jest.Mock; update: jest.Mock };
-    $transaction: jest.Mock;
+  const tx = {
+    qASession: { update: jest.fn() },
+    qARecord: {
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      findFirstOrThrow: jest.fn(),
+    },
   };
-
+  const transaction = jest.fn();
+  let repository: QARecordRepository;
   beforeEach(() => {
-    prisma = {
-      qARecord: { create: jest.fn(), update: jest.fn() },
-      $transaction: jest.fn(),
-    };
-    repository = new QARecordRepository(prisma as unknown as PrismaService);
+    jest.resetAllMocks();
+    transaction.mockImplementation((run: (client: typeof tx) => unknown) =>
+      run(tx),
+    );
+    tx.qARecord.findFirstOrThrow.mockResolvedValue({ sessionId: 'session-1' });
+    repository = new QARecordRepository({
+      $transaction: transaction,
+    } as unknown as PrismaService);
   });
 
-  it('creates a record and its citations as one nested write', async () => {
-    prisma.qARecord.create.mockResolvedValue({ id: 'record-1' });
-
-    await repository.create({
+  it('writes content, citations and dataset timestamp in the same transaction', async () => {
+    await repository.create('org-1', {
       sessionId: 'session-1',
       question: ' Question? ',
       answer: ' Answer. ',
@@ -32,63 +37,92 @@ describe('QARecordRepository', () => {
         },
       ],
     });
-
-    expect(prisma.qARecord.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        question: 'Question?',
-        answer: 'Answer.',
-        session: { connect: { id: 'session-1' } },
-        citations: {
-          create: [
-            expect.objectContaining({
-              sourceType: 'transcript',
-              sourceId: 'minute-1',
-              snippet: 'source text',
-            }),
-          ],
-        },
-      }),
-      include: {
-        citations: true,
-        session: { select: { id: true, title: true } },
-      },
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(tx.qASession.update).toHaveBeenCalledWith({
+      where: { id: 'session-1', orgId: 'org-1', deletedAt: null },
+      data: { updatedAt: expect.any(Date) as Date },
     });
+    expect(tx.qARecord.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          question: 'Question?',
+          answer: 'Answer.',
+          citations: {
+            create: [
+              expect.objectContaining({
+                sourceType: 'transcript',
+                sourceId: 'minute-1',
+                snippet: 'source text',
+              }),
+            ],
+          },
+        }) as unknown,
+      }),
+    );
   });
 
-  it('uses one transaction for the whole batch and propagates rollback errors', async () => {
-    prisma.qARecord.create
-      .mockReturnValueOnce({ operation: 1 })
-      .mockReturnValueOnce({ operation: 2 });
-    prisma.$transaction.mockRejectedValue(new Error('transaction rolled back'));
-
+  it('rejects a deleted or foreign destination before writing any content', async () => {
+    tx.qASession.update.mockRejectedValue(new Error('dataset unavailable'));
     await expect(
-      repository.createBatch([
+      repository.create('org-1', {
+        sessionId: 'foreign',
+        question: 'Q',
+        answer: 'A',
+      }),
+    ).rejects.toThrow('dataset unavailable');
+    expect(tx.qARecord.create).not.toHaveBeenCalled();
+  });
+
+  it('uses one transaction for a batch and propagates a write failure for rollback', async () => {
+    tx.qARecord.create
+      .mockResolvedValueOnce({ id: 'record-1' })
+      .mockRejectedValueOnce(new Error('write failed'));
+    await expect(
+      repository.createBatch('org-1', [
         { sessionId: 'session-1', question: 'Q1', answer: 'A1' },
         { sessionId: 'session-1', question: 'Q2', answer: 'A2' },
       ]),
-    ).rejects.toThrow('transaction rolled back');
-    expect(prisma.$transaction).toHaveBeenCalledWith([
-      { operation: 1 },
-      { operation: 2 },
-    ]);
+    ).rejects.toThrow('write failed');
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(tx.qASession.update).toHaveBeenCalledTimes(1);
   });
 
-  it('moves a record by reconnecting it to the destination session', async () => {
-    prisma.qARecord.update.mockResolvedValue({
-      id: 'record-1',
-      sessionId: 'session-2',
+  it('updates both datasets when moving content, with deterministic lock order', async () => {
+    tx.qARecord.findFirstOrThrow.mockResolvedValue({ sessionId: 'session-2' });
+    await repository.update('record-1', 'org-1', { sessionId: 'session-1' });
+    expect(tx.qARecord.findFirstOrThrow).toHaveBeenCalledWith({
+      where: { id: 'record-1', session: { orgId: 'org-1', deletedAt: null } },
+      select: { sessionId: true },
     });
-
-    await repository.update('record-1', 'org-1', {
-      sessionId: 'session-2',
-    });
-
-    expect(prisma.qARecord.update).toHaveBeenCalledWith(
+    expect(tx.qASession.update).toHaveBeenNthCalledWith(
+      1,
       expect.objectContaining({
-        data: expect.objectContaining({
-          session: { connect: { id: 'session-2' } },
-        }),
+        where: { id: 'session-1', orgId: 'org-1', deletedAt: null },
       }),
     );
+    expect(tx.qASession.update).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        where: { id: 'session-2', orgId: 'org-1', deletedAt: null },
+      }),
+    );
+    expect(tx.qARecord.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'record-1', session: { orgId: 'org-1', deletedAt: null } },
+        data: { session: { connect: { id: 'session-1' } } },
+      }),
+    );
+  });
+
+  it('refreshes the dataset timestamp when deleting a record', async () => {
+    await repository.delete('record-1', 'org-1');
+    expect(tx.qASession.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'session-1', orgId: 'org-1', deletedAt: null },
+      }),
+    );
+    expect(tx.qARecord.delete).toHaveBeenCalledWith({
+      where: { id: 'record-1', session: { orgId: 'org-1', deletedAt: null } },
+    });
   });
 });

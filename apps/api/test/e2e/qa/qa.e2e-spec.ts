@@ -1,3 +1,5 @@
+import { PermissionGuard } from '@/admin/permission/guards/permission.guard';
+import { PermService } from '@/admin/permission/services/permission.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { PrismaModule } from '@/prisma/prisma.module';
 import {
@@ -50,6 +52,14 @@ describe('QA data hub (e2e)', () => {
   const suffix = Date.now().toString();
   const userId = `qa-e2e-user-${suffix}`;
   const orgId = `qa-e2e-org-${suffix}`;
+  const memberId = `qa-e2e-member-${suffix}`;
+  const readerId = `qa-e2e-reader-${suffix}`;
+  const outsiderId = `qa-e2e-outsider-${suffix}`;
+  const foreignOrgId = `qa-e2e-foreign-${suffix}`;
+  const users = [userId, memberId, readerId, outsiderId];
+  const allowed = (actor: string, permission: string) =>
+    users.includes(actor) &&
+    (actor !== readerId || permission.endsWith(':read'));
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -60,6 +70,20 @@ describe('QA data hub (e2e)', () => {
         QAFeedbackController,
       ],
       providers: [
+        PermissionGuard,
+        {
+          provide: PermService,
+          useValue: {
+            hasAnyPermission: (actor: string, permissions: string[]) =>
+              Promise.resolve(
+                permissions.some((permission) => allowed(actor, permission)),
+              ),
+            hasAllPermissions: (actor: string, permissions: string[]) =>
+              Promise.resolve(
+                permissions.every((permission) => allowed(actor, permission)),
+              ),
+          },
+        },
         QASessionService,
         QARecordService,
         QAFeedbackService,
@@ -74,14 +98,19 @@ describe('QA data hub (e2e)', () => {
 
     app = moduleRef.createNestApplication();
     app.use((req: Request, _res: Response, next: NextFunction) => {
+      const actor =
+        typeof req.headers['x-test-user'] === 'string'
+          ? req.headers['x-test-user']
+          : userId;
       req.authContext = {
         authMethod: 'jwt',
-        userId,
-        orgId,
+        userId: actor,
+        orgId: actor === outsiderId ? foreignOrgId : orgId,
         permissions: [],
       };
       next();
     });
+    app.useGlobalGuards(moduleRef.get(PermissionGuard));
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -93,21 +122,151 @@ describe('QA data hub (e2e)', () => {
     httpServer = app.getHttpServer() as Server;
 
     prisma = app.get(PrismaService);
-    await prisma.user.create({
-      data: { id: userId, username: userId, active: true },
+    await prisma.user.createMany({
+      data: users.map((id) => ({ id, username: id, active: true })),
     });
     await prisma.org.create({
       data: { id: orgId, name: 'QA E2E Org', code: orgId },
     });
-    await prisma.orgMember.create({ data: { orgId, userId } });
+    await prisma.org.create({
+      data: {
+        id: foreignOrgId,
+        name: 'Foreign QA E2E Org',
+        code: foreignOrgId,
+      },
+    });
+    await prisma.orgMember.createMany({
+      data: users.map((id) => ({
+        orgId: id === outsiderId ? foreignOrgId : orgId,
+        userId: id,
+      })),
+    });
   });
 
   afterAll(async () => {
-    await prisma.qASession.deleteMany({ where: { orgId } });
-    await prisma.orgMember.deleteMany({ where: { orgId, userId } });
-    await prisma.org.deleteMany({ where: { id: orgId } });
-    await prisma.user.deleteMany({ where: { id: userId } });
+    if (prisma) {
+      await prisma.qASession.deleteMany({
+        where: { orgId: { in: [orgId, foreignOrgId] } },
+      });
+      await prisma.orgMember.deleteMany({
+        where: { orgId: { in: [orgId, foreignOrgId] } },
+      });
+      await prisma.org.deleteMany({
+        where: { id: { in: [orgId, foreignOrgId] } },
+      });
+      await prisma.user.deleteMany({ where: { id: { in: users } } });
+    }
     await app.close();
+  });
+
+  it('shares datasets across members while enforcing organization and operation permissions', async () => {
+    const created = await request(httpServer)
+      .post('/api/v1/qa/sessions')
+      .send({ title: 'Shared knowledge' })
+      .expect(201);
+    const sessionId = readRequiredId(created.body as unknown);
+    const base = `/api/v1/qa/sessions/${sessionId}`;
+    const listed = await request(httpServer)
+      .get('/api/v1/qa/sessions')
+      .set('x-test-user', memberId)
+      .query({ keyword: 'Shared' })
+      .expect(200);
+    expect(readItems(listed.body as unknown)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: sessionId, userId }),
+      ]),
+    );
+    await request(httpServer)
+      .get(`${base}/metadata`)
+      .set('x-test-user', readerId)
+      .expect(200);
+    await request(httpServer)
+      .patch(base)
+      .set('x-test-user', readerId)
+      .send({ title: 'Forbidden' })
+      .expect(403);
+    await request(httpServer)
+      .patch(base)
+      .set('x-test-user', memberId)
+      .send({ title: 'Shared edit' })
+      .expect(200);
+    await request(httpServer)
+      .get(`${base}/metadata`)
+      .set('x-test-user', outsiderId)
+      .expect(404);
+    await request(httpServer)
+      .patch(base)
+      .set('x-test-user', outsiderId)
+      .send({ title: 'Foreign' })
+      .expect(404);
+    await request(httpServer)
+      .delete(base)
+      .set('x-test-user', outsiderId)
+      .expect(404);
+    await request(httpServer)
+      .post(`${base}/records`)
+      .set('x-test-user', outsiderId)
+      .send({ question: 'Q', answer: 'A' })
+      .expect(404);
+
+    const oldDate = new Date('2000-01-01T00:00:00Z');
+    await prisma.qASession.update({
+      where: { id: sessionId },
+      data: { updatedAt: oldDate },
+    });
+    const recordResponse = await request(httpServer)
+      .post(`${base}/records`)
+      .set('x-test-user', memberId)
+      .send({ question: 'Shared Q', answer: 'Shared A', generatedBy: 'HUMAN' })
+      .expect(201);
+    const recordId = readRequiredId(recordResponse.body as unknown);
+    const stored = await prisma.qASession.findUniqueOrThrow({
+      where: { id: sessionId },
+    });
+    expect(stored.updatedAt.getTime()).toBeGreaterThan(oldDate.getTime());
+    expect(stored.userId).toBe(userId);
+    await request(httpServer)
+      .patch(`/api/v1/qa/records/${recordId}`)
+      .set('x-test-user', readerId)
+      .send({ answer: 'Forbidden' })
+      .expect(403);
+    await request(httpServer)
+      .patch(`/api/v1/qa/records/${recordId}`)
+      .set('x-test-user', outsiderId)
+      .send({ answer: 'Foreign' })
+      .expect(404);
+    const foreignRecords = await request(httpServer)
+      .get('/api/v1/qa/records')
+      .set('x-test-user', outsiderId)
+      .query({ sessionId })
+      .expect(200);
+    expect(readItems(foreignRecords.body as unknown)).toEqual([]);
+    await request(httpServer)
+      .patch(`/api/v1/qa/records/${recordId}`)
+      .set('x-test-user', memberId)
+      .send({ answer: 'Updated by coworker' })
+      .expect(200);
+    await request(httpServer)
+      .patch(`/api/v1/qa/records/${recordId}`)
+      .send({ question: null })
+      .expect(400);
+    await request(httpServer)
+      .post(`${base}/records`)
+      .send({ question: '   ', answer: '   ' })
+      .expect(400);
+    await request(httpServer)
+      .delete(base)
+      .set('x-test-user', memberId)
+      .expect(204);
+    await request(httpServer)
+      .get(`${base}/metadata`)
+      .set('x-test-user', readerId)
+      .expect(404);
+    const hiddenRecords = await request(httpServer)
+      .get('/api/v1/qa/records')
+      .query({ sessionId })
+      .expect(200);
+    expect(readItems(hiddenRecords.body as unknown)).toEqual([]);
   });
 
   it('creates, edits, finds, and deletes sessions and records', async () => {

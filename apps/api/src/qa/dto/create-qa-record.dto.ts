@@ -1,6 +1,6 @@
 import { QAGeneratedBy } from '@/generated/prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
@@ -8,6 +8,7 @@ import {
   IsNumber,
   IsObject,
   IsOptional,
+  ValidateIf,
   IsString,
   Length,
   Max,
@@ -18,11 +19,17 @@ import {
 
 export class CreateQACitationDto {
   @ApiProperty({ maxLength: 50 })
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString()
   @Length(1, 50)
   sourceType: string;
 
   @ApiProperty()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString()
   @Length(1, 255)
   sourceId: string;
@@ -40,6 +47,9 @@ export class CreateQACitationDto {
   location?: string;
 
   @ApiProperty()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString()
   @Length(1, 10000)
   snippet: string;
@@ -56,24 +66,30 @@ export class CreateQACitationDto {
     additionalProperties: true,
     default: {},
   })
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsObject()
   metadata?: Record<string, unknown>;
 }
 
 export class CreateQARecordDto {
   @ApiProperty()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString()
   @Length(1, 20000)
   question: string;
 
   @ApiProperty()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString()
   @Length(1, 100000)
   answer: string;
 
   @ApiPropertyOptional({ enum: QAGeneratedBy, default: QAGeneratedBy.AI })
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsEnum(QAGeneratedBy)
   generatedBy?: QAGeneratedBy;
 
@@ -112,12 +128,12 @@ export class CreateQARecordDto {
     additionalProperties: true,
     default: {},
   })
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsObject()
   metadata?: Record<string, unknown>;
 
   @ApiPropertyOptional({ type: [CreateQACitationDto], default: [] })
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateQACitationDto)

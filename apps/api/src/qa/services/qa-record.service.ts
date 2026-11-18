@@ -18,13 +18,13 @@ export class QARecordService {
 
   async create(orgId: string, sessionId: string, dto: CreateQARecordDto) {
     await this.assertSession(sessionId, orgId);
-    return this.records.create({ ...dto, sessionId });
+    return this.records.create(orgId, { ...dto, sessionId });
   }
 
   async createBatch(orgId: string, dto: BatchCreateQARecordDto) {
     const sessionIds = [...new Set(dto.records.map((item) => item.sessionId))];
     await Promise.all(sessionIds.map((id) => this.assertSession(id, orgId)));
-    return this.records.createBatch(dto.records);
+    return this.records.createBatch(orgId, dto.records);
   }
 
   async findAll(orgId: string, query: QueryQARecordDto) {
@@ -77,7 +77,7 @@ export class QARecordService {
   }
 
   private async assertSession(sessionId: string, orgId: string): Promise<void> {
-    if (!(await this.sessions.findById(sessionId, orgId))) {
+    if (!(await this.sessions.findMetadata(sessionId, orgId))) {
       throw new NotFoundException('QA session not found');
     }
   }

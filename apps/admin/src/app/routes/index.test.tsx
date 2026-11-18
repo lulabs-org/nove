@@ -113,11 +113,11 @@ describe('application routes', () => {
     });
   });
 
-  it('exposes the QA data hub with record read permission', () => {
+  it('exposes the shared QA library with dataset read permission', () => {
     expect(routes.find((route) => route.path === '/qa')).toMatchObject({
       title: '问答数据',
       menu: true,
-      permission: PERMISSIONS.QA.RECORD_READ,
+      permission: PERMISSIONS.QA.SESSION_READ,
     });
   });
 

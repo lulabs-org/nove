@@ -13,7 +13,7 @@ describe('QARecordService', () => {
     update: jest.Mock;
     delete: jest.Mock;
   };
-  let sessions: { findById: jest.Mock };
+  let sessions: { findMetadata: jest.Mock };
   let minuteService: { getById: jest.Mock };
 
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe('QARecordService', () => {
       update: jest.fn(),
       delete: jest.fn(),
     };
-    sessions = { findById: jest.fn() };
+    sessions = { findMetadata: jest.fn() };
     minuteService = { getById: jest.fn() };
     service = new QARecordService(
       records as unknown as QARecordRepository,
@@ -35,7 +35,7 @@ describe('QARecordService', () => {
   });
 
   it('creates a record only after finding its session in the organization', async () => {
-    sessions.findById.mockResolvedValue({ id: 'session-1' });
+    sessions.findMetadata.mockResolvedValue({ id: 'session-1' });
     records.create.mockResolvedValue({ id: 'record-1' });
 
     await service.create('org-1', 'session-1', {
@@ -43,14 +43,15 @@ describe('QARecordService', () => {
       answer: 'A decision was made.',
     });
 
-    expect(sessions.findById).toHaveBeenCalledWith('session-1', 'org-1');
+    expect(sessions.findMetadata).toHaveBeenCalledWith('session-1', 'org-1');
     expect(records.create).toHaveBeenCalledWith(
+      'org-1',
       expect.objectContaining({ sessionId: 'session-1' }),
     );
   });
 
   it('rejects a batch when any session is outside the organization', async () => {
-    sessions.findById
+    sessions.findMetadata
       .mockResolvedValueOnce({ id: 'session-1' })
       .mockResolvedValueOnce(null);
 
@@ -66,7 +67,7 @@ describe('QARecordService', () => {
   });
 
   it('writes a validated batch in one repository operation', async () => {
-    sessions.findById.mockResolvedValue({ id: 'session-1' });
+    sessions.findMetadata.mockResolvedValue({ id: 'session-1' });
     records.createBatch.mockResolvedValue([{ id: 'record-1' }]);
     const batch = {
       records: [
@@ -77,8 +78,8 @@ describe('QARecordService', () => {
 
     await service.createBatch('org-1', batch);
 
-    expect(sessions.findById).toHaveBeenCalledTimes(1);
-    expect(records.createBatch).toHaveBeenCalledWith(batch.records);
+    expect(sessions.findMetadata).toHaveBeenCalledTimes(1);
+    expect(records.createBatch).toHaveBeenCalledWith('org-1', batch.records);
   });
 
   it('passes trimmed filters and pagination to global record search', async () => {
@@ -133,7 +134,7 @@ describe('QARecordService', () => {
 
   it('validates the destination session before moving a record', async () => {
     records.findById.mockResolvedValue({ id: 'record-1' });
-    sessions.findById.mockResolvedValue({ id: 'session-2' });
+    sessions.findMetadata.mockResolvedValue({ id: 'session-2' });
     records.update.mockResolvedValue({
       id: 'record-1',
       sessionId: 'session-2',
@@ -141,7 +142,7 @@ describe('QARecordService', () => {
 
     await service.update('org-1', 'record-1', { sessionId: 'session-2' });
 
-    expect(sessions.findById).toHaveBeenCalledWith('session-2', 'org-1');
+    expect(sessions.findMetadata).toHaveBeenCalledWith('session-2', 'org-1');
     expect(records.update).toHaveBeenCalledWith('record-1', 'org-1', {
       sessionId: 'session-2',
     });
@@ -149,7 +150,7 @@ describe('QARecordService', () => {
 
   it('rejects moving a record to a session outside the organization', async () => {
     records.findById.mockResolvedValue({ id: 'record-1' });
-    sessions.findById.mockResolvedValue(null);
+    sessions.findMetadata.mockResolvedValue(null);
 
     await expect(
       service.update('org-1', 'record-1', { sessionId: 'session-2' }),

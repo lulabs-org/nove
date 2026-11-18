@@ -9,7 +9,7 @@ export const qaRoutes: RouteConfig[] = [
     element: <QADataHubPage />,
     title: '问答数据',
     menu: true,
-    permission: PERMISSIONS.QA.RECORD_READ,
+    permission: PERMISSIONS.QA.SESSION_READ,
     icon: <DatabaseOutlined />,
   },
 ];

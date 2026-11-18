@@ -89,10 +89,18 @@
   gap: 14px;
 }
 
+.qa-dataset-list-filters {
+  padding: 16px 32px;
+}
+
+.qa-record-citations {
+  color: #596579;
+  white-space: pre-wrap;
+}
+
 .qa-record-card {
   position: relative;
   padding: 18px 20px 12px;
-  cursor: pointer;
   border: 1px solid #e6eaf2;
   border-radius: 10px;
   background: #f8faff;

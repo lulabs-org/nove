@@ -8,6 +8,20 @@ import { QARecordController } from './qa-record.controller';
 import { QASessionController } from './qa-session.controller';
 
 describe('QA controller contracts', () => {
+  it('requires dataset AND record read permission for the legacy detail containing records', () => {
+    expect(
+      Reflect.getMetadata(
+        PERMISSIONS_KEY,
+        QASessionController.prototype.findById,
+      ),
+    ).toEqual(['qa:session:read', 'qa:record:read']);
+    expect(
+      Reflect.getMetadata(
+        'permission_mode',
+        QASessionController.prototype.findById,
+      ),
+    ).toBe('all');
+  });
   it('publishes the required route groups', () => {
     expect(Reflect.getMetadata(PATH_METADATA, QASessionController)).toBe(
       'api/v1/qa/sessions',
@@ -37,8 +51,8 @@ describe('QA controller contracts', () => {
       'qa:session:read',
     ],
     [
-      QASessionController.prototype.findById,
-      ':id',
+      QASessionController.prototype.findMetadata,
+      ':id/metadata',
       RequestMethod.GET,
       'qa:session:read',
     ],

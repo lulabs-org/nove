@@ -22,22 +22,36 @@ const recordInclude = {
 export class QARecordRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: RecordCreateData) {
-    return this.prisma.qARecord.create({
-      data: this.toCreateInput(data),
-      include: recordInclude,
+  create(orgId: string, data: RecordCreateData) {
+    return this.prisma.$transaction(async (tx) => {
+      await this.touchSessions(tx, orgId, [data.sessionId]);
+      return tx.qARecord.create({
+        data: this.toCreateInput(data),
+        include: recordInclude,
+      });
     });
   }
 
-  createBatch(records: RecordCreateData[]) {
-    return this.prisma.$transaction(
-      records.map((record) =>
-        this.prisma.qARecord.create({
-          data: this.toCreateInput(record),
-          include: recordInclude,
-        }),
-      ),
-    );
+  createBatch(orgId: string, records: RecordCreateData[]) {
+    return this.prisma.$transaction(async (tx) => {
+      await this.touchSessions(
+        tx,
+        orgId,
+        records.map((record) => record.sessionId),
+      );
+      const result: Prisma.QARecordGetPayload<{
+        include: typeof recordInclude;
+      }>[] = [];
+      for (const record of records) {
+        result.push(
+          await tx.qARecord.create({
+            data: this.toCreateInput(record),
+            include: recordInclude,
+          }),
+        );
+      }
+      return result;
+    });
   }
 
   async findMany(params: {
@@ -94,7 +108,7 @@ export class QARecordRepository {
         where,
         skip: params.skip,
         take: params.take,
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         include: recordInclude,
       }),
     ]);
@@ -109,56 +123,75 @@ export class QARecordRepository {
   }
 
   update(id: string, orgId: string, data: UpdateQARecordDto) {
-    return this.prisma.qARecord.update({
-      where: { id, session: { orgId, deletedAt: null } },
-      data: {
-        ...(data.sessionId !== undefined
-          ? { session: { connect: { id: data.sessionId } } }
-          : {}),
-        ...(data.question !== undefined
-          ? { question: data.question.trim() }
-          : {}),
-        ...(data.answer !== undefined ? { answer: data.answer.trim() } : {}),
-        ...(data.generatedBy !== undefined
-          ? { generatedBy: data.generatedBy }
-          : {}),
-        ...(data.generatedBy !== undefined &&
-        data.generatedBy !== QAGeneratedBy.AI
-          ? { aiModel: null }
-          : data.aiModel !== undefined
-            ? { aiModel: data.aiModel?.trim() || null }
+    return this.prisma.$transaction(async (tx) => {
+      const original = await tx.qARecord.findFirstOrThrow({
+        where: { id, session: { orgId, deletedAt: null } },
+        select: { sessionId: true },
+      });
+      await this.touchSessions(tx, orgId, [
+        original.sessionId,
+        data.sessionId ?? original.sessionId,
+      ]);
+      return tx.qARecord.update({
+        where: { id, session: { orgId, deletedAt: null } },
+        data: {
+          ...(data.sessionId !== undefined
+            ? { session: { connect: { id: data.sessionId } } }
             : {}),
-        ...(data.promptTokens !== undefined
-          ? { promptTokens: data.promptTokens }
-          : {}),
-        ...(data.completionTokens !== undefined
-          ? { completionTokens: data.completionTokens }
-          : {}),
-        ...(data.totalTokens !== undefined
-          ? { totalTokens: data.totalTokens }
-          : {}),
-        ...(data.latencyMs !== undefined ? { latencyMs: data.latencyMs } : {}),
-        ...(data.metadata !== undefined
-          ? { metadata: data.metadata as Prisma.InputJsonValue }
-          : {}),
-        ...(data.citations !== undefined
-          ? {
-              citations: {
-                deleteMany: {},
-                create: data.citations.map((citation) =>
-                  this.toCitationInput(citation),
-                ),
-              },
-            }
-          : {}),
-      },
-      include: recordInclude,
+          ...(data.question !== undefined
+            ? { question: data.question.trim() }
+            : {}),
+          ...(data.answer !== undefined ? { answer: data.answer.trim() } : {}),
+          ...(data.generatedBy !== undefined
+            ? { generatedBy: data.generatedBy }
+            : {}),
+          ...(data.generatedBy !== undefined &&
+          data.generatedBy !== QAGeneratedBy.AI
+            ? { aiModel: null }
+            : data.aiModel !== undefined
+              ? { aiModel: data.aiModel?.trim() || null }
+              : {}),
+          ...(data.promptTokens !== undefined
+            ? { promptTokens: data.promptTokens }
+            : {}),
+          ...(data.completionTokens !== undefined
+            ? { completionTokens: data.completionTokens }
+            : {}),
+          ...(data.totalTokens !== undefined
+            ? { totalTokens: data.totalTokens }
+            : {}),
+          ...(data.latencyMs !== undefined
+            ? { latencyMs: data.latencyMs }
+            : {}),
+          ...(data.metadata !== undefined
+            ? { metadata: data.metadata as Prisma.InputJsonValue }
+            : {}),
+          ...(data.citations !== undefined
+            ? {
+                citations: {
+                  deleteMany: {},
+                  create: data.citations.map((citation) =>
+                    this.toCitationInput(citation),
+                  ),
+                },
+              }
+            : {}),
+        },
+        include: recordInclude,
+      });
     });
   }
 
   delete(id: string, orgId: string) {
-    return this.prisma.qARecord.delete({
-      where: { id, session: { orgId, deletedAt: null } },
+    return this.prisma.$transaction(async (tx) => {
+      const original = await tx.qARecord.findFirstOrThrow({
+        where: { id, session: { orgId, deletedAt: null } },
+        select: { sessionId: true },
+      });
+      await this.touchSessions(tx, orgId, [original.sessionId]);
+      return tx.qARecord.delete({
+        where: { id, session: { orgId, deletedAt: null } },
+      });
     });
   }
 
@@ -179,6 +212,20 @@ export class QARecordRepository {
       data,
       include: recordInclude,
     });
+  }
+
+  private async touchSessions(
+    tx: Prisma.TransactionClient,
+    orgId: string,
+    sessionIds: string[],
+  ) {
+    // Stable lock order for batches and moves; roll back content and timestamps together.
+    for (const id of [...new Set(sessionIds)].sort()) {
+      await tx.qASession.update({
+        where: { id, orgId, deletedAt: null },
+        data: { updatedAt: new Date() },
+      });
+    }
   }
 
   private toCreateInput(data: RecordCreateData): Prisma.QARecordCreateInput {

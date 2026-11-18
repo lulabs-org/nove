@@ -7,6 +7,8 @@ export type QAFeedbackRating = 'LIKE' | 'DISLIKE';
 export interface QASession {
   id: string;
   title: string;
+  userId: string;
+  orgId: string;
   targetType: QATargetType;
   targetId: string | null;
   createdAt: string;
@@ -83,12 +85,21 @@ export interface RecordListParams {
 }
 
 export const qaApi = {
-  listSessions(): Promise<PageResult<QASession>> {
+  listSessions(params: {
+    page: number;
+    pageSize: number;
+    keyword?: string;
+    targetType?: QATargetType;
+  }): Promise<PageResult<QASession>> {
     return mutator({
       url: '/api/v1/qa/sessions',
       method: 'GET',
-      params: { page: 1, pageSize: 100 },
+      params,
     });
+  },
+
+  getSession(id: string): Promise<QASession> {
+    return mutator({ url: `/api/v1/qa/sessions/${id}/metadata`, method: 'GET' });
   },
 
   listTargetOptions(type: QATargetType, keyword?: string): Promise<QATargetOption[]> {

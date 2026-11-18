@@ -7,6 +7,10 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Alert from 'antd/es/alert';
+import Pagination from 'antd/es/pagination';
+import Select from 'antd/es/select';
+import Spin from 'antd/es/spin';
 import Button from 'antd/es/button';
 import Form from 'antd/es/form';
 import Input from 'antd/es/input';
@@ -19,9 +23,17 @@ import Tag from 'antd/es/tag';
 import Typography from 'antd/es/typography';
 import type { TableProps } from 'antd/es/table';
 import { useCallback, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../../shared/hooks/useAuth';
 import { Perm } from '../../../app/guards/Perm';
 import { PERMISSIONS } from '../../../shared/utils/permissions';
-import { qaApi, type QAFeedbackRating, type QARecord, type QASession } from '../api/qaApi';
+import {
+  qaApi,
+  type QAFeedbackRating,
+  type QARecord,
+  type QASession,
+  type QATargetType,
+} from '../api/qaApi';
 import './QADataHubPage.css';
 
 interface DatasetFormValues {
@@ -43,11 +55,45 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+const targetLabels: Record<QATargetType, string> = {
+  GLOBAL: '通用',
+  PROJECT: '项目',
+  MINUTE: '妙记',
+  DRIVE_FILE: '云盘文件',
+};
+
 export function QADataHubPage() {
+  const { user } = useAuth();
+  const [params] = useSearchParams();
+  return (
+    <SharedKnowledgePage
+      key={`${user?.currentOrgId}:${user?.id}:${params.get('dataset') ?? 'list'}`}
+    />
+  );
+}
+
+function SharedKnowledgePage() {
+  const { user, checkPermission } = useAuth();
+  const scope = ['qa', user?.currentOrgId, user?.id] as const;
+  const canReadRecords = checkPermission(PERMISSIONS.QA.RECORD_READ);
+  const canEditRecords = checkPermission(PERMISSIONS.QA.RECORD_UPDATE);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeDatasetId = searchParams.get('dataset') || undefined;
+  const setActiveDatasetId = (id?: string) => {
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (id) next.set('dataset', id);
+      else next.delete('dataset');
+      return next;
+    });
+  };
+  const [datasetPage, setDatasetPage] = useState(1);
+  const [datasetKeyword, setDatasetKeyword] = useState<string>();
+  const [targetType, setTargetType] = useState<QATargetType>();
+  const [rating, setRating] = useState<QAFeedbackRating>();
   const queryClient = useQueryClient();
   const [datasetForm] = Form.useForm<DatasetFormValues>();
   const [recordForm] = Form.useForm<RecordFormValues>();
-  const [activeDatasetId, setActiveDatasetId] = useState<string>();
   const [editingDataset, setEditingDataset] = useState<QASession>();
   const [editingRecord, setEditingRecord] = useState<QARecord>();
   const [datasetModalOpen, setDatasetModalOpen] = useState(false);
@@ -56,16 +102,42 @@ export function QADataHubPage() {
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  const sessionsQuery = useQuery({ queryKey: ['qa-sessions'], queryFn: qaApi.listSessions });
-  const recordParams = { page, pageSize, keyword, sessionId: activeDatasetId };
-  const recordsQuery = useQuery({
-    queryKey: ['qa-records', recordParams],
-    queryFn: () => qaApi.listRecords(recordParams),
+  const datasetParams = { page: datasetPage, pageSize, keyword: datasetKeyword, targetType };
+  const sessionsQuery = useQuery({
+    queryKey: [...scope, 'sessions', datasetParams],
+    queryFn: () => qaApi.listSessions(datasetParams),
+    enabled: !activeDatasetId,
+  });
+  const sessionQuery = useQuery({
+    queryKey: [...scope, 'session', activeDatasetId],
+    queryFn: () => qaApi.getSession(activeDatasetId!),
     enabled: Boolean(activeDatasetId),
   });
-  const blankDatasets =
-    sessionsQuery.data?.items.filter((item) => item.targetType === 'GLOBAL') ?? [];
-  const activeDataset = blankDatasets.find((item) => item.id === activeDatasetId);
+  const recordParams = { page, pageSize, keyword, rating, sessionId: activeDatasetId };
+  const recordsQuery = useQuery({
+    queryKey: [...scope, 'records', recordParams],
+    queryFn: () => qaApi.listRecords(recordParams),
+    enabled: Boolean(activeDatasetId && sessionQuery.data && canReadRecords),
+  });
+  const activeDataset = sessionQuery.data;
+  const refreshDatasets = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: [...scope, 'sessions'] }),
+      queryClient.invalidateQueries({ queryKey: [...scope, 'session'] }),
+    ]);
+  const refreshRecords = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: [...scope, 'records'] }),
+      refreshDatasets(),
+    ]);
+
+  // Clamp stale pages after concurrent deletions before rendering the next query.
+  if (sessionsQuery.data && datasetPage > Math.max(1, sessionsQuery.data.totalPages)) {
+    setDatasetPage(Math.max(1, sessionsQuery.data.totalPages));
+  }
+  if (recordsQuery.data && page > Math.max(1, recordsQuery.data.totalPages)) {
+    setPage(Math.max(1, recordsQuery.data.totalPages));
+  }
 
   const closeDatasetModal = () => {
     setDatasetModalOpen(false);
@@ -94,11 +166,12 @@ export function QADataHubPage() {
   };
   const openEditRecord = useCallback(
     (record: QARecord) => {
+      if (!canEditRecords) return;
       setEditingRecord(record);
       recordForm.setFieldsValue({ question: record.question, answer: record.answer });
       setRecordModalOpen(true);
     },
-    [recordForm]
+    [recordForm, canEditRecords]
   );
 
   const createDatasetMutation = useMutation({
@@ -107,7 +180,7 @@ export function QADataHubPage() {
     onSuccess: () => {
       message.success('空白数据集创建成功');
       closeDatasetModal();
-      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
+      void refreshDatasets();
     },
     onError: () => message.error('空白数据集创建失败'),
   });
@@ -117,7 +190,7 @@ export function QADataHubPage() {
     onSuccess: () => {
       message.success('数据集名称已更新');
       closeDatasetModal();
-      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
+      void refreshDatasets();
     },
     onError: () => message.error('数据集修改失败'),
   });
@@ -126,8 +199,7 @@ export function QADataHubPage() {
     onSuccess: (_, deletedId) => {
       message.success('数据集已删除');
       if (activeDatasetId === deletedId) setActiveDatasetId(undefined);
-      queryClient.invalidateQueries({ queryKey: ['qa-sessions'] });
-      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
+      void refreshRecords();
     },
     onError: () => message.error('数据集删除失败'),
   });
@@ -141,7 +213,7 @@ export function QADataHubPage() {
     onSuccess: () => {
       message.success('问答数据已插入');
       closeRecordModal();
-      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
+      void refreshRecords();
     },
     onError: () => message.error('问答数据保存失败'),
   });
@@ -154,7 +226,7 @@ export function QADataHubPage() {
     onSuccess: () => {
       message.success('问答数据已更新');
       closeRecordModal();
-      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
+      void refreshRecords();
     },
     onError: () => message.error('问答数据修改失败'),
   });
@@ -162,14 +234,14 @@ export function QADataHubPage() {
     mutationFn: qaApi.deleteRecord,
     onSuccess: () => {
       message.success('问答数据已删除');
-      queryClient.invalidateQueries({ queryKey: ['qa-records'] });
+      void refreshRecords();
     },
     onError: () => message.error('问答数据删除失败'),
   });
   const feedbackMutation = useMutation({
     mutationFn: ({ recordId, rating }: { recordId: string; rating: QAFeedbackRating | null }) =>
       qaApi.submitFeedback(recordId, rating),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['qa-records'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [...scope, 'records'] }),
     onError: () => message.error('反馈提交失败'),
   });
 
@@ -201,7 +273,12 @@ export function QADataHubPage() {
     },
     { title: '创建时间', dataIndex: 'createdAt', width: 190, render: formatDate },
     { title: '更新时间', dataIndex: 'updatedAt', width: 190, render: formatDate },
-    { title: '状态', width: 110, render: () => <Tag color="success">已就绪</Tag> },
+    {
+      title: '类型',
+      dataIndex: 'targetType',
+      width: 110,
+      render: (value: QATargetType) => <Tag>{targetLabels[value]}</Tag>,
+    },
     {
       title: '操作',
       width: 110,
@@ -217,7 +294,7 @@ export function QADataHubPage() {
           </Perm>
           <Perm permission={PERMISSIONS.QA.SESSION_DELETE}>
             <Popconfirm
-              title="确定删除这个数据集及其全部问答吗？"
+              title="确定删除这个组织共享数据集吗？组织成员将无法再访问其中的问答。"
               onConfirm={() => deleteDatasetMutation.mutate(dataset.id)}
             >
               <Button danger type="text" icon={<DeleteOutlined />} aria-label="删除数据集" />
@@ -247,20 +324,20 @@ export function QADataHubPage() {
         </Form.Item>
         {!editingDataset ? (
           <Typography.Text type="secondary">
-            将创建一个空白数据集，之后可以手动插入问题和答案。
+            创建后，同组织有权限的成员可查看和维护其中的问题与答案。
           </Typography.Text>
         ) : null}
       </Form>
     </Modal>
   );
 
-  if (!activeDatasetId || !activeDataset) {
+  if (!activeDatasetId) {
     return (
       <div className="qa-dataset-page">
         <div className="qa-dataset-list-header">
           <div>
-            <Typography.Title level={3}>问答知识库</Typography.Title>
-            <Typography.Text type="secondary">使用空白数据集整理和维护问答内容</Typography.Text>
+            <Typography.Title level={3}>组织共享知识库</Typography.Title>
+            <Typography.Text type="secondary">组织成员按权限共享和维护问答内容</Typography.Text>
           </div>
           <Perm permission={PERMISSIONS.QA.SESSION_CREATE}>
             <Button type="primary" icon={<PlusOutlined />} onClick={openCreateDataset}>
@@ -268,25 +345,96 @@ export function QADataHubPage() {
             </Button>
           </Perm>
         </div>
-        <Table
-          rowKey="id"
-          columns={datasetColumns}
-          dataSource={blankDatasets}
-          loading={sessionsQuery.isLoading}
-          pagination={false}
-          rowClassName="qa-dataset-row"
-          onRow={(dataset) => ({
-            onClick: () => {
-              setActiveDatasetId(dataset.id);
-              setKeyword(undefined);
-              setPage(1);
-            },
-          })}
-        />
+        <Space wrap className="qa-dataset-list-filters">
+          <Input.Search
+            aria-label="搜索数据集"
+            placeholder="搜索数据集名称"
+            allowClear
+            maxLength={200}
+            onSearch={(value) => {
+              setDatasetKeyword(value.trim() || undefined);
+              setDatasetPage(1);
+            }}
+            onChange={(event) => {
+              if (!event.target.value) {
+                setDatasetKeyword(undefined);
+                setDatasetPage(1);
+              }
+            }}
+          />
+          <Select<QATargetType>
+            aria-label="数据集类型"
+            placeholder="全部类型"
+            allowClear
+            value={targetType}
+            style={{ width: 150 }}
+            options={Object.entries(targetLabels).map(([value, label]) => ({ value, label }))}
+            onChange={(value) => {
+              setTargetType(value);
+              setDatasetPage(1);
+            }}
+          />
+        </Space>
+        {sessionsQuery.isError ? (
+          <Alert
+            type="error"
+            showIcon
+            title="数据集加载失败"
+            action={<Button onClick={() => void sessionsQuery.refetch()}>重试</Button>}
+          />
+        ) : (
+          <Table
+            rowKey="id"
+            columns={datasetColumns}
+            dataSource={sessionsQuery.data?.items ?? []}
+            loading={sessionsQuery.isLoading}
+            pagination={{
+              current: datasetPage,
+              pageSize,
+              total: sessionsQuery.data?.total ?? 0,
+              showSizeChanger: false,
+              onChange: setDatasetPage,
+              showTotal: (total) => `共 ${total} 个数据集`,
+            }}
+            locale={{
+              emptyText: datasetKeyword || targetType ? '没有匹配的数据集' : '组织内暂无数据集',
+            }}
+            rowClassName="qa-dataset-row"
+            onRow={(dataset) => ({
+              onClick: () => {
+                setActiveDatasetId(dataset.id);
+                setKeyword(undefined);
+                setPage(1);
+              },
+            })}
+          />
+        )}
         {datasetModal}
       </div>
     );
   }
+
+  if (sessionQuery.isPending)
+    return (
+      <Spin tip="正在加载数据集">
+        <div style={{ minHeight: 240 }} />
+      </Spin>
+    );
+  if (sessionQuery.isError || !activeDataset)
+    return (
+      <Alert
+        type="error"
+        showIcon
+        title="无法加载数据集"
+        description="数据集可能已删除、无权访问，或网络暂时不可用。"
+        action={
+          <Space>
+            <Button onClick={() => void sessionQuery.refetch()}>重试</Button>
+            <Button onClick={() => setActiveDatasetId(undefined)}>返回列表</Button>
+          </Space>
+        }
+      />
+    );
 
   return (
     <div className="qa-dataset-detail-page">
@@ -311,7 +459,9 @@ export function QADataHubPage() {
           </div>
           <div className="qa-dataset-detail-actions">
             <Input.Search
+              key={activeDatasetId}
               className="qa-dataset-search"
+              disabled={!canReadRecords}
               allowClear
               placeholder="搜索相关数据"
               onSearch={(value) => {
@@ -323,6 +473,22 @@ export function QADataHubPage() {
                   setKeyword(undefined);
                   setPage(1);
                 }
+              }}
+            />
+            <Select<QAFeedbackRating>
+              aria-label="质量筛选"
+              placeholder="全部质量标记"
+              allowClear
+              disabled={!canReadRecords}
+              value={rating}
+              style={{ width: 150 }}
+              options={[
+                { value: 'LIKE', label: '已认可' },
+                { value: 'DISLIKE', label: '待改进' },
+              ]}
+              onChange={(value) => {
+                setRating(value);
+                setPage(1);
               }}
             />
             <Perm permission={PERMISSIONS.QA.SESSION_UPDATE}>
@@ -340,86 +506,154 @@ export function QADataHubPage() {
 
         <div className="qa-dataset-summary">
           <Space>
-            <Typography.Text>{recordsQuery.data?.total ?? 0} 组数据</Typography.Text>
-            <Tag color="success">已就绪</Tag>
+            {canReadRecords && (
+              <Typography.Text>
+                {recordsQuery.data?.total ?? 0} 条问答{keyword || rating ? '（筛选结果）' : ''}
+              </Typography.Text>
+            )}
+            <Tag>组织共享</Tag>
+            <Tag>{targetLabels[activeDataset.targetType]}</Tag>
           </Space>
         </div>
 
-        <div className="qa-record-card-list">
-          {recordsQuery.data?.items.map((record) => (
-            <article
-              className="qa-record-card"
-              key={record.id}
-              onClick={() => openEditRecord(record)}
-            >
-              <div className="qa-record-card-topline">
-                <Typography.Text strong>{record.question}</Typography.Text>
-                <Tag color="success">已索引</Tag>
-              </div>
-              <Typography.Paragraph>{record.answer}</Typography.Paragraph>
-              <div className="qa-record-card-actions" onClick={(event) => event.stopPropagation()}>
-                <Perm permission={PERMISSIONS.QA.FEEDBACK_CREATE} fallback={record.rating || '-'}>
-                  <Button
-                    type={record.rating === 'LIKE' ? 'primary' : 'text'}
-                    icon={<LikeOutlined />}
-                    aria-label="满意"
-                    onClick={() =>
-                      feedbackMutation.mutate({
-                        recordId: record.id,
-                        rating: record.rating === 'LIKE' ? null : 'LIKE',
-                      })
-                    }
-                  />
-                  <Button
-                    danger={record.rating === 'DISLIKE'}
-                    type={record.rating === 'DISLIKE' ? 'primary' : 'text'}
-                    icon={<DislikeOutlined />}
-                    aria-label="不满意"
-                    onClick={() =>
-                      feedbackMutation.mutate({
-                        recordId: record.id,
-                        rating: record.rating === 'DISLIKE' ? null : 'DISLIKE',
-                      })
-                    }
-                  />
-                </Perm>
-                <Perm permission={PERMISSIONS.QA.RECORD_DELETE}>
-                  <Popconfirm
-                    title="确定删除这条问答吗？"
-                    onConfirm={() => deleteRecordMutation.mutate(record.id)}
+        {!canReadRecords ? (
+          <Alert type="info" title="你可以查看数据集信息，但没有查看问答内容的权限。" />
+        ) : recordsQuery.isError ? (
+          <Alert
+            type="error"
+            showIcon
+            title="问答加载失败"
+            action={<Button onClick={() => void recordsQuery.refetch()}>重试</Button>}
+          />
+        ) : (
+          <Spin spinning={recordsQuery.isFetching}>
+            <div className="qa-record-card-list">
+              {recordsQuery.data?.items.map((record) => (
+                <article className="qa-record-card" key={record.id}>
+                  <div className="qa-record-card-topline">
+                    <Typography.Text strong>{record.question}</Typography.Text>
+                    <Tag>
+                      {record.generatedBy === 'HUMAN'
+                        ? '人工维护'
+                        : record.generatedBy === 'AI'
+                          ? 'AI 来源'
+                          : '系统来源'}
+                    </Tag>
+                  </div>
+                  <Typography.Paragraph>{record.answer}</Typography.Paragraph>
+                  {record.citations.length > 0 && (
+                    <details className="qa-record-citations">
+                      <summary>引用来源（{record.citations.length}）</summary>
+                      {record.citations.map((citation) => (
+                        <blockquote key={citation.id}>
+                          <Typography.Text strong>
+                            {citation.title || citation.sourceType}
+                          </Typography.Text>
+                          {citation.location && <span> · {citation.location}</span>}
+                          <p>{citation.snippet}</p>
+                        </blockquote>
+                      ))}
+                    </details>
+                  )}
+                  <div
+                    className="qa-record-card-actions"
+                    onClick={(event) => event.stopPropagation()}
                   >
-                    <Button danger type="text" icon={<DeleteOutlined />} aria-label="删除问答" />
-                  </Popconfirm>
-                </Perm>
-              </div>
-            </article>
-          ))}
-          {!recordsQuery.isLoading && !recordsQuery.data?.items.length ? (
-            <div className="qa-dataset-empty">
-              <Typography.Text type="secondary">当前数据集还没有问答数据</Typography.Text>
-              <Perm permission={PERMISSIONS.QA.RECORD_CREATE}>
-                <Button type="link" onClick={openCreateRecord}>
-                  插入第一条问答
-                </Button>
-              </Perm>
+                    <Perm permission={PERMISSIONS.QA.RECORD_UPDATE}>
+                      <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        aria-label="编辑问答"
+                        onClick={() => openEditRecord(record)}
+                      >
+                        编辑
+                      </Button>
+                    </Perm>
+                    <Perm
+                      permission={PERMISSIONS.QA.FEEDBACK_CREATE}
+                      fallback={
+                        record.rating === 'LIKE'
+                          ? '已认可'
+                          : record.rating === 'DISLIKE'
+                            ? '待改进'
+                            : '未标记'
+                      }
+                    >
+                      <Button
+                        type={record.rating === 'LIKE' ? 'primary' : 'text'}
+                        icon={<LikeOutlined />}
+                        aria-label="标记为已认可"
+                        title="组织共享质量标记：已认可"
+                        disabled={feedbackMutation.isPending}
+                        onClick={() =>
+                          feedbackMutation.mutate({
+                            recordId: record.id,
+                            rating: record.rating === 'LIKE' ? null : 'LIKE',
+                          })
+                        }
+                      />
+                      <Button
+                        danger={record.rating === 'DISLIKE'}
+                        type={record.rating === 'DISLIKE' ? 'primary' : 'text'}
+                        icon={<DislikeOutlined />}
+                        aria-label="标记为待改进"
+                        title="组织共享质量标记：待改进"
+                        disabled={feedbackMutation.isPending}
+                        onClick={() =>
+                          feedbackMutation.mutate({
+                            recordId: record.id,
+                            rating: record.rating === 'DISLIKE' ? null : 'DISLIKE',
+                          })
+                        }
+                      />
+                    </Perm>
+                    <Perm permission={PERMISSIONS.QA.RECORD_DELETE}>
+                      <Popconfirm
+                        title="确定永久删除这条共享问答吗？此操作无法恢复。"
+                        onConfirm={() => deleteRecordMutation.mutate(record.id)}
+                      >
+                        <Button
+                          danger
+                          type="text"
+                          icon={<DeleteOutlined />}
+                          aria-label="删除问答"
+                        />
+                      </Popconfirm>
+                    </Perm>
+                  </div>
+                </article>
+              ))}
+              {!recordsQuery.isLoading && !recordsQuery.data?.items.length ? (
+                <div className="qa-dataset-empty">
+                  <Typography.Text type="secondary">
+                    {keyword || rating
+                      ? '没有匹配的问答，请调整搜索或筛选条件'
+                      : '当前数据集还没有问答数据'}
+                  </Typography.Text>
+                  {!keyword && !rating && (
+                    <Perm permission={PERMISSIONS.QA.RECORD_CREATE}>
+                      <Button type="link" onClick={openCreateRecord}>
+                        插入第一条问答
+                      </Button>
+                    </Perm>
+                  )}
+                </div>
+              ) : null}
             </div>
-          ) : null}
-        </div>
-
-        {(recordsQuery.data?.total ?? 0) > pageSize ? (
-          <div className="qa-dataset-pagination">
-            <Button disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>
-              上一页
-            </Button>
-            <Typography.Text>第 {page} 页</Typography.Text>
-            <Button
-              disabled={page >= (recordsQuery.data?.totalPages ?? 1)}
-              onClick={() => setPage((value) => value + 1)}
-            >
-              下一页
-            </Button>
-          </div>
-        ) : null}
+          </Spin>
+        )}
+        {canReadRecords &&
+          !recordsQuery.isError &&
+          ((recordsQuery.data?.total ?? 0) > pageSize || page > 1) && (
+            <Pagination
+              className="qa-dataset-pagination"
+              current={page}
+              pageSize={pageSize}
+              total={recordsQuery.data?.total ?? 0}
+              showSizeChanger={false}
+              onChange={setPage}
+            />
+          )}
       </main>
 
       <aside className="qa-dataset-metadata">
@@ -452,14 +686,14 @@ export function QADataHubPage() {
             label="问题"
             rules={[{ required: true, whitespace: true, message: '请输入问题' }]}
           >
-            <Input.TextArea rows={3} placeholder="输入问题" />
+            <Input.TextArea maxLength={20000} rows={3} placeholder="输入问题" />
           </Form.Item>
           <Form.Item
             name="answer"
             label="答案"
             rules={[{ required: true, whitespace: true, message: '请输入答案' }]}
           >
-            <Input.TextArea rows={5} placeholder="输入答案" />
+            <Input.TextArea maxLength={100000} rows={5} placeholder="输入答案" />
           </Form.Item>
         </Form>
       </Modal>

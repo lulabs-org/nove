@@ -41,16 +41,16 @@ export class QASessionService {
     });
   }
 
-  async findAll(orgId: string, userId: string, query: QueryQASessionDto) {
+  async findAll(orgId: string, query: QueryQASessionDto) {
     const page = query.page ?? 1;
     const pageSize = query.pageSize ?? 20;
     const { items, total } = await this.sessions.findMany({
       orgId,
-      userId,
       skip: (page - 1) * pageSize,
       take: pageSize,
       targetType: query.targetType,
       targetId: query.targetId?.trim(),
+      keyword: query.keyword?.trim(),
     });
     return {
       items,
@@ -61,26 +61,27 @@ export class QASessionService {
     };
   }
 
-  async findById(id: string, orgId: string, userId: string) {
-    const session = await this.sessions.findById(id, orgId, userId);
+  async findById(id: string, orgId: string) {
+    const session = await this.sessions.findById(id, orgId);
     if (!session) throw new NotFoundException('QA session not found');
     return session;
   }
 
-  async update(
-    id: string,
-    orgId: string,
-    userId: string,
-    dto: UpdateQASessionDto,
-  ) {
-    const session = await this.findById(id, orgId, userId);
+  async findMetadata(id: string, orgId: string) {
+    const session = await this.sessions.findMetadata(id, orgId);
+    if (!session) throw new NotFoundException('QA dataset not found');
+    return session;
+  }
+
+  async update(id: string, orgId: string, dto: UpdateQASessionDto) {
+    const session = await this.findMetadata(id, orgId);
     const targetType = dto.targetType ?? session.targetType;
     const targetId =
       dto.targetId === undefined
         ? session.targetId
         : dto.targetId?.trim() || null;
     await this.assertTarget(targetType, targetId, orgId);
-    return this.sessions.update(id, orgId, userId, {
+    return this.sessions.update(id, orgId, {
       ...(dto.title !== undefined ? { title: dto.title.trim() } : {}),
       targetType,
       targetId,
@@ -90,9 +91,9 @@ export class QASessionService {
     });
   }
 
-  async delete(id: string, orgId: string, userId: string): Promise<void> {
-    await this.findById(id, orgId, userId);
-    await this.sessions.softDelete(id, orgId, userId);
+  async delete(id: string, orgId: string): Promise<void> {
+    await this.findMetadata(id, orgId);
+    await this.sessions.softDelete(id, orgId);
   }
 
   async findTargetOptions(

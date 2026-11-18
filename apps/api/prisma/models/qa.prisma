@@ -19,6 +19,7 @@ enum QAFeedbackRating {
 model QASession {
   id         String       @id @default(cuid())
   orgId      String       @map("org_id")
+  /// Creator attribution only; access is scoped to the organization and permissions.
   userId     String       @map("user_id")
   title      String       @db.VarChar(200)
   targetType QATargetType @default(GLOBAL) @map("target_type")

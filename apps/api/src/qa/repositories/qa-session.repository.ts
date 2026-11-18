@@ -19,16 +19,18 @@ export class QASessionRepository {
 
   async findMany(params: {
     orgId: string;
-    userId: string;
     skip: number;
     take: number;
     targetType?: QATargetType;
     targetId?: string;
+    keyword?: string;
   }) {
     const where: Prisma.QASessionWhereInput = {
       orgId: params.orgId,
-      userId: params.userId,
       deletedAt: null,
+      ...(params.keyword
+        ? { title: { contains: params.keyword, mode: 'insensitive' as const } }
+        : {}),
       ...(params.targetType ? { targetType: params.targetType } : {}),
       ...(params.targetId ? { targetId: params.targetId } : {}),
     };
@@ -38,19 +40,18 @@ export class QASessionRepository {
         where,
         skip: params.skip,
         take: params.take,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
       }),
     ]);
     return { items, total };
   }
 
-  findById(id: string, orgId: string, userId?: string) {
+  findById(id: string, orgId: string) {
     return this.prisma.qASession.findFirst({
       where: {
         id,
         orgId,
         deletedAt: null,
-        ...(userId ? { userId } : {}),
       },
       include: {
         records: {
@@ -61,21 +62,22 @@ export class QASessionRepository {
     });
   }
 
-  update(
-    id: string,
-    orgId: string,
-    userId: string,
-    data: Prisma.QASessionUpdateInput,
-  ) {
+  findMetadata(id: string, orgId: string) {
+    return this.prisma.qASession.findFirst({
+      where: { id, orgId, deletedAt: null },
+    });
+  }
+
+  update(id: string, orgId: string, data: Prisma.QASessionUpdateInput) {
     return this.prisma.qASession.update({
-      where: { id, orgId, userId, deletedAt: null },
+      where: { id, orgId, deletedAt: null },
       data,
     });
   }
 
-  softDelete(id: string, orgId: string, userId: string) {
+  softDelete(id: string, orgId: string) {
     return this.prisma.qASession.update({
-      where: { id, orgId, userId, deletedAt: null },
+      where: { id, orgId, deletedAt: null },
       data: { deletedAt: new Date() },
     });
   }

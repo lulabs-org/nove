@@ -7,6 +7,43 @@ import { UpdateQARecordDto } from './update-qa-record.dto';
 import { UpdateQASessionDto } from './update-qa-session.dto';
 
 describe('QA DTO validation', () => {
+  it.each(['', '   ', null])(
+    'rejects empty or null record content: %p',
+    async (value) => {
+      for (const Dto of [CreateQARecordDto, UpdateQARecordDto]) {
+        const errors = await validate(
+          plainToInstance(Dto, { question: value, answer: value }),
+        );
+        expect(errors.map((error) => error.property)).toEqual(
+          expect.arrayContaining(['question', 'answer']),
+        );
+      }
+      const errors = await validate(
+        plainToInstance(UpdateQASessionDto, { title: value }),
+      );
+      expect(errors.map((error) => error.property)).toContain('title');
+    },
+  );
+
+  it('rejects null collections, metadata, source and destination on partial updates', async () => {
+    const errors = await validate(
+      plainToInstance(UpdateQARecordDto, {
+        citations: null,
+        metadata: null,
+        generatedBy: null,
+        sessionId: null,
+      }),
+    );
+    expect(errors.map((error) => error.property)).toEqual(
+      expect.arrayContaining([
+        'citations',
+        'metadata',
+        'generatedBy',
+        'sessionId',
+      ]),
+    );
+  });
+
   it('accepts valid session and nested record input', async () => {
     const session = plainToInstance(CreateQASessionDto, {
       title: 'Project Q&A',

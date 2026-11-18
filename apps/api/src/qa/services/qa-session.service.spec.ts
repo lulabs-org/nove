@@ -15,6 +15,7 @@ describe('QASessionService', () => {
     create: jest.Mock;
     findMany: jest.Mock;
     findById: jest.Mock;
+    findMetadata: jest.Mock;
     update: jest.Mock;
     softDelete: jest.Mock;
   };
@@ -36,6 +37,7 @@ describe('QASessionService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
       findById: jest.fn(),
+      findMetadata: jest.fn(),
       update: jest.fn(),
       softDelete: jest.fn(),
     };
@@ -134,13 +136,13 @@ describe('QASessionService', () => {
     );
   });
 
-  it('returns paginated sessions for the current user and organization', async () => {
+  it('returns paginated sessions for the current organization', async () => {
     sessions.findMany.mockResolvedValue({
       items: [{ id: 'session-1' }],
       total: 5,
     });
 
-    const result = await service.findAll('org-1', 'user-1', {
+    const result = await service.findAll('org-1', {
       page: 2,
       pageSize: 2,
       targetId: ' target-1 ',
@@ -149,7 +151,6 @@ describe('QASessionService', () => {
     expect(sessions.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'org-1',
-        userId: 'user-1',
         skip: 2,
         take: 2,
         targetId: 'target-1',
@@ -175,28 +176,24 @@ describe('QASessionService', () => {
     });
   });
 
-  it('throws when a session is not owned by the current user', async () => {
+  it('throws when a session is outside the current organization', async () => {
     sessions.findById.mockResolvedValue(null);
 
-    await expect(
-      service.findById('session-2', 'org-1', 'user-1'),
-    ).rejects.toThrow(NotFoundException);
-  });
-
-  it('soft deletes an owned session', async () => {
-    sessions.findById.mockResolvedValue({ id: 'session-1' });
-
-    await service.delete('session-1', 'org-1', 'user-1');
-
-    expect(sessions.softDelete).toHaveBeenCalledWith(
-      'session-1',
-      'org-1',
-      'user-1',
+    await expect(service.findById('session-2', 'org-1')).rejects.toThrow(
+      NotFoundException,
     );
   });
 
-  it('updates an owned session after validating its target', async () => {
-    sessions.findById.mockResolvedValue({
+  it('soft deletes a shared session in the organization', async () => {
+    sessions.findMetadata.mockResolvedValue({ id: 'session-1' });
+
+    await service.delete('session-1', 'org-1');
+
+    expect(sessions.softDelete).toHaveBeenCalledWith('session-1', 'org-1');
+  });
+
+  it('updates a shared session after validating its target', async () => {
+    sessions.findMetadata.mockResolvedValue({
       id: 'session-1',
       targetType: QATargetType.GLOBAL,
       targetId: null,
@@ -204,7 +201,7 @@ describe('QASessionService', () => {
     prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
     sessions.update.mockResolvedValue({ id: 'session-1' });
 
-    await service.update('session-1', 'org-1', 'user-1', {
+    await service.update('session-1', 'org-1', {
       title: ' Updated questions ',
       targetType: QATargetType.PROJECT,
       targetId: 'project-1',
@@ -218,7 +215,6 @@ describe('QASessionService', () => {
     expect(sessions.update).toHaveBeenCalledWith(
       'session-1',
       'org-1',
-      'user-1',
       expect.objectContaining({
         title: 'Updated questions',
         targetType: QATargetType.PROJECT,
