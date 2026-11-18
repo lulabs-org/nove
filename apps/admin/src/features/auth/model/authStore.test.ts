@@ -14,7 +14,7 @@ vi.mock('../api/api', () => ({
 }));
 
 import { authService } from '../api/service';
-import { useAuthStore } from './authStore';
+import { AUTH_STORAGE_KEY, syncAuthFromStorageEvent, useAuthStore } from './authStore';
 
 const mockUser: User = {
   id: 'user-1',
@@ -135,17 +135,20 @@ describe('useAuthStore', () => {
       expect(state.user).toBeNull();
     });
 
-    it('preserves auth when logout API throws an error', async () => {
+    it('still clears local auth when logout API throws an error', async () => {
       authService.setToken('active-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
       apiMocks.logout.mockRejectedValueOnce(new Error('Network error'));
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await useAuthStore.getState().logout();
 
-      expect(authService.getToken()).toBe('active-token');
+      expect(consoleError).toHaveBeenCalledWith('Logout error:', expect.any(Error));
+      consoleError.mockRestore();
+      expect(authService.getToken()).toBeNull();
       const state = useAuthStore.getState();
-      expect(state.isAuthenticated).toBe(true);
-      expect(state.user).toEqual(mockUser);
+      expect(state.isAuthenticated).toBe(false);
+      expect(state.user).toBeNull();
     });
   });
 
@@ -200,6 +203,62 @@ describe('useAuthStore', () => {
 
       expect(useAuthStore.getState().checkPermission('user:read')).toBe(true);
       expect(useAuthStore.getState().checkPermission('admin:secret')).toBe(false);
+    });
+  });
+
+  describe('cross-tab sync', () => {
+    const otherUser: User = { ...mockUser, id: 'user-2', name: '另一个用户' };
+
+    const storageEvent = (init: StorageEventInit) =>
+      new StorageEvent('storage', { storageArea: localStorage, ...init });
+
+    it('adopts the account another tab signed in with', async () => {
+      useAuthStore.setState({ isAuthenticated: true, user: mockUser });
+      const persisted = JSON.stringify({
+        state: { isAuthenticated: true, user: otherUser },
+        version: 0,
+      });
+      localStorage.setItem(AUTH_STORAGE_KEY, persisted);
+
+      window.dispatchEvent(storageEvent({ key: AUTH_STORAGE_KEY, newValue: persisted }));
+
+      await vi.waitFor(() => expect(useAuthStore.getState().user).toEqual(otherUser));
+      expect(useAuthStore.getState().isAuthenticated).toBe(true);
+    });
+
+    it('logs out when another tab logs out', async () => {
+      useAuthStore.setState({ isAuthenticated: true, user: mockUser });
+      const persisted = JSON.stringify({
+        state: { isAuthenticated: false, user: null },
+        version: 0,
+      });
+      localStorage.setItem(AUTH_STORAGE_KEY, persisted);
+
+      window.dispatchEvent(storageEvent({ key: AUTH_STORAGE_KEY, newValue: persisted }));
+
+      await vi.waitFor(() => expect(useAuthStore.getState().user).toBeNull());
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    });
+
+    it.each([
+      ['the auth entry is removed', { key: AUTH_STORAGE_KEY, newValue: null }],
+      ['storage is cleared', { key: null }],
+    ])('logs out when %s in another tab', (_label, init) => {
+      useAuthStore.setState({ isAuthenticated: true, user: mockUser });
+
+      syncAuthFromStorageEvent(storageEvent(init));
+
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+      expect(useAuthStore.getState().user).toBeNull();
+    });
+
+    it('ignores token refreshes and other keys', () => {
+      useAuthStore.setState({ isAuthenticated: true, user: mockUser });
+
+      syncAuthFromStorageEvent(storageEvent({ key: 'auth_token', newValue: 'refreshed-token' }));
+
+      expect(useAuthStore.getState().user).toEqual(mockUser);
+      expect(useAuthStore.getState().isAuthenticated).toBe(true);
     });
   });
 });
