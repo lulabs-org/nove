@@ -51,8 +51,8 @@ const record = {
   rating: null,
   citations: [],
 };
-function page<T>(items: T[], total = items.length, current = 1) {
-  return { items, total, page: current, pageSize: 20, totalPages: Math.ceil(total / 20) };
+function page<T>(items: T[], total = items.length, current = 1, pageSize = 20) {
+  return { items, total, page: current, pageSize, totalPages: Math.ceil(total / pageSize) };
 }
 let client: QueryClient;
 function view(path = '/qa') {
@@ -288,6 +288,32 @@ describe('Organization shared knowledge library', () => {
     });
     expect(await screen.findByText(record.question)).toBeInTheDocument();
     expect(state.api.listRecords).toHaveBeenLastCalledWith(expect.objectContaining({ page: 1 }));
+  });
+
+  it('resets to page one when changing page size and keeps the selector on single-page results', async () => {
+    state.api.listRecords.mockImplementation((params: { page: number; pageSize: number }) =>
+      Promise.resolve(page([record], 23, params.page, params.pageSize))
+    );
+    render(view('/qa?dataset=dataset-1'));
+    await screen.findByText(record.question);
+    fireEvent.click(screen.getByTitle('2'));
+    await waitFor(() =>
+      expect(state.api.listRecords).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 2, pageSize: 20 })
+      )
+    );
+
+    fireEvent.mouseDown(await screen.findByRole('combobox', { name: '每页条数' }));
+    fireEvent.click(
+      await screen.findByText('50 条/页', { selector: '.ant-select-item-option-content' })
+    );
+    await waitFor(() =>
+      expect(state.api.listRecords).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 1, pageSize: 50 })
+      )
+    );
+    expect(await screen.findByRole('combobox', { name: '每页条数' })).toBeInTheDocument();
+    expect(screen.queryByTitle('2')).not.toBeInTheDocument();
   });
 
   it('saves manual edits and refreshes dataset metadata as well as records', async () => {

@@ -66,7 +66,7 @@
 .qa-dataset-detail-page {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
-  overflow: hidden;
+  overflow: clip;
 }
 
 .qa-dataset-main {
@@ -192,6 +192,7 @@
 
 .qa-dataset-pagination {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 14px;
@@ -199,9 +200,15 @@
 }
 
 .qa-dataset-metadata {
-  padding: 32px 28px;
   border-left: 1px solid #edf0f5;
+  border-radius: 10px;
   background: #fbfcff;
+}
+
+.qa-dataset-metadata-content {
+  position: sticky;
+  inset-block-start: 24px;
+  padding: 32px 28px;
 }
 
 .qa-dataset-metadata h4 {
@@ -240,6 +247,10 @@
   .qa-dataset-metadata {
     border-top: 1px solid #edf0f5;
     border-left: 0;
+  }
+
+  .qa-dataset-metadata-content {
+    position: static;
   }
 }
 

@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Alert from 'antd/es/alert';
+import zhCN from 'antd/es/locale/zh_CN';
 import Pagination from 'antd/es/pagination';
 import Select from 'antd/es/select';
 import Spin from 'antd/es/spin';
@@ -128,7 +129,8 @@ function SharedKnowledgePage() {
   const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [keyword, setKeyword] = useState<string>();
   const [page, setPage] = useState(1);
-  const pageSize = 20;
+  const [recordPageSize, setRecordPageSize] = useState(20);
+  const datasetPageSize = 20;
   const editingTargetType = Form.useWatch('targetType', datasetForm);
   const hasTargetField = Boolean(editingTargetType && editingTargetType !== 'GLOBAL');
 
@@ -143,7 +145,12 @@ function SharedKnowledgePage() {
     enabled: datasetModalOpen && Boolean(editingDataset) && hasTargetField,
   });
 
-  const datasetParams = { page: datasetPage, pageSize, keyword: datasetKeyword, targetType };
+  const datasetParams = {
+    page: datasetPage,
+    pageSize: datasetPageSize,
+    keyword: datasetKeyword,
+    targetType,
+  };
   const sessionsQuery = useQuery({
     queryKey: [...scope, 'sessions', datasetParams],
     queryFn: () => qaApi.listSessions(datasetParams),
@@ -154,7 +161,13 @@ function SharedKnowledgePage() {
     queryFn: () => qaApi.getSession(activeDatasetId!),
     enabled: Boolean(activeDatasetId),
   });
-  const recordParams = { page, pageSize, keyword, rating, sessionId: activeDatasetId };
+  const recordParams = {
+    page,
+    pageSize: recordPageSize,
+    keyword,
+    rating,
+    sessionId: activeDatasetId,
+  };
   const recordsQuery = useQuery({
     queryKey: [...scope, 'records', recordParams],
     queryFn: () => qaApi.listRecords(recordParams),
@@ -525,7 +538,7 @@ function SharedKnowledgePage() {
             loading={sessionsQuery.isLoading}
             pagination={{
               current: datasetPage,
-              pageSize,
+              pageSize: datasetPageSize,
               total: sessionsQuery.data?.total ?? 0,
               showSizeChanger: false,
               onChange: setDatasetPage,
@@ -779,32 +792,37 @@ function SharedKnowledgePage() {
             </div>
           </Spin>
         )}
-        {canReadRecords &&
-          !recordsQuery.isError &&
-          ((recordsQuery.data?.total ?? 0) > pageSize || page > 1) && (
-            <Pagination
-              className="qa-dataset-pagination"
-              current={page}
-              pageSize={pageSize}
-              total={recordsQuery.data?.total ?? 0}
-              showSizeChanger={false}
-              onChange={setPage}
-            />
-          )}
+        {canReadRecords && recordsQuery.data && !recordsQuery.isError && (
+          <Pagination
+            className="qa-dataset-pagination"
+            current={page}
+            pageSize={recordPageSize}
+            total={recordsQuery.data.total}
+            locale={{ ...zhCN.Pagination, page_size: '每页条数' }}
+            showSizeChanger
+            pageSizeOptions={[10, 20, 50, 100]}
+            onChange={(nextPage, nextPageSize) => {
+              setRecordPageSize(nextPageSize);
+              setPage(nextPageSize === recordPageSize ? nextPage : 1);
+            }}
+          />
+        )}
       </main>
 
       <aside className="qa-dataset-metadata">
-        <Typography.Title level={4}>元数据</Typography.Title>
-        <dl>
-          <dt>数据集 ID</dt>
-          <dd>{activeDataset.id}</dd>
-          <dt>数据集名称</dt>
-          <dd>{activeDataset.title}</dd>
-          <dt>创建时间</dt>
-          <dd>{formatDate(activeDataset.createdAt)}</dd>
-          <dt>更新时间</dt>
-          <dd>{formatDate(activeDataset.updatedAt)}</dd>
-        </dl>
+        <div className="qa-dataset-metadata-content">
+          <Typography.Title level={4}>元数据</Typography.Title>
+          <dl>
+            <dt>数据集 ID</dt>
+            <dd>{activeDataset.id}</dd>
+            <dt>数据集名称</dt>
+            <dd>{activeDataset.title}</dd>
+            <dt>创建时间</dt>
+            <dd>{formatDate(activeDataset.createdAt)}</dd>
+            <dt>更新时间</dt>
+            <dd>{formatDate(activeDataset.updatedAt)}</dd>
+          </dl>
+        </div>
       </aside>
 
       <Modal
