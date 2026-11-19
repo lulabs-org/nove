@@ -176,11 +176,20 @@ describe('Organization shared knowledge library', () => {
     expect(state.api.deleteSession.mock.calls[0]?.[0]).toBe(dataset.id);
   });
 
-  it('requires an associated object when changing a dataset to a scoped type', async () => {
+  it('requires an associated object for a scoped type and prefills it after saving', async () => {
     state.api.listTargetOptions.mockResolvedValue([
       { id: 'project-1', label: '招生项目', description: null },
     ]);
-    state.api.updateSession.mockResolvedValue(dataset);
+    const linkedDataset = {
+      ...dataset,
+      targetType: 'PROJECT',
+      targetId: 'project-1',
+      targetName: '招生项目',
+    };
+    state.api.updateSession.mockImplementation(() => {
+      state.api.listSessions.mockResolvedValue(page([linkedDataset]));
+      return Promise.resolve(linkedDataset);
+    });
     render(view());
     fireEvent.click(await screen.findByRole('button', { name: '编辑数据集' }));
     const dialog = within(await screen.findByRole('dialog'));
@@ -205,6 +214,11 @@ describe('Organization shared knowledge library', () => {
         targetId: 'project-1',
       })
     );
+    expect(await screen.findByRole('cell', { name: '项目 招生项目' })).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: '编辑数据集' }));
+    const reopenedDialog = within(await screen.findByRole('dialog'));
+    await waitFor(() => expect(reopenedDialog.getByText('招生项目')).toBeVisible());
   });
 
   it('prefills an existing association and clears it when switching to global', async () => {

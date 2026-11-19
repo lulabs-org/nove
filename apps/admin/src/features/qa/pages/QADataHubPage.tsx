@@ -441,7 +441,6 @@ function SharedKnowledgePage() {
               <Form.Item
                 name="target"
                 label="关联对象"
-                preserve={false}
                 rules={[{ required: true, message: '请选择关联对象' }]}
               >
                 <Select
