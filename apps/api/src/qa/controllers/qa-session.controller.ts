@@ -34,11 +34,11 @@ import {
 } from '../dto';
 import { QASessionService } from '../services';
 
-@ApiTags('QA Sessions')
+@ApiTags('QA / Sessions')
 @ApiBearerAuth()
 @Controller('api/v1/qa/sessions')
 export class QASessionController {
-  constructor(private readonly sessions: QASessionService) {}
+  constructor(private readonly sessions: QASessionService) { }
 
   @Post()
   @RequirePermissions('qa:session:create')

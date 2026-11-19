@@ -29,11 +29,11 @@ import {
 } from '../dto';
 import { QARecordService } from '../services';
 
-@ApiTags('QA Records')
+@ApiTags('QA / Records')
 @ApiBearerAuth()
 @Controller('api/v1/qa')
 export class QARecordController {
-  constructor(private readonly records: QARecordService) {}
+  constructor(private readonly records: QARecordService) { }
 
   @Post('sessions/:sessionId/records')
   @RequirePermissions('qa:record:create')

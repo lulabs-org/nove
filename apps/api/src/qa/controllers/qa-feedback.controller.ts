@@ -11,11 +11,11 @@ import {
 import { QAFeedbackDto, QARecordResponseDto } from '../dto';
 import { QAFeedbackService } from '../services';
 
-@ApiTags('QA Feedback')
+@ApiTags('QA / Feedback')
 @ApiBearerAuth()
 @Controller('api/v1/qa/records')
 export class QAFeedbackController {
-  constructor(private readonly feedback: QAFeedbackService) {}
+  constructor(private readonly feedback: QAFeedbackService) { }
 
   @Post(':recordId/feedback')
   @RequirePermissions('qa:feedback:create')

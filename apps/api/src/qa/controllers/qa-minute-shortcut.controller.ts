@@ -11,11 +11,11 @@ import {
 import { QARecordListResponseDto, QueryQARecordDto } from '../dto';
 import { QARecordService } from '../services';
 
-@ApiTags('QA Records')
+@ApiTags('QA / Records')
 @ApiBearerAuth()
 @Controller('api/v1/minutes')
 export class QAMinuteShortcutController {
-  constructor(private readonly records: QARecordService) {}
+  constructor(private readonly records: QARecordService) { }
 
   @Get(':minuteId/qa-records')
   @RequirePermissions('qa:record:read')
