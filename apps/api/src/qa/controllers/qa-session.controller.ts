@@ -38,7 +38,7 @@ import { QASessionService } from '../services';
 @ApiBearerAuth()
 @Controller('api/v1/qa/sessions')
 export class QASessionController {
-  constructor(private readonly sessions: QASessionService) { }
+  constructor(private readonly sessions: QASessionService) {}
 
   @Post()
   @RequirePermissions('qa:session:create')
