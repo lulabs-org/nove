@@ -1,10 +1,6 @@
 import { MinuteModule } from '@/minute/minute.module';
 import { Module } from '@nestjs/common';
-import {
-  QAFeedbackController,
-  QARecordController,
-  QASessionController,
-} from './controllers';
+import { QARecordController, QASessionController } from './controllers';
 import { QARecordRepository, QASessionRepository } from './repositories';
 import {
   QAFeedbackService,
@@ -14,7 +10,7 @@ import {
 
 @Module({
   imports: [MinuteModule],
-  controllers: [QASessionController, QARecordController, QAFeedbackController],
+  controllers: [QASessionController, QARecordController],
   providers: [
     QASessionService,
     QARecordService,

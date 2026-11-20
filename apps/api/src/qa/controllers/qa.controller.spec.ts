@@ -2,7 +2,6 @@
 import { PERMISSIONS_KEY } from '@/admin/permission/decorators/permissions.decorator';
 import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { RequestMethod } from '@nestjs/common';
-import { QAFeedbackController } from './qa-feedback.controller';
 import { QARecordController } from './qa-record.controller';
 import { QASessionController } from './qa-session.controller';
 
@@ -27,9 +26,6 @@ describe('QA controller contracts', () => {
     );
     expect(Reflect.getMetadata(PATH_METADATA, QARecordController)).toBe(
       'api/v1/qa',
-    );
-    expect(Reflect.getMetadata(PATH_METADATA, QAFeedbackController)).toBe(
-      'api/v1/qa/records',
     );
   });
 
@@ -95,8 +91,8 @@ describe('QA controller contracts', () => {
       'qa:record:delete',
     ],
     [
-      QAFeedbackController.prototype.submit,
-      ':recordId/feedback',
+      QARecordController.prototype.submitFeedback,
+      'records/:recordId/feedback',
       RequestMethod.POST,
       'qa:feedback:create',
     ],

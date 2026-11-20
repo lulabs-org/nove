@@ -22,18 +22,22 @@ import {
 import {
   BatchCreateQARecordDto,
   CreateQARecordDto,
+  QAFeedbackDto,
   QARecordListResponseDto,
   QARecordResponseDto,
   QueryQARecordDto,
   UpdateQARecordDto,
 } from '../dto';
-import { QARecordService } from '../services';
+import { QAFeedbackService, QARecordService } from '../services';
 
 @ApiTags('QA / Records')
 @ApiBearerAuth()
 @Controller('api/v1/qa')
 export class QARecordController {
-  constructor(private readonly records: QARecordService) { }
+  constructor(
+    private readonly records: QARecordService,
+    private readonly feedback: QAFeedbackService,
+  ) {}
 
   @Post('sessions/:sessionId/records')
   @RequirePermissions('qa:record:create')
@@ -88,5 +92,17 @@ export class QARecordController {
     @CurrentOrg() orgId: string,
   ) {
     return this.records.delete(orgId, recordId);
+  }
+
+  @Post('records/:recordId/feedback')
+  @RequirePermissions('qa:feedback:create')
+  @ApiOperation({ summary: '提交问答记录满意度反馈' })
+  @ApiResponse({ status: 201, type: QARecordResponseDto })
+  submitFeedback(
+    @Param('recordId', CuidPipe) recordId: string,
+    @Body() dto: QAFeedbackDto,
+    @CurrentOrg() orgId: string,
+  ) {
+    return this.feedback.submit(orgId, recordId, dto);
   }
 }

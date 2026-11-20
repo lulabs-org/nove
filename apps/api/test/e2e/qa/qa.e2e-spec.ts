@@ -2,11 +2,7 @@ import { PermissionGuard } from '@/admin/permission/guards/permission.guard';
 import { PermService } from '@/admin/permission/services/permission.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { PrismaModule } from '@/prisma/prisma.module';
-import {
-  QAFeedbackController,
-  QARecordController,
-  QASessionController,
-} from '@/qa/controllers';
+import { QARecordController, QASessionController } from '@/qa/controllers';
 import { QARecordRepository, QASessionRepository } from '@/qa/repositories';
 import {
   QAFeedbackService,
@@ -64,11 +60,7 @@ describe('QA data hub (e2e)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [PrismaModule],
-      controllers: [
-        QASessionController,
-        QARecordController,
-        QAFeedbackController,
-      ],
+      controllers: [QASessionController, QARecordController],
       providers: [
         PermissionGuard,
         {
