@@ -147,18 +147,6 @@ export class QARecordRepository {
             : data.aiModel !== undefined
               ? { aiModel: data.aiModel?.trim() || null }
               : {}),
-          ...(data.promptTokens !== undefined
-            ? { promptTokens: data.promptTokens }
-            : {}),
-          ...(data.completionTokens !== undefined
-            ? { completionTokens: data.completionTokens }
-            : {}),
-          ...(data.totalTokens !== undefined
-            ? { totalTokens: data.totalTokens }
-            : {}),
-          ...(data.latencyMs !== undefined
-            ? { latencyMs: data.latencyMs }
-            : {}),
           ...(data.metadata !== undefined
             ? { metadata: data.metadata as Prisma.InputJsonValue }
             : {}),
@@ -234,10 +222,6 @@ export class QARecordRepository {
         (data.generatedBy ?? QAGeneratedBy.AI) === QAGeneratedBy.AI
           ? data.aiModel?.trim() || null
           : null,
-      promptTokens: data.promptTokens,
-      completionTokens: data.completionTokens,
-      totalTokens: data.totalTokens,
-      latencyMs: data.latencyMs,
       metadata: (data.metadata ?? {}) as Prisma.InputJsonValue,
       citations: {
         create: (data.citations ?? []).map((citation) =>

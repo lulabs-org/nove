@@ -47,10 +47,6 @@ model QARecord {
   answer           String            @db.Text
   generatedBy      QAGeneratedBy     @default(AI) @map("generated_by")
   aiModel          String?           @map("ai_model") @db.VarChar(100)
-  promptTokens     Int?              @map("prompt_tokens")
-  completionTokens Int?              @map("completion_tokens")
-  totalTokens      Int?              @map("total_tokens")
-  latencyMs        Int?              @map("latency_ms")
   rating           QAFeedbackRating?
   feedbackReason   String?           @map("feedback_reason") @db.VarChar(50)
   feedbackComment  String?           @map("feedback_comment") @db.Text

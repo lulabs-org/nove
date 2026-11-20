@@ -99,30 +99,6 @@ export class CreateQARecordDto {
   @MaxLength(100)
   aiModel?: string;
 
-  @ApiPropertyOptional({ minimum: 0 })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  promptTokens?: number;
-
-  @ApiPropertyOptional({ minimum: 0 })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  completionTokens?: number;
-
-  @ApiPropertyOptional({ minimum: 0 })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  totalTokens?: number;
-
-  @ApiPropertyOptional({ minimum: 0 })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  latencyMs?: number;
-
   @ApiPropertyOptional({
     type: 'object',
     additionalProperties: true,

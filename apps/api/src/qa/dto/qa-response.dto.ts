@@ -32,10 +32,6 @@ export class QARecordResponseDto {
   @ApiProperty() answer: string;
   @ApiProperty({ enum: QAGeneratedBy }) generatedBy: QAGeneratedBy;
   @ApiPropertyOptional({ nullable: true }) aiModel: string | null;
-  @ApiPropertyOptional({ nullable: true }) promptTokens: number | null;
-  @ApiPropertyOptional({ nullable: true }) completionTokens: number | null;
-  @ApiPropertyOptional({ nullable: true }) totalTokens: number | null;
-  @ApiPropertyOptional({ nullable: true }) latencyMs: number | null;
   @ApiPropertyOptional({ enum: QAFeedbackRating, nullable: true })
   rating: QAFeedbackRating | null;
   @ApiPropertyOptional({ nullable: true }) feedbackReason: string | null;
