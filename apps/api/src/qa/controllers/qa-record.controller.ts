@@ -62,12 +62,16 @@ export class QARecordController {
     return this.records.createBatch(orgId, dto);
   }
 
-  @Get('records')
+  @Get('sessions/:sessionId/records')
   @RequirePermissions('qa:record:read')
-  @ApiOperation({ summary: '跨会话检索当前组织的问答记录' })
+  @ApiOperation({ summary: '检索指定数据集的问答记录' })
   @ApiResponse({ status: 200, type: QARecordListResponseDto })
-  findAll(@Query() query: QueryQARecordDto, @CurrentOrg() orgId: string) {
-    return this.records.findAll(orgId, query);
+  findAll(
+    @Param('sessionId', CuidPipe) sessionId: string,
+    @Query() query: QueryQARecordDto,
+    @CurrentOrg() orgId: string,
+  ) {
+    return this.records.findAll(orgId, sessionId, query);
   }
 
   @Patch('records/:recordId')

@@ -28,6 +28,8 @@
 
 新增 `GET /api/v1/qa/sessions/:id/metadata`，仅返回数据集信息，避免加载全部问答。旧的 `GET /api/v1/qa/sessions/:id` 继续返回问答及引用，因此现在同时要求 `qa:session:read` 和 `qa:record:read`。调用该接口的客户端应确认两项权限均已授予。
 
+问答列表使用 `GET /api/v1/qa/sessions/:sessionId/records`，支持分页、搜索和筛选。原 `GET /api/v1/qa/records` 已移除，调用方需改用指定数据集的路径。
+
 列表支持 `page`、`pageSize`、`keyword`、`targetType`、`targetId`；不再限定当前创建者。后台权限点名称中的 session 为兼容保留。
 
 ## 当前范围

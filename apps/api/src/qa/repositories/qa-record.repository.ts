@@ -60,7 +60,7 @@ export class QARecordRepository {
     take: number;
     keyword?: string;
     rating?: QAFeedbackRating;
-    sessionId?: string;
+    sessionId: string;
     from?: Date;
     to?: Date;
   }) {
@@ -69,7 +69,7 @@ export class QARecordRepository {
         orgId: params.orgId,
         deletedAt: null,
       },
-      ...(params.sessionId ? { sessionId: params.sessionId } : {}),
+      sessionId: params.sessionId,
       ...(params.rating ? { rating: params.rating } : {}),
       ...(params.keyword
         ? {

@@ -228,9 +228,8 @@ describe('QA data hub (e2e)', () => {
       .send({ answer: 'Foreign' })
       .expect(404);
     const foreignRecords = await request(httpServer)
-      .get('/api/v1/qa/records')
+      .get(`${base}/records`)
       .set('x-test-user', outsiderId)
-      .query({ sessionId })
       .expect(200);
     expect(readItems(foreignRecords.body as unknown)).toEqual([]);
     await request(httpServer)
@@ -255,8 +254,7 @@ describe('QA data hub (e2e)', () => {
       .set('x-test-user', readerId)
       .expect(404);
     const hiddenRecords = await request(httpServer)
-      .get('/api/v1/qa/records')
-      .query({ sessionId })
+      .get(`${base}/records`)
       .expect(200);
     expect(readItems(hiddenRecords.body as unknown)).toEqual([]);
   });
@@ -318,7 +316,7 @@ describe('QA data hub (e2e)', () => {
       });
 
     const listResponse = await request(httpServer)
-      .get('/api/v1/qa/records')
+      .get(`/api/v1/qa/sessions/${sessionId}/records`)
       .query({ keyword: '10 月 31 日' })
       .expect(200);
 
@@ -330,6 +328,18 @@ describe('QA data hub (e2e)', () => {
         }),
       ]),
     );
+
+    const otherSessionResponse = await request(httpServer)
+      .post('/api/v1/qa/sessions')
+      .send({ title: '其他数据集', targetType: 'GLOBAL' })
+      .expect(201);
+    const otherSessionId = readRequiredId(otherSessionResponse.body as unknown);
+    const otherRecords = await request(httpServer)
+      .get(`/api/v1/qa/sessions/${otherSessionId}/records`)
+      .query({ keyword: '10 月 31 日' })
+      .expect(200);
+    expect(readItems(otherRecords.body as unknown)).toEqual([]);
+    await request(httpServer).get('/api/v1/qa/records').expect(404);
 
     const feedbackResponse = await request(httpServer)
       .post(`/api/v1/qa/records/${recordId}/feedback`)
@@ -364,8 +374,7 @@ describe('QA data hub (e2e)', () => {
       .expect(204);
 
     const emptyListResponse = await request(httpServer)
-      .get('/api/v1/qa/records')
-      .query({ sessionId })
+      .get(`/api/v1/qa/sessions/${sessionId}/records`)
       .expect(200);
     expect(readItems(emptyListResponse.body as unknown)).toHaveLength(0);
 

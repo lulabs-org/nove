@@ -87,7 +87,7 @@ export interface RecordListParams {
   pageSize?: number;
   keyword?: string;
   rating?: QAFeedbackRating;
-  sessionId?: string;
+  sessionId: string;
 }
 
 export const qaApi = {
@@ -129,7 +129,12 @@ export const qaApi = {
   },
 
   listRecords(params: RecordListParams): Promise<PageResult<QARecord>> {
-    return mutator({ url: '/api/v1/qa/records', method: 'GET', params });
+    const { sessionId, ...filters } = params;
+    return mutator({
+      url: `/api/v1/qa/sessions/${sessionId}/records`,
+      method: 'GET',
+      params: filters,
+    });
   },
 
   createRecord(sessionId: string, data: CreateRecordInput): Promise<QARecord> {

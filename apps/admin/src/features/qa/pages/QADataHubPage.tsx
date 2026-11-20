@@ -166,7 +166,7 @@ function SharedKnowledgePage() {
     pageSize: recordPageSize,
     keyword,
     rating,
-    sessionId: activeDatasetId,
+    sessionId: activeDatasetId!,
   };
   const recordsQuery = useQuery({
     queryKey: [...scope, 'records', recordParams],

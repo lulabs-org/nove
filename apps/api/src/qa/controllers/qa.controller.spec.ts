@@ -74,7 +74,7 @@ describe('QA controller contracts', () => {
     ],
     [
       QARecordController.prototype.findAll,
-      'records',
+      'sessions/:sessionId/records',
       RequestMethod.GET,
       'qa:record:read',
     ],

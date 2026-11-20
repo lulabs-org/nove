@@ -39,11 +39,6 @@ export class QueryQARecordDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  sessionId?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
   @IsDateString()
   from?: string;
 

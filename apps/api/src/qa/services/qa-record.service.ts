@@ -25,7 +25,7 @@ export class QARecordService {
     return this.records.createBatch(orgId, dto.records);
   }
 
-  async findAll(orgId: string, query: QueryQARecordDto) {
+  async findAll(orgId: string, sessionId: string, query: QueryQARecordDto) {
     const page = query.page ?? 1;
     const pageSize = query.pageSize ?? 20;
     const { items, total } = await this.records.findMany({
@@ -34,7 +34,7 @@ export class QARecordService {
       take: pageSize,
       keyword: query.keyword?.trim(),
       rating: query.rating,
-      sessionId: query.sessionId,
+      sessionId,
       from: query.from ? new Date(query.from) : undefined,
       to: query.to ? new Date(query.to) : undefined,
     });

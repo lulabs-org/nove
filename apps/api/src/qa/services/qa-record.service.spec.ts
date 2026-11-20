@@ -78,10 +78,10 @@ describe('QARecordService', () => {
     expect(records.createBatch).toHaveBeenCalledWith('org-1', batch.records);
   });
 
-  it('passes trimmed filters and pagination to global record search', async () => {
+  it('passes the session, trimmed filters and pagination to record search', async () => {
     records.findMany.mockResolvedValue({ items: [], total: 3 });
 
-    const result = await service.findAll('org-1', {
+    const result = await service.findAll('org-1', 'session-1', {
       page: 2,
       pageSize: 2,
       keyword: ' decision ',
@@ -92,6 +92,7 @@ describe('QARecordService', () => {
     expect(records.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'org-1',
+        sessionId: 'session-1',
         skip: 2,
         take: 2,
         keyword: 'decision',
