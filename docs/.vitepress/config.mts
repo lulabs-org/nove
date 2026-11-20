@@ -170,6 +170,10 @@ export default withMermaid(
             items: [
               { text: '模块地图', link: '/developer/admin/modules/' },
               {
+                text: '组织共享问答知识库',
+                link: '/developer/admin/guides/qa-knowledge-base',
+              },
+              {
                 text: '组织与交易',
                 link: '/developer/admin/modules/organization-and-transactions',
               },

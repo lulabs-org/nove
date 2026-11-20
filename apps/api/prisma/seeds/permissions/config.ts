@@ -1162,6 +1162,81 @@ const PLATFORM_USER_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
   },
 ];
 
+const QA_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
+  {
+    name: '查看问答会话',
+    code: 'qa:session:read',
+    description: '查看当前组织的问答会话',
+    resource: 'qa:session',
+    action: 'read',
+    type: PermissionType.API,
+  },
+  {
+    name: '创建问答会话',
+    code: 'qa:session:create',
+    description: '创建问答会话',
+    resource: 'qa:session',
+    action: 'create',
+    type: PermissionType.API,
+  },
+  {
+    name: '编辑问答会话',
+    code: 'qa:session:update',
+    description: '编辑问答会话',
+    resource: 'qa:session',
+    action: 'update',
+    type: PermissionType.API,
+  },
+  {
+    name: '删除问答会话',
+    code: 'qa:session:delete',
+    description: '软删除问答会话',
+    resource: 'qa:session',
+    action: 'delete',
+    type: PermissionType.API,
+  },
+  {
+    name: '查看问答记录',
+    code: 'qa:record:read',
+    description: '检索当前组织的问答记录',
+    resource: 'qa:record',
+    action: 'read',
+    type: PermissionType.API,
+  },
+  {
+    name: '创建问答记录',
+    code: 'qa:record:create',
+    description: '写入当前组织的问答记录',
+    resource: 'qa:record',
+    action: 'create',
+    type: PermissionType.API,
+  },
+  {
+    name: '编辑问答记录',
+    code: 'qa:record:update',
+    description: '编辑当前组织的问答记录',
+    resource: 'qa:record',
+    action: 'update',
+    type: PermissionType.API,
+  },
+  {
+    name: '删除问答记录',
+    code: 'qa:record:delete',
+    description: '删除当前组织的问答记录',
+    resource: 'qa:record',
+    action: 'delete',
+    type: PermissionType.API,
+  },
+  {
+    name: '提交问答反馈',
+    code: 'qa:feedback:create',
+    description: '提交问答记录的满意度评价',
+    resource: 'qa:feedback',
+    action: 'create',
+    type: PermissionType.API,
+  },
+];
+
 export const REAL_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
   ...USER_PERMISSION_CONFIGS,
   ...ROLE_PERMISSION_CONFIGS,
@@ -1192,6 +1267,7 @@ export const REAL_PERMISSION_CONFIGS: readonly PermissionConfig[] = [
   ...DRIVE_PERMISSION_CONFIGS,
   ...SKILL_PERMISSION_CONFIGS,
   ...OAUTH_CLIENT_PERMISSION_CONFIGS,
+  ...QA_PERMISSION_CONFIGS,
 ] as const satisfies readonly Prisma.PermissionCreateInput[];
 
 export const PERMISSION_CONFIGS: readonly PermissionConfig[] =
