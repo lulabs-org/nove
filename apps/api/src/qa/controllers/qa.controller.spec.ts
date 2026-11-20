@@ -3,7 +3,6 @@ import { PERMISSIONS_KEY } from '@/admin/permission/decorators/permissions.decor
 import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { RequestMethod } from '@nestjs/common';
 import { QAFeedbackController } from './qa-feedback.controller';
-import { QAMinuteShortcutController } from './qa-minute-shortcut.controller';
 import { QARecordController } from './qa-record.controller';
 import { QASessionController } from './qa-session.controller';
 
@@ -31,9 +30,6 @@ describe('QA controller contracts', () => {
     );
     expect(Reflect.getMetadata(PATH_METADATA, QAFeedbackController)).toBe(
       'api/v1/qa/records',
-    );
-    expect(Reflect.getMetadata(PATH_METADATA, QAMinuteShortcutController)).toBe(
-      'api/v1/minutes',
     );
   });
 
@@ -103,12 +99,6 @@ describe('QA controller contracts', () => {
       ':recordId/feedback',
       RequestMethod.POST,
       'qa:feedback:create',
-    ],
-    [
-      QAMinuteShortcutController.prototype.findByMinute,
-      ':minuteId/qa-records',
-      RequestMethod.GET,
-      'qa:record:read',
     ],
   ] as const)(
     'documents route and permission metadata',

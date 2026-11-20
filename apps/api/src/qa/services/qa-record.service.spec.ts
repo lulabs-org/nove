@@ -1,4 +1,3 @@
-import { MinuteService } from '@/minute/services/minute.service';
 import { NotFoundException } from '@nestjs/common';
 import { QARecordRepository, QASessionRepository } from '../repositories';
 import { QARecordService } from './qa-record.service';
@@ -14,7 +13,6 @@ describe('QARecordService', () => {
     delete: jest.Mock;
   };
   let sessions: { findMetadata: jest.Mock };
-  let minuteService: { getById: jest.Mock };
 
   beforeEach(() => {
     records = {
@@ -26,11 +24,9 @@ describe('QARecordService', () => {
       delete: jest.fn(),
     };
     sessions = { findMetadata: jest.fn() };
-    minuteService = { getById: jest.fn() };
     service = new QARecordService(
       records as unknown as QARecordRepository,
       sessions as unknown as QASessionRepository,
-      minuteService as unknown as MinuteService,
     );
   });
 
@@ -104,18 +100,6 @@ describe('QARecordService', () => {
       }),
     );
     expect(result.totalPages).toBe(2);
-  });
-
-  it('validates minute ownership and applies the minute shortcut filter', async () => {
-    minuteService.getById.mockResolvedValue({ id: 'minute-1' });
-    records.findMany.mockResolvedValue({ items: [], total: 0 });
-
-    await service.findByMinute('org-1', 'minute-1', {});
-
-    expect(minuteService.getById).toHaveBeenCalledWith('minute-1', 'org-1');
-    expect(records.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ orgId: 'org-1', minuteId: 'minute-1' }),
-    );
   });
 
   it('updates a record only when it belongs to the organization', async () => {

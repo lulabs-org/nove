@@ -63,15 +63,11 @@ export class QARecordRepository {
     sessionId?: string;
     from?: Date;
     to?: Date;
-    minuteId?: string;
   }) {
     const where: Prisma.QARecordWhereInput = {
       session: {
         orgId: params.orgId,
         deletedAt: null,
-        ...(params.minuteId
-          ? { targetType: 'MINUTE', targetId: params.minuteId }
-          : {}),
       },
       ...(params.sessionId ? { sessionId: params.sessionId } : {}),
       ...(params.rating ? { rating: params.rating } : {}),
