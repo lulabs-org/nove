@@ -15,6 +15,7 @@ vi.mock('../api/api', () => ({
 
 import { authService } from '../api/service';
 import { useAuthStore } from './authStore';
+import { removeSession, saveSession } from './session';
 
 const mockUser: User = {
   id: 'user-1',
@@ -97,12 +98,15 @@ describe('useAuthStore', () => {
       });
 
       expect(authService.getToken()).toBe('new-token');
+      expect(apiMocks.getMe).toHaveBeenCalledWith({
+        headers: { Authorization: 'Bearer new-token' },
+      });
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(true);
       expect(state.user).toEqual(mockUser);
     });
 
-    it('clears auth and re-throws error if getMe fails after login', async () => {
+    it('commits nothing and re-throws error if getMe fails after login', async () => {
       apiMocks.login.mockResolvedValueOnce({ accessToken: 'temp-token' });
       apiMocks.getMe.mockRejectedValueOnce(new Error('Profile fetch failed'));
 
@@ -181,16 +185,80 @@ describe('useAuthStore', () => {
       expect(state.user).toBeNull();
     });
 
-    it('responds to auth-unauthorized window event', () => {
+    it('responds to a session ended by the kernel', () => {
       authService.setToken('expired-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
 
-      window.dispatchEvent(new Event('auth-unauthorized'));
+      removeSession();
 
       expect(authService.getToken()).toBeNull();
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(false);
       expect(state.user).toBeNull();
+    });
+  });
+
+  describe('session races', () => {
+    const otherUser: User = { ...mockUser, id: 'user-2', name: '其他用户' };
+
+    function deferred<T>() {
+      let resolve!: (value: T) => void;
+      const promise = new Promise<T>((r) => {
+        resolve = r;
+      });
+      return { promise, resolve };
+    }
+
+    it('does not write back the old user when initialize finishes after an account switch', async () => {
+      authService.setToken('token-a');
+      const me = deferred<User>();
+      apiMocks.getMe.mockReturnValueOnce(me.promise);
+      useAuthStore.setState({ loading: true });
+
+      const pending = useAuthStore.getState().initialize();
+      saveSession('token-b', otherUser);
+      me.resolve(mockUser);
+      await pending;
+
+      const state = useAuthStore.getState();
+      expect(state.user).toEqual(otherUser);
+      expect(state.loading).toBe(false);
+      expect(authService.getToken()).toBe('token-b');
+    });
+
+    it('does not clear the new session when an earlier initialize fails late', async () => {
+      authService.setToken('token-a');
+      let rejectMe!: (error: Error) => void;
+      apiMocks.getMe.mockReturnValueOnce(
+        new Promise<User>((_, reject) => {
+          rejectMe = reject;
+        })
+      );
+
+      const pending = useAuthStore.getState().initialize();
+      saveSession('token-b', otherUser);
+      rejectMe(new Error('Unauthorized'));
+      await pending;
+
+      expect(authService.getToken()).toBe('token-b');
+      expect(useAuthStore.getState().isAuthenticated).toBe(true);
+    });
+
+    it('does not clear the new session when an earlier logout finishes late', async () => {
+      authService.setToken('token-a');
+      useAuthStore.setState({ isAuthenticated: true, user: mockUser });
+      const logoutCall = deferred<undefined>();
+      apiMocks.logout.mockReturnValueOnce(logoutCall.promise);
+
+      const pending = useAuthStore.getState().logout();
+      saveSession('token-b', otherUser);
+      logoutCall.resolve(undefined);
+      await pending;
+
+      expect(authService.getToken()).toBe('token-b');
+      const state = useAuthStore.getState();
+      expect(state.isAuthenticated).toBe(true);
+      expect(state.user).toEqual(otherUser);
     });
   });
 

@@ -29,6 +29,27 @@ function unauthorized(config: InternalAxiosRequestConfig) {
   );
 }
 
+function jwt(claims: Record<string, unknown>): string {
+  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  return `${header}.${btoa(JSON.stringify(claims))}.signature`;
+}
+
+function expiringJwt(sub = 'user-a'): string {
+  return jwt({ sub, exp: Math.floor(Date.now() / 1000) + 30 });
+}
+
+function freshJwt(sub = 'user-a'): string {
+  return jwt({ sub, exp: Math.floor(Date.now() / 1000) + 900 });
+}
+
+async function loadMutator() {
+  await import('./mutator');
+  const session = await import('../../../features/auth/model/session');
+  const events: string[] = [];
+  session.onAuthStateChange((event) => events.push(event));
+  return { session, signedOut: () => events.filter((event) => event === 'SIGNED_OUT').length };
+}
+
 const AUTH_ENDPOINTS = {
   LOGIN: '/api/auth/login',
   REGISTER: '/api/auth/register',
@@ -180,12 +201,9 @@ describe('HTTP authentication and request handling', () => {
     expect(authService.getToken()).toBe('new-token');
   });
 
-  it('clears credentials and emits one event when proactive refresh fails', async () => {
-    await import('./mutator');
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 30 }));
-    authService.setToken(`${header}.${payload}.signature`);
-    const dispatch = vi.spyOn(window, 'dispatchEvent');
+  it('clears credentials and ends the session once when proactive refresh fails', async () => {
+    const { signedOut } = await loadMutator();
+    authService.setToken(expiringJwt());
 
     http.defaults.adapter = async (config) => {
       if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
@@ -197,29 +215,183 @@ describe('HTTP authentication and request handling', () => {
     const results = await Promise.allSettled([http.get('/api/projects'), http.get('/api/users')]);
     expect(results.every((result) => result.status === 'rejected')).toBe(true);
     expect(authService.getToken()).toBeNull();
-    expect(
-      dispatch.mock.calls.filter(([event]) => event.type === 'auth-unauthorized')
-    ).toHaveLength(1);
+    expect(signedOut()).toBe(1);
+  });
+
+  it('keeps the session when proactive refresh fails without a response', async () => {
+    const { signedOut } = await loadMutator();
+    const token = expiringJwt();
+    authService.setToken(token);
+
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        throw new AxiosError('Network Error', 'ERR_NETWORK', config);
+      }
+      return response(config);
+    };
+
+    await expect(http.get('/api/projects')).rejects.toMatchObject({ code: 'ERR_NETWORK' });
+    expect(authService.getToken()).toBe(token);
+    expect(signedOut()).toBe(0);
   });
 
   it('logs out and clears credentials on 401 response for protected requests', async () => {
-    await import('./mutator');
+    const { signedOut } = await loadMutator();
     authService.setToken('valid-token');
-    const dispatch = vi.spyOn(window, 'dispatchEvent');
     http.defaults.adapter = async (config) => {
       throw unauthorized(config);
     };
 
     await expect(http.get('/api/projects')).rejects.toMatchObject({ response: { status: 401 } });
     expect(authService.getToken()).toBeNull();
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'auth-unauthorized' }));
+    expect(signedOut()).toBe(1);
+  });
+
+  it('ignores a 401 for a request sent by the previous session', async () => {
+    const { session, signedOut } = await loadMutator();
+    authService.setToken('token-a');
+    let releaseRequest!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      releaseRequest = resolve;
+    });
+    const sent = vi.fn();
+    http.defaults.adapter = async (config) => {
+      sent();
+      await gate;
+      throw unauthorized(config);
+    };
+
+    const pending = http.get('/api/projects');
+    await vi.waitFor(() => expect(sent).toHaveBeenCalled());
+    session.saveSession('token-b', { id: 'user-b' } as never);
+    releaseRequest();
+
+    await expect(pending).rejects.toMatchObject({ response: { status: 401 } });
+    expect(authService.getToken()).toBe('token-b');
+    expect(signedOut()).toBe(0);
+  });
+
+  it('discards a refreshed token when the session changes during the refresh', async () => {
+    const { session } = await loadMutator();
+    authService.setToken(expiringJwt('user-a'));
+    let releaseRefresh!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      releaseRefresh = resolve;
+    });
+    const refreshSent = vi.fn();
+    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        refreshSent();
+        await gate;
+        return response(config, { accessToken: freshJwt('user-a') });
+      }
+      return requests(config);
+    };
+
+    const pending = http.get('/api/projects');
+    await vi.waitFor(() => expect(refreshSent).toHaveBeenCalled());
+    const tokenB = freshJwt('user-b');
+    session.saveSession(tokenB, { id: 'user-b' } as never);
+    releaseRefresh();
+
+    await expect(pending).rejects.toMatchObject({ name: 'SessionChangedError' });
+    expect(authService.getToken()).toBe(tokenB);
+    expect(requests).not.toHaveBeenCalled();
+  });
+
+  it('ends the session when the refreshed token belongs to another user', async () => {
+    const { signedOut } = await loadMutator();
+    authService.setToken(expiringJwt('user-a'));
+    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        return response(config, { accessToken: freshJwt('user-b') });
+      }
+      return requests(config);
+    };
+
+    await expect(http.get('/api/projects')).rejects.toMatchObject({ name: 'SessionChangedError' });
+    expect(authService.getToken()).toBeNull();
+    expect(signedOut()).toBe(1);
+    expect(requests).not.toHaveBeenCalled();
+  });
+
+  it('uses the token another tab refreshed while this tab waited for the lock', async () => {
+    const tokenFromOtherTab = freshJwt('user-a');
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      locks: {
+        request: async (_name: string, _options: unknown, callback: () => Promise<unknown>) => {
+          authService.setToken(tokenFromOtherTab);
+          return callback();
+        },
+      },
+    });
+    await loadMutator();
+    authService.setToken(expiringJwt('user-a'));
+    const refresh = vi.fn();
+    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        return refresh(config);
+      }
+      return requests(config);
+    };
+
+    await http.get('/api/projects');
+
+    expect(refresh).not.toHaveBeenCalled();
+    expect(requests.mock.calls[0][0].headers.get('Authorization')).toBe(
+      `Bearer ${tokenFromOtherTab}`
+    );
+  });
+
+  it('uses the token another tab committed when this refresh is rejected', async () => {
+    const { signedOut } = await loadMutator();
+    authService.setToken(expiringJwt('user-a'));
+    const tokenFromOtherTab = freshJwt('user-a');
+    const requests = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        authService.setToken(tokenFromOtherTab);
+        throw unauthorized(config);
+      }
+      return requests(config);
+    };
+
+    await http.get('/api/projects');
+
+    expect(signedOut()).toBe(0);
+    expect(authService.getToken()).toBe(tokenFromOtherTab);
+    expect(requests.mock.calls[0][0].headers.get('Authorization')).toBe(
+      `Bearer ${tokenFromOtherTab}`
+    );
+  });
+
+  it('keeps an explicit Authorization header and skips session handling', async () => {
+    const { signedOut } = await loadMutator();
+    authService.setToken(expiringJwt('user-a'));
+    const refresh = vi.fn();
+    http.defaults.adapter = async (config) => {
+      if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
+        return refresh(config);
+      }
+      throw unauthorized(config);
+    };
+
+    await expect(
+      http.get('/api/auth/me', { headers: { Authorization: 'Bearer explicit-token' } })
+    ).rejects.toMatchObject({ config: { headers: expect.anything() } });
+
+    expect(refresh).not.toHaveBeenCalled();
+    expect(signedOut()).toBe(0);
   });
 
   it('does not refresh or log out for a rejected public login', async () => {
-    await import('./mutator');
+    const { signedOut } = await loadMutator();
     authService.setToken('existing-token');
     const refresh = vi.fn();
-    const dispatch = vi.spyOn(window, 'dispatchEvent');
     http.defaults.adapter = async (config) => {
       if (config.url === AUTH_ENDPOINTS.REFRESH_TOKEN) {
         return refresh(config);
@@ -230,7 +402,7 @@ describe('HTTP authentication and request handling', () => {
       response: { status: 401 },
     });
     expect(refresh).not.toHaveBeenCalled();
-    expect(dispatch).not.toHaveBeenCalled();
+    expect(signedOut()).toBe(0);
     expect(authService.getToken()).toBe('existing-token');
   });
 

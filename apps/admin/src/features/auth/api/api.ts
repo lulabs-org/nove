@@ -41,8 +41,8 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
   };
 };
 
-export const getMe = async (): Promise<User> => {
-  const response = await authControllerGetMe();
+export const getMe = async (options?: Parameters<typeof authControllerGetMe>[0]): Promise<User> => {
+  const response = await authControllerGetMe(options);
   return normalizeAuthUser(response as unknown as AuthApiUser);
 };
 

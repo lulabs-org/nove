@@ -10,8 +10,23 @@
 
 import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
 import { message } from 'antd';
-import { authService } from '../../../features/auth/api/service';
 import { getDeviceId, getDeviceInfo } from '../../../features/auth/model/device';
+import { isTokenExpiringSoon } from '../../../features/auth/model/jwt';
+import {
+  getAccessToken,
+  getSessionEpoch,
+  isCurrentSession,
+  isSessionChangedError,
+  refreshSession,
+  removeSession,
+} from '../../../features/auth/model/session';
+
+declare module 'axios' {
+  interface InternalAxiosRequestConfig {
+    /** 请求发起时的会话编号；调用方自带 Authorization 的请求不记录 */
+    sessionEpoch?: number;
+  }
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                1. 常量配置                                  */
@@ -19,7 +34,6 @@ import { getDeviceId, getDeviceInfo } from '../../../features/auth/model/device'
 
 const REQUEST_TIMEOUT = 15000;
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
-const AUTH_UNAUTHORIZED_EVENT = 'auth-unauthorized';
 
 const AUTH_ENDPOINTS = {
   LOGIN: '/api/auth/login',
@@ -61,53 +75,19 @@ function setAuthorizationHeader(config: AxiosRequestConfig, token: string): void
 }
 
 /**
- * 解码 JWT Payload 载荷
+ * 结束请求发起时所属的会话；会话已变化（例如已切换账号）时忽略，避免误伤新会话
  */
-function decodeJwtPayload(token: string): { exp?: number } | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length < 2 || !parts[1]) return null;
-    let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    const pad = base64.length % 4;
-    if (pad) {
-      base64 += '='.repeat(4 - pad);
-    }
-    const decoded = atob(base64);
-    return JSON.parse(decoded);
-  } catch {
-    return null;
+function endSessionIfCurrent(epoch: number | undefined): void {
+  if (epoch !== undefined && isCurrentSession(epoch)) {
+    removeSession();
   }
 }
 
 /**
- * 检查 JWT Token 是否即将过期（默认剩余不足 60 秒视为即将过期）
+ * 网络中断或超时（没有收到响应）属于可重试错误，不应因此退出登录
  */
-function isTokenExpiringSoon(token: string, thresholdSeconds = 60): boolean {
-  const payload = decodeJwtPayload(token);
-  if (!payload || typeof payload.exp !== 'number') {
-    return false;
-  }
-  return payload.exp - Math.floor(Date.now() / 1000) <= thresholdSeconds;
-}
-
-let isNotifyingUnauthorized = false;
-
-/**
- * 集中触发未授权认证失效逻辑，并防止高频并发请求造成重复事件风暴
- */
-function notifyUnauthorized(): void {
-  authService.removeToken();
-
-  if (typeof window === 'undefined' || isNotifyingUnauthorized) {
-    return;
-  }
-
-  isNotifyingUnauthorized = true;
-  window.dispatchEvent(new Event(AUTH_UNAUTHORIZED_EVENT));
-
-  setTimeout(() => {
-    isNotifyingUnauthorized = false;
-  }, 1000);
+function isRetryableNetworkError(error: unknown): boolean {
+  return axios.isAxiosError(error) && !error.response && !axios.isCancel(error);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -124,39 +104,24 @@ const http = axios.create({
 /*                                4. Token 刷新机制                           */
 /* -------------------------------------------------------------------------- */
 
-let refreshPromise: Promise<string> | null = null;
-
 /**
- * 单例互斥刷新 AccessToken，确保并发时仅发起一次网络刷新请求
+ * 通过会话内核刷新 AccessToken（同标签页去重、跨标签页互斥）
  */
 function refreshAccessToken(): Promise<string> {
-  if (!refreshPromise) {
-    refreshPromise = http
-      .post<{ accessToken?: string }>(AUTH_ENDPOINTS.REFRESH_TOKEN, {
-        clientType: 'web',
-        deviceId: getDeviceId(),
-        deviceInfo: getDeviceInfo(),
-      })
-      .then((response) => {
-        const { accessToken } = response.data;
+  return refreshSession(async () => {
+    const response = await http.post<{ accessToken?: string }>(AUTH_ENDPOINTS.REFRESH_TOKEN, {
+      clientType: 'web',
+      deviceId: getDeviceId(),
+      deviceInfo: getDeviceInfo(),
+    });
+    const { accessToken } = response.data;
 
-        if (!accessToken) {
-          throw new Error('刷新令牌响应缺少 accessToken');
-        }
+    if (!accessToken) {
+      throw new Error('刷新令牌响应缺少 accessToken');
+    }
 
-        authService.setToken(accessToken);
-        return accessToken;
-      })
-      .catch((error) => {
-        notifyUnauthorized();
-        return Promise.reject(error);
-      })
-      .finally(() => {
-        refreshPromise = null;
-      });
-  }
-
-  return refreshPromise;
+    return accessToken;
+  });
 }
 
 /* -------------------------------------------------------------------------- */
@@ -167,19 +132,24 @@ function refreshAccessToken(): Promise<string> {
 http.interceptors.request.use(
   async (config) => {
     // 非公开接口自动注入 Token（并在即将过期时主动静默换票）
-    if (!isPublicAuthRequest(config)) {
-      let token = authService.getToken();
+    // 调用方显式携带 Authorization（例如登录后用新 token 拉取用户）时不做处理
+    if (!isPublicAuthRequest(config) && !config.headers?.has('Authorization')) {
+      const sessionEpoch = getSessionEpoch();
+      let token = getAccessToken();
 
       if (token && isTokenExpiringSoon(token)) {
         try {
           token = await refreshAccessToken();
-        } catch {
-          notifyUnauthorized();
-          return Promise.reject(new Error('Token refresh failed'));
+        } catch (error) {
+          if (!isSessionChangedError(error) && !isRetryableNetworkError(error)) {
+            endSessionIfCurrent(sessionEpoch);
+          }
+          return Promise.reject(error instanceof Error ? error : new Error('Token refresh failed'));
         }
       }
 
       if (token) {
+        config.sessionEpoch = sessionEpoch;
         setAuthorizationHeader(config, token);
       }
     }
@@ -208,7 +178,7 @@ http.interceptors.response.use(
 
     // 401 未授权处理（非公开接口直接触发登出，无需重试）
     if (axiosError.response?.status === 401 && !isPublicAuthRequest(axiosError.config)) {
-      notifyUnauthorized();
+      endSessionIfCurrent(axiosError.config?.sessionEpoch);
     }
 
     // 403 权限不足提示

@@ -11,7 +11,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { login, getMe, logout as logoutApi } from '../api/api';
-import { authService } from '../api/service';
+import {
+  getAccessToken,
+  getSessionEpoch,
+  isCurrentSession,
+  onAuthStateChange,
+  removeSession,
+  saveSession,
+} from './session';
 import type { LoginRequest, User } from './types';
 import { canAccessPermission } from './permissions';
 
@@ -35,45 +42,50 @@ export const useAuthStore = create<AuthState>()(
       loading: true,
 
       initialize: async () => {
-        const token = authService.getToken();
-
-        if (!token) {
+        if (!getAccessToken()) {
           set({ loading: false, isAuthenticated: false });
           return;
         }
 
+        const epoch = getSessionEpoch();
         try {
           const userData = await getMe();
+          // 拉取期间会话已变化（退出或切换账号），不能把旧身份写回
+          if (!isCurrentSession(epoch)) {
+            set({ loading: false });
+            return;
+          }
           set({ user: userData, isAuthenticated: true, loading: false });
         } catch (error) {
           console.error('Failed to fetch user data:', error);
-          authService.removeToken();
-          set({ isAuthenticated: false, loading: false });
+          if (isCurrentSession(epoch)) {
+            removeSession();
+          }
+          set({ loading: false });
         }
       },
 
       login: async (credentials: LoginRequest) => {
         const response = await login(credentials);
-        authService.setToken(response.accessToken);
-
-        try {
-          const userData = await getMe();
-          set({ user: userData, isAuthenticated: true });
-        } catch (error) {
-          console.error('Failed to fetch user data after login:', error);
-          authService.removeToken();
-          set({ isAuthenticated: false });
-          throw error;
-        }
+        // 先用新 token 拉取用户，成功后再一次性提交会话
+        const userData = await getMe({
+          headers: { Authorization: `Bearer ${response.accessToken}` },
+        });
+        saveSession(response.accessToken, userData);
       },
 
       logout: async () => {
+        const epoch = getSessionEpoch();
         try {
           await logoutApi();
-          authService.removeToken();
-          set({ user: null, isAuthenticated: false });
         } catch (error) {
+          // 退出接口失败时保留当前会话
           console.error('Logout error:', error);
+          return;
+        }
+        // 退出请求期间已切换到其他会话时，不能清掉新会话
+        if (isCurrentSession(epoch)) {
+          removeSession();
         }
       },
 
@@ -82,8 +94,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       clearAuth: () => {
-        authService.removeToken();
-        set({ user: null, isAuthenticated: false });
+        removeSession();
       },
 
       setUser: (user: User | null) => {
@@ -100,8 +111,11 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-if (typeof window !== 'undefined') {
-  window.addEventListener('auth-unauthorized', () => {
-    useAuthStore.getState().clearAuth();
-  });
-}
+// 本标签页及其他标签页的会话变化都在这里落到界面状态；回调中只更新状态
+onAuthStateChange((event, { user }) => {
+  if (event === 'SIGNED_IN') {
+    useAuthStore.setState({ user, isAuthenticated: true, loading: false });
+  } else if (event === 'SIGNED_OUT') {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+  }
+});
