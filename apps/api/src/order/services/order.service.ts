@@ -17,6 +17,7 @@ import {
   OrderDto,
   OrderListResponse,
   OrderRelationDto,
+  OrderTagOptionListResponse,
   QueryOrderDto,
   UnfreezeOrderDto,
   UpdateOrderDto,
@@ -103,45 +104,48 @@ export class OrderService {
       auth,
     );
 
-    const order = await this.orderRepository.create({
-      orderCode,
-      orderNumber,
-      externalId: this.trimNullable(dto.externalId),
-      metadata: dto.metadata as Prisma.InputJsonValue | undefined,
-      productName,
-      email: this.trimNullable(dto.email),
-      phone: this.trimNullable(dto.phone),
-      phoneCode: this.trimNullable(dto.phoneCode) || '+86',
-      financialClosedAt: this.toDate(dto.financialClosedAt),
-      amount: dto.amount,
-      currency: dto.currency || Currency.CNY,
-      amountCny: dto.amountCny,
-      fxRateToCny: dto.fxRateToCny,
-      fxLockedAt: this.toDate(dto.fxLockedAt),
-      status: dto.status || OrderStatus.UNPAID,
-      paidAt: this.toDate(dto.paidAt),
-      cancelledAt: this.toDate(dto.cancelledAt),
-      completedAt: this.toDate(dto.completedAt),
-      durationDays,
-      benefitStart,
-      benefitEnd,
-      paymentProvider: dto.paymentProvider,
-      providerTradeNo: this.trimNullable(dto.providerTradeNo),
-      product: dto.productId ? { connect: { id: dto.productId } } : undefined,
-      purchaser: dto.purchaserId
-        ? { connect: { id: dto.purchaserId } }
-        : undefined,
-      channel:
-        dto.channelId !== undefined
-          ? { connect: { id: dto.channelId } }
+    const order = await this.orderRepository.create(
+      {
+        orderCode,
+        orderNumber,
+        externalId: this.trimNullable(dto.externalId),
+        metadata: dto.metadata as Prisma.InputJsonValue | undefined,
+        productName,
+        email: this.trimNullable(dto.email),
+        phone: this.trimNullable(dto.phone),
+        phoneCode: this.trimNullable(dto.phoneCode) || '+86',
+        financialClosedAt: this.toDate(dto.financialClosedAt),
+        amount: dto.amount,
+        currency: dto.currency || Currency.CNY,
+        amountCny: dto.amountCny,
+        fxRateToCny: dto.fxRateToCny,
+        fxLockedAt: this.toDate(dto.fxLockedAt),
+        status: dto.status || OrderStatus.UNPAID,
+        paidAt: this.toDate(dto.paidAt),
+        cancelledAt: this.toDate(dto.cancelledAt),
+        completedAt: this.toDate(dto.completedAt),
+        durationDays,
+        benefitStart,
+        benefitEnd,
+        paymentProvider: dto.paymentProvider,
+        providerTradeNo: this.trimNullable(dto.providerTradeNo),
+        product: dto.productId ? { connect: { id: dto.productId } } : undefined,
+        purchaser: dto.purchaserId
+          ? { connect: { id: dto.purchaserId } }
           : undefined,
-      currentOwner: currentOwnerId
-        ? { connect: { id: currentOwnerId } }
-        : undefined,
-      financialCloser: dto.financialCloserId
-        ? { connect: { id: dto.financialCloserId } }
-        : undefined,
-    });
+        channel:
+          dto.channelId !== undefined
+            ? { connect: { id: dto.channelId } }
+            : undefined,
+        currentOwner: currentOwnerId
+          ? { connect: { id: currentOwnerId } }
+          : undefined,
+        financialCloser: dto.financialCloserId
+          ? { connect: { id: dto.financialCloserId } }
+          : undefined,
+      },
+      this.normalizeTags(dto.tags) ?? [],
+    );
 
     return this.toDto(order);
   }
@@ -174,6 +178,23 @@ export class OrderService {
       pageSize,
       totalPages: Math.ceil(total / pageSize),
     };
+  }
+
+  /**
+   * 标签筛选候选：当前用户可见、未删除订单上引用过的标签，按名称排序。
+   * 标签为低基数字典数据，不设数量上限，由前端 Select 做本地搜索。
+   */
+  async listTagOptions(
+    auth?: AuthContext | null,
+  ): Promise<OrderTagOptionListResponse> {
+    const names = await this.orderRepository.findTagNames({
+      AND: [
+        this.orderPolicyService.getAccessibleWhere(auth),
+        { deletedAt: null },
+      ],
+    });
+
+    return { items: names.sort((a, b) => a.localeCompare(b, 'zh-CN')) };
   }
 
   async findById(id: string, auth?: AuthContext | null): Promise<OrderDto> {
@@ -227,61 +248,65 @@ export class OrderService {
         ? await this.resolveProductName(dto.productId, dto.productName)
         : undefined;
 
-    const order = await this.orderRepository.update(id, {
-      orderCode: this.trimNullable(dto.orderCode),
-      orderNumber: this.trimNullable(dto.orderNumber),
-      externalId: this.trimNullable(dto.externalId),
-      metadata: dto.metadata as Prisma.InputJsonValue | undefined,
-      productName,
-      email: this.trimNullable(dto.email),
-      phone: this.trimNullable(dto.phone),
-      phoneCode: this.trimNullable(dto.phoneCode),
-      financialClosedAt: this.toDate(dto.financialClosedAt),
-      amount: dto.amount,
-      currency: dto.currency,
-      amountCny: dto.amountCny,
-      fxRateToCny: dto.fxRateToCny,
-      fxLockedAt: this.toDate(dto.fxLockedAt),
-      status: dto.status,
-      paidAt: this.toDate(dto.paidAt),
-      cancelledAt: this.toDate(dto.cancelledAt),
-      completedAt: this.toDate(dto.completedAt),
-      durationDays: dto.durationDays,
-      benefitStart: this.toDate(dto.benefitStart),
-      benefitEnd: this.toDate(dto.benefitEnd),
-      paymentProvider: dto.paymentProvider,
-      providerTradeNo: this.trimNullable(dto.providerTradeNo),
-      product:
-        dto.productId === undefined
-          ? undefined
-          : dto.productId
-            ? { connect: { id: dto.productId } }
-            : { disconnect: true },
-      purchaser:
-        dto.purchaserId === undefined
-          ? undefined
-          : dto.purchaserId
-            ? { connect: { id: dto.purchaserId } }
-            : { disconnect: true },
-      channel:
-        dto.channelId === undefined
-          ? undefined
-          : dto.channelId
-            ? { connect: { id: dto.channelId } }
-            : { disconnect: true },
-      currentOwner:
-        dto.currentOwnerId === undefined
-          ? undefined
-          : dto.currentOwnerId
-            ? { connect: { id: dto.currentOwnerId } }
-            : { disconnect: true },
-      financialCloser:
-        dto.financialCloserId === undefined
-          ? undefined
-          : dto.financialCloserId
-            ? { connect: { id: dto.financialCloserId } }
-            : { disconnect: true },
-    });
+    const order = await this.orderRepository.update(
+      id,
+      {
+        orderCode: this.trimNullable(dto.orderCode),
+        orderNumber: this.trimNullable(dto.orderNumber),
+        externalId: this.trimNullable(dto.externalId),
+        metadata: dto.metadata as Prisma.InputJsonValue | undefined,
+        productName,
+        email: this.trimNullable(dto.email),
+        phone: this.trimNullable(dto.phone),
+        phoneCode: this.trimNullable(dto.phoneCode),
+        financialClosedAt: this.toDate(dto.financialClosedAt),
+        amount: dto.amount,
+        currency: dto.currency,
+        amountCny: dto.amountCny,
+        fxRateToCny: dto.fxRateToCny,
+        fxLockedAt: this.toDate(dto.fxLockedAt),
+        status: dto.status,
+        paidAt: this.toDate(dto.paidAt),
+        cancelledAt: this.toDate(dto.cancelledAt),
+        completedAt: this.toDate(dto.completedAt),
+        durationDays: dto.durationDays,
+        benefitStart: this.toDate(dto.benefitStart),
+        benefitEnd: this.toDate(dto.benefitEnd),
+        paymentProvider: dto.paymentProvider,
+        providerTradeNo: this.trimNullable(dto.providerTradeNo),
+        product:
+          dto.productId === undefined
+            ? undefined
+            : dto.productId
+              ? { connect: { id: dto.productId } }
+              : { disconnect: true },
+        purchaser:
+          dto.purchaserId === undefined
+            ? undefined
+            : dto.purchaserId
+              ? { connect: { id: dto.purchaserId } }
+              : { disconnect: true },
+        channel:
+          dto.channelId === undefined
+            ? undefined
+            : dto.channelId
+              ? { connect: { id: dto.channelId } }
+              : { disconnect: true },
+        currentOwner:
+          dto.currentOwnerId === undefined
+            ? undefined
+            : dto.currentOwnerId
+              ? { connect: { id: dto.currentOwnerId } }
+              : { disconnect: true },
+        financialCloser:
+          dto.financialCloserId === undefined
+            ? undefined
+            : dto.financialCloserId
+              ? { connect: { id: dto.financialCloserId } }
+              : { disconnect: true },
+      },
+      this.normalizeTags(dto.tags),
+    );
 
     return this.toDto(order);
   }
@@ -603,6 +628,11 @@ export class OrderService {
       ];
     }
 
+    const tag = query.tag?.trim();
+    if (tag) {
+      where.tagLinks = { some: { tag: { name: tag } } };
+    }
+
     if (query.status) where.status = query.status;
     if (query.currency) where.currency = query.currency;
     if (query.paymentProvider) where.paymentProvider = query.paymentProvider;
@@ -649,6 +679,12 @@ export class OrderService {
     return sortField ? { [sortField]: direction } : { createdAt: 'desc' };
   }
 
+  // 标签规范化：trim、去空、去重并保留首次出现的顺序；null 视同未传
+  private normalizeTags(value?: string[] | null): string[] | undefined {
+    if (value === undefined || value === null) return undefined;
+    return [...new Set(value.map((item) => item.trim()).filter(Boolean))];
+  }
+
   private trimNullable(value?: string | null): string | undefined {
     if (value === undefined || value === null) return undefined;
     const trimmed = value.trim();
@@ -692,6 +728,7 @@ export class OrderService {
       orderNumber: order.orderNumber,
       externalId: order.externalId,
       metadata: order.metadata,
+      tags: order.tagLinks.map((link) => link.tag.name),
       productId: order.productId,
       productName: order.productName,
       purchaserId: order.purchaserId,

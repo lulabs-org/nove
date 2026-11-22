@@ -1,0 +1,14 @@
+// 订单标签字典表：标签作为独立实体存储，订单通过 OrderTagLink 关联
+// 订单不区分组织，标签字典全局唯一；名称已在服务层 trim 规范化
+model OrderTag {
+  id   String @id @default(cuid())
+  name String @map("name") // 标签名称（如：急需跟进、高客单、定制需求、已开票）
+
+  orderLinks OrderTagLink[] // 使用该标签的订单
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([name], map: "uk_order_tags_name")
+  @@map("order_tags")
+}

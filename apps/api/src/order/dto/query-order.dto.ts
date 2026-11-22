@@ -38,6 +38,11 @@ export class QueryOrderDto {
   @IsString()
   keyword?: string;
 
+  @ApiPropertyOptional({ description: '按指定标签筛选', example: '急需跟进' })
+  @IsOptional()
+  @IsString()
+  tag?: string;
+
   @ApiPropertyOptional({ description: '订单状态', enum: OrderStatus })
   @IsOptional()
   @IsEnum(OrderStatus)

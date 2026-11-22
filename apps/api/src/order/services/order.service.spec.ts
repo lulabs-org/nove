@@ -63,11 +63,15 @@ const mockOrder = (
   channel: { id: 1, code: 'OFFLINE', name: '线下' },
   currentOwner: null,
   financialCloser: null,
+  tagLinks: [],
   createdAt: new Date('2024-01-01T00:00:00.000Z'),
   updatedAt: new Date('2024-01-01T00:00:00.000Z'),
   deletedAt: null,
   ...overrides,
 });
+
+const tagLinks = (...names: string[]): OrderWithRelations['tagLinks'] =>
+  names.map((name) => ({ tag: { name } }));
 
 describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
   let repository: jest.Mocked<OrderRepository>;
@@ -89,6 +93,7 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
       channelExists: jest.fn(),
       executeBenefitAdjustment: jest.fn(),
       findBenefitAdjustments: jest.fn(),
+      findTagNames: jest.fn(),
     } as unknown as jest.Mocked<OrderRepository>;
 
     const policyService = new OrderPolicyService(new OrderAbilityFactory());
@@ -107,6 +112,7 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
       expect(repository.update).toHaveBeenCalledWith(
         'order-1',
         expect.objectContaining({ currentOwner: { disconnect: true } }),
+        undefined,
       );
     });
 
@@ -123,7 +129,191 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
       expect(repository.update).toHaveBeenCalledWith(
         'order-1',
         expect.objectContaining({ currentOwner: undefined }),
+        undefined,
       );
+    });
+  });
+
+  describe('tags', () => {
+    beforeEach(() => {
+      repository.findByOrderCode.mockResolvedValue(null);
+      repository.findByOrderNumber.mockResolvedValue(null);
+    });
+
+    it('normalizes tags on create: trims, drops blanks, de-duplicates and keeps order', async () => {
+      repository.create.mockResolvedValue(
+        mockOrder({ tagLinks: tagLinks('急需跟进', '大客户') }),
+      );
+
+      const result = await service.create({
+        amount: 100,
+        tags: [' 急需跟进 ', '大客户', '急需跟进', '  '],
+      });
+
+      expect(repository.create).toHaveBeenCalledWith(expect.anything(), [
+        '急需跟进',
+        '大客户',
+      ]);
+      expect(result.tags).toEqual(['急需跟进', '大客户']);
+    });
+
+    it('creates the order with no tags when the field is omitted or null', async () => {
+      repository.create.mockResolvedValue(mockOrder());
+
+      await service.create({ amount: 100 });
+      await service.create({ amount: 100, tags: null as unknown as string[] });
+
+      expect(repository.create).toHaveBeenNthCalledWith(
+        1,
+        expect.anything(),
+        [],
+      );
+      expect(repository.create).toHaveBeenNthCalledWith(
+        2,
+        expect.anything(),
+        [],
+      );
+    });
+
+    it('does not write tags into the order columns', async () => {
+      repository.create.mockResolvedValue(mockOrder());
+
+      await service.create({ amount: 100, tags: ['大客户'] });
+
+      const [data] = repository.create.mock.calls[0];
+      expect(data).not.toHaveProperty('tags');
+      expect(data).not.toHaveProperty('tagLinks');
+    });
+
+    it('replaces tags on update when provided', async () => {
+      repository.findById.mockResolvedValue(
+        mockOrder({ tagLinks: tagLinks('旧标签') }),
+      );
+      repository.update.mockResolvedValue(
+        mockOrder({ tagLinks: tagLinks('已开发票') }),
+      );
+
+      const result = await service.update('order-1', {
+        tags: ['已开发票', ' 已开发票 '],
+      });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        'order-1',
+        expect.anything(),
+        ['已开发票'],
+      );
+      expect(result.tags).toEqual(['已开发票']);
+    });
+
+    it('clears tags on update when an empty array is provided', async () => {
+      repository.findById.mockResolvedValue(
+        mockOrder({ tagLinks: tagLinks('旧标签') }),
+      );
+      repository.update.mockResolvedValue(mockOrder());
+
+      await service.update('order-1', { tags: [] });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        'order-1',
+        expect.anything(),
+        [],
+      );
+    });
+
+    it.each([
+      ['omitted', {}],
+      ['null', { tags: null as unknown as string[] }],
+    ])(
+      'keeps tags untouched on update when the field is %s',
+      async (_, dto) => {
+        repository.findById.mockResolvedValue(
+          mockOrder({ tagLinks: tagLinks('旧标签') }),
+        );
+        repository.update.mockResolvedValue(
+          mockOrder({ tagLinks: tagLinks('旧标签') }),
+        );
+
+        await service.update('order-1', dto);
+
+        expect(repository.update).toHaveBeenCalledWith(
+          'order-1',
+          expect.anything(),
+          undefined,
+        );
+      },
+    );
+
+    it('does not touch tags when only the status changes', async () => {
+      repository.findById.mockResolvedValue(mockOrder());
+      repository.update.mockResolvedValue(mockOrder());
+
+      await service.updateStatus('order-1', OrderStatus.COMPLETED);
+
+      expect(repository.update).toHaveBeenCalledWith('order-1', {
+        status: OrderStatus.COMPLETED,
+      });
+    });
+
+    it('maps tag links to tag names in link order', async () => {
+      repository.findById.mockResolvedValue(
+        mockOrder({ tagLinks: tagLinks('乙', '甲', '丙') }),
+      );
+
+      const result = await service.findById('order-1');
+
+      expect(result.tags).toEqual(['乙', '甲', '丙']);
+    });
+
+    it('filters the list by tag through the tag relation', async () => {
+      repository.findMany.mockResolvedValue({ items: [], total: 0 });
+
+      await service.findAll({ tag: ' 急需跟进 ' });
+
+      expect(repository.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            AND: [
+              expect.anything(),
+              expect.objectContaining({
+                tagLinks: { some: { tag: { name: '急需跟进' } } },
+              }),
+            ],
+          },
+        }),
+      );
+    });
+
+    it('does not filter by tag when the tag is blank', async () => {
+      repository.findMany.mockResolvedValue({ items: [], total: 0 });
+
+      await service.findAll({ tag: '   ' });
+
+      const { where } = repository.findMany.mock.calls[0][0];
+      expect(JSON.stringify(where)).not.toContain('tagLinks');
+    });
+  });
+
+  describe('listTagOptions', () => {
+    it('returns tags sorted by name without a size limit', async () => {
+      const names = Array.from({ length: 500 }, (_, i) => `tag-${i}`);
+      repository.findTagNames.mockResolvedValue([...names].reverse());
+
+      const result = await service.listTagOptions();
+
+      expect(result.items).toHaveLength(500);
+      expect(result.items).toEqual(
+        [...names].sort((a, b) => a.localeCompare(b, 'zh-CN')),
+      );
+    });
+
+    it('only reads tags of non-deleted orders within the accessible scope', async () => {
+      repository.findTagNames.mockResolvedValue([]);
+
+      await service.listTagOptions();
+
+      expect(repository.findTagNames).toHaveBeenCalledWith({
+        AND: [expect.anything(), { deletedAt: null }],
+      });
     });
   });
 
@@ -429,6 +619,7 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
           benefitStart: new Date(startDate),
           benefitEnd: new Date('2027-01-01T00:00:00.000Z'),
         }),
+        [],
       );
       expect(result.durationDays).toBe(365);
     });
@@ -464,6 +655,7 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
           benefitStart: new Date(startDate),
           benefitEnd: new Date('2026-01-31T00:00:00.000Z'),
         }),
+        [],
       );
       expect(result.durationDays).toBe(30);
     });

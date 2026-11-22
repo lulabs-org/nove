@@ -6,3 +6,4 @@ export * from './freeze-order.dto';
 export * from './unfreeze-order.dto';
 export * from './extend-order.dto';
 export * from './order.dto';
+export * from './order-tag-options.dto';

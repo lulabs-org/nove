@@ -71,6 +71,7 @@ model Order {
   refunds            OrderRefund[] // 订单的退款记录
   profitShareRecords ProfitShareRecord[] // 分润明细流水记录
   benefitAdjustments OrderBenefitAdjustment[] // 权益调整记录（冻结、解冻、延期）
+  tagLinks           OrderTagLink[] // 订单标签关联（按 position 排序）
 
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6) // 创建时间
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6) // 更新时间

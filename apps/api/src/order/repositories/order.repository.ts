@@ -53,6 +53,10 @@ const orderInclude = {
       },
     },
   },
+  tagLinks: {
+    orderBy: { position: 'asc' },
+    select: { tag: { select: { name: true } } },
+  },
 } satisfies Prisma.OrderInclude;
 
 export type OrderWithRelations = Prisma.OrderGetPayload<{
@@ -83,10 +87,24 @@ export type OrderBenefitAdjustmentWithOperator =
 export class OrderRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: Prisma.OrderCreateInput): Promise<OrderWithRelations> {
-    return this.prisma.order.create({
-      data,
-      include: orderInclude,
+  /**
+   * 创建订单并写入标签。标签名需已规范化（trim、去空、去重）。
+   * 标签字典与订单关联在同一事务内写入。
+   */
+  async create(
+    data: Prisma.OrderCreateInput,
+    tags: string[] = [],
+  ): Promise<OrderWithRelations> {
+    if (tags.length === 0) {
+      return this.prisma.order.create({ data, include: orderInclude });
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      await this.ensureTags(tx, tags);
+      return tx.order.create({
+        data: { ...data, tagLinks: { create: this.toTagLinks(tags) } },
+        include: orderInclude,
+      });
     });
   }
 
@@ -143,15 +161,67 @@ export class OrderRepository {
     return { items, total };
   }
 
+  /**
+   * 更新订单。传入 tags 时整体替换订单标签（空数组即清空），
+   * 不传则保持原有标签不变。
+   */
   async update(
     id: string,
     data: Prisma.OrderUpdateInput,
+    tags?: string[],
   ): Promise<OrderWithRelations> {
-    return this.prisma.order.update({
-      where: { id },
-      data,
-      include: orderInclude,
+    if (tags === undefined) {
+      return this.prisma.order.update({
+        where: { id },
+        data,
+        include: orderInclude,
+      });
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      await this.ensureTags(tx, tags);
+      return tx.order.update({
+        where: { id },
+        data: {
+          ...data,
+          tagLinks: { deleteMany: {}, create: this.toTagLinks(tags) },
+        },
+        include: orderInclude,
+      });
     });
+  }
+
+  /**
+   * 返回被指定范围内订单引用的标签名（未排序、不限数量）。
+   * 订单可见范围直接下推到 SQL，避免候选项泄露无权查看订单的标签。
+   */
+  async findTagNames(orderWhere: Prisma.OrderWhereInput): Promise<string[]> {
+    const tags = await this.prisma.orderTag.findMany({
+      where: { orderLinks: { some: { order: orderWhere } } },
+      select: { name: true },
+    });
+    return tags.map((tag) => tag.name);
+  }
+
+  // 补齐标签字典；并发写入同名标签时由唯一约束 + skipDuplicates 兜底
+  private async ensureTags(
+    tx: Prisma.TransactionClient,
+    tags: string[],
+  ): Promise<void> {
+    if (tags.length === 0) return;
+    await tx.orderTag.createMany({
+      data: tags.map((name) => ({ name })),
+      skipDuplicates: true,
+    });
+  }
+
+  private toTagLinks(
+    tags: string[],
+  ): Prisma.OrderTagLinkCreateWithoutOrderInput[] {
+    return tags.map((name, position) => ({
+      position,
+      tag: { connect: { name } },
+    }));
   }
 
   async softDelete(id: string): Promise<OrderWithRelations> {

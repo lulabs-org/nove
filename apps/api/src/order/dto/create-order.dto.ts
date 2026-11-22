@@ -5,12 +5,15 @@ import {
   PaymentProvider,
 } from '@/generated/prisma/client';
 import {
+  ArrayMaxSize,
+  IsArray,
   IsDateString,
   IsEnum,
   IsInt,
   IsObject,
   IsOptional,
   IsString,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -46,6 +49,19 @@ export class CreateOrderDto {
   @IsOptional()
   @IsObject()
   metadata?: Record<string, unknown>;
+
+  @ApiPropertyOptional({
+    description: '订单标签数组（按顺序保存；每个标签最长 50 个字符）',
+    type: [String],
+    default: [],
+    example: ['急需跟进', '大客户'],
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(50)
+  @IsString({ each: true })
+  @MaxLength(50, { each: true })
+  tags?: string[];
 
   @ApiPropertyOptional({
     description: '产品 ID',

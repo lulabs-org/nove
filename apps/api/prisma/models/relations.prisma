@@ -7,6 +7,7 @@
 //   - MemberPermission   成员 ↔ 权限（特殊授权）
 //   - RoleDataPermission     角色 ↔ 数据权限规则
 //   - MemberDataPermission   成员 ↔ 数据权限规则
+//   - OrderTagLink           订单 ↔ 订单标签
 // =============================================================================
 
 // 成员部门关联表
@@ -135,4 +136,22 @@ model MemberDataPermission {
   @@index([memberId])
   @@index([ruleId])
   @@map("member_data_permissions")
+}
+
+// 订单标签关联表
+// 标签整体替换时直接删除重建关联，不做软删除；position 保留用户录入顺序
+model OrderTagLink {
+  id       String @id @default(cuid())
+  orderId  String @map("order_id") // 订单ID
+  tagId    String @map("tag_id") // 标签ID
+  position Int    @default(0) // 标签在订单内的展示顺序（从 0 开始）
+
+  order Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tag   OrderTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([orderId, tagId])
+  @@index([tagId]) // 按标签筛选订单、按可见订单反查标签
+  @@map("order_tag_links")
 }
