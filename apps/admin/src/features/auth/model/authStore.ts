@@ -56,8 +56,6 @@ export const useAuthStore = create<AuthState>()(
       login: async (credentials: LoginRequest) => {
         const response = await login(credentials);
         authService.setToken(response.accessToken);
-        // Drop any data cached by a previously signed-in account.
-        queryClient.clear();
 
         try {
           const userData = await getMe();
