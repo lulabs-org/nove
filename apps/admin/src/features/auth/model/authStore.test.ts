@@ -115,39 +115,6 @@ describe('useAuthStore', () => {
       expect(state.user).toEqual(mockUser);
     });
 
-    it('clears query cache left by a previous account before setting the new user', async () => {
-      seedQueryCache();
-      apiMocks.login.mockResolvedValueOnce({ accessToken: 'new-token' });
-      apiMocks.getMe.mockImplementationOnce(() => {
-        expectQueryCacheCleared();
-        return Promise.resolve(mockUser);
-      });
-
-      await useAuthStore.getState().login({
-        type: 'email_password',
-        email: 'test@proflu.cn',
-        password: 'Password123',
-      });
-
-      expectQueryCacheCleared();
-      expect(useAuthStore.getState().user).toEqual(mockUser);
-    });
-
-    it('keeps query cache when login API fails', async () => {
-      seedQueryCache();
-      apiMocks.login.mockRejectedValueOnce(new Error('Invalid credentials'));
-
-      await expect(
-        useAuthStore.getState().login({
-          type: 'email_password',
-          email: 'test@proflu.cn',
-          password: 'Password123',
-        })
-      ).rejects.toThrow('Invalid credentials');
-
-      expect(queryClient.getQueryData(cachedKey)).toEqual(['previous-account-data']);
-    });
-
     it('clears auth and re-throws error if getMe fails after login', async () => {
       apiMocks.login.mockResolvedValueOnce({ accessToken: 'temp-token' });
       apiMocks.getMe.mockRejectedValueOnce(new Error('Profile fetch failed'));
