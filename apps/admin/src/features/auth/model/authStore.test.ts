@@ -150,7 +150,7 @@ describe('useAuthStore', () => {
       expect(state.user).toBeNull();
     });
 
-    it('still clears local auth and query cache when logout API throws', async () => {
+    it('preserves auth and query cache when logout API throws an error', async () => {
       seedQueryCache();
       authService.setToken('active-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
@@ -161,11 +161,11 @@ describe('useAuthStore', () => {
 
       expect(consoleError).toHaveBeenCalledWith('Logout error:', expect.any(Error));
       consoleError.mockRestore();
-      expect(authService.getToken()).toBeNull();
-      expectQueryCacheCleared();
+      expect(authService.getToken()).toBe('active-token');
+      expect(queryClient.getQueryData(cachedKey)).toEqual(['previous-account-data']);
       const state = useAuthStore.getState();
-      expect(state.isAuthenticated).toBe(false);
-      expect(state.user).toBeNull();
+      expect(state.isAuthenticated).toBe(true);
+      expect(state.user).toEqual(mockUser);
     });
   });
 
