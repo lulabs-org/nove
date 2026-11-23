@@ -7,6 +7,7 @@ import type {
   UserImportResponse,
   UserListParams,
   UserListResponse,
+  UserTagOptionList,
   UserWritePayload,
 } from '../types';
 
@@ -22,6 +23,10 @@ function queryString(params: UserListParams): string {
 export const userApi = {
   list(params: UserListParams = {}): Promise<UserListResponse> {
     return mutator({ url: `/admin/users${queryString(params)}`, method: 'GET' });
+  },
+
+  getTagOptions(): Promise<UserTagOptionList> {
+    return mutator({ url: '/admin/users/tag-options', method: 'GET' });
   },
 
   getById(id: string): Promise<AdminUser> {

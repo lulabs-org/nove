@@ -14,6 +14,7 @@ import {
   AdminUserDto,
   AdminUserListItemDto,
   AdminUserListResponseDto,
+  AdminUserTagOptionListResponseDto,
   CreateAdminUserDto,
   QueryUsersDto,
   UpdateAdminUserDto,
@@ -28,6 +29,8 @@ import {
 } from './user.repository';
 
 const MAX_IMPORT_ROWS = 5000;
+// 标签候选数量上限：标签是低基数数据，由前端 Select 做本地搜索
+const TAG_OPTIONS_LIMIT = 200;
 const HEADER_ALIASES: Record<string, keyof ImportRow> = {
   username: 'username',
   用户名: 'username',
@@ -71,6 +74,8 @@ const HEADER_ALIASES: Record<string, keyof ImportRow> = {
   邮政编码: 'zipCode',
   website: 'website',
   个人网站: 'website',
+  tags: 'tags',
+  标签: 'tags',
   active: 'active',
   状态: 'active',
   是否启用: 'active',
@@ -101,6 +106,7 @@ interface ImportRow {
   country?: unknown;
   zipCode?: unknown;
   website?: unknown;
+  tags?: unknown;
   active?: unknown;
 }
 
@@ -110,9 +116,11 @@ export class AdminUserService {
 
   async list(dto: QueryUsersDto): Promise<AdminUserListResponseDto> {
     const { page = 1, pageSize = 20, keyword, active } = dto;
+    const tag = dto.tag?.trim();
     const where: Prisma.UserWhereInput = {
       deletedAt: null,
       ...(active !== undefined ? { active } : {}),
+      ...(tag ? { profile: { is: { tags: { has: tag } } } } : {}),
       ...(keyword
         ? {
             OR: [
@@ -150,6 +158,21 @@ export class AdminUserService {
       pageSize,
       totalPages: Math.ceil(total / pageSize),
     };
+  }
+
+  /**
+   * 已有标签候选：只统计未删除用户，去重后按名称排序（中文按拼音）。
+   * 接口与用户列表同为 user:read，可见范围一致。
+   */
+  async listTagOptions(): Promise<AdminUserTagOptionListResponseDto> {
+    const tagLists = await this.repository.findTagLists({
+      user: { deletedAt: null },
+      NOT: { tags: { isEmpty: true } },
+    });
+    const items = [...new Set(tagLists.flat())]
+      .sort((a, b) => a.localeCompare(b, 'zh-CN'))
+      .slice(0, TAG_OPTIONS_LIMIT);
+    return { items };
   }
 
   async getById(id: string): Promise<AdminUserDto> {
@@ -285,8 +308,16 @@ export class AdminUserService {
       ...(dto.website !== undefined
         ? { website: dto.website?.trim() || null }
         : {}),
+      ...(dto.tags !== undefined && dto.tags !== null
+        ? { tags: this.normalizeTags(dto.tags) }
+        : {}),
       ...(dto.active !== undefined ? { active: dto.active } : {}),
     };
+  }
+
+  // 标签规范化：trim、去空、去重（与 Project / Order 标签规则一致）
+  private normalizeTags(value: string[]): string[] {
+    return [...new Set(value.map((item) => item.trim()).filter(Boolean))];
   }
 
   private validateIdentifiers(data: AdminUserWriteData): void {
@@ -398,6 +429,7 @@ export class AdminUserService {
       country: text(row.country),
       zipCode: text(row.zipCode),
       website: text(row.website),
+      tags: this.parseTags(row.tags),
       active: this.parseActive(row.active),
     };
   }
@@ -434,6 +466,13 @@ export class AdminUserService {
     throw new BadRequestException(
       messages.length ? messages : '用户数据格式不正确',
     );
+  }
+
+  // 导入文件中的标签以中英文逗号或分号分隔
+  private parseTags(value: unknown): string[] | undefined {
+    const text = this.primitiveText(value);
+    if (!text) return undefined;
+    return text.split(/[,，;；]/);
   }
 
   private parseActive(value: unknown): boolean | undefined {
@@ -558,6 +597,7 @@ export class AdminUserService {
       displayName: user.profile?.displayName ?? null,
       fullName: user.profile?.fullName ?? null,
       avatar: user.profile?.avatar ?? null,
+      tags: user.profile?.tags ?? [],
       active: user.active,
       emailVerified: Boolean(user.emailVerifiedAt),
       phoneVerified: Boolean(user.phoneVerifiedAt),

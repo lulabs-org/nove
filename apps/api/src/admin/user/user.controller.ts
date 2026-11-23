@@ -25,6 +25,7 @@ import { RequirePermissions } from '@/admin/permission/decorators/permissions.de
 import {
   AdminUserDto,
   AdminUserListResponseDto,
+  AdminUserTagOptionListResponseDto,
   CreateAdminUserDto,
   QueryUsersDto,
   UpdateAdminUserDto,
@@ -51,6 +52,17 @@ export class AdminUserController {
   @RequirePermissions('user:read')
   list(@Query() query: QueryUsersDto) {
     return this.service.list(query);
+  }
+
+  @Get('tag-options')
+  @ApiOperation({
+    summary: '用户标签候选',
+    description: '获取未删除用户上已有的标签，用于标签筛选与录入下拉',
+  })
+  @ApiResponse({ status: 200, type: AdminUserTagOptionListResponseDto })
+  @RequirePermissions('user:read')
+  listTagOptions() {
+    return this.service.listTagOptions();
   }
 
   @Get(':id')

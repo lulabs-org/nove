@@ -80,4 +80,37 @@ describe('Admin user DTOs', () => {
       expect(dto.active).toBeUndefined();
     });
   });
+
+  describe('tags', () => {
+    it('treats a blank tag query as omitted', async () => {
+      const dto = plainToInstance(QueryUsersDto, { tag: '  ' });
+
+      await expect(validate(dto)).resolves.toHaveLength(0);
+      expect(dto.tag).toBeUndefined();
+    });
+
+    it('accepts a string array and null', async () => {
+      await expect(
+        validate(plainToInstance(CreateAdminUserDto, { tags: ['大客户'] })),
+      ).resolves.toHaveLength(0);
+      await expect(
+        validate(plainToInstance(UpdateAdminUserDto, { tags: null })),
+      ).resolves.toHaveLength(0);
+    });
+
+    it('rejects non-string items, overlong tags and more than 50 tags', async () => {
+      const cases = [
+        { tags: [1] },
+        { tags: ['x'.repeat(51)] },
+        { tags: Array.from({ length: 51 }, (_, index) => `t${index}`) },
+        { tags: '大客户' },
+      ];
+      for (const payload of cases) {
+        const errors = await validate(
+          plainToInstance(CreateAdminUserDto, payload),
+        );
+        expect(errors.map((error) => error.property)).toContain('tags');
+      }
+    });
+  });
 });

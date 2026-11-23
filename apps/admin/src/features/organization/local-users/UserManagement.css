@@ -19,7 +19,7 @@
 
 .user-management-filters {
   display: grid;
-  grid-template-columns: 280px 140px;
+  grid-template-columns: 280px 140px 180px;
   gap: 12px;
 }
 

@@ -28,6 +28,7 @@ export const adminUserSelect = {
       country: true,
       zipCode: true,
       website: true,
+      tags: true,
     },
   },
 } satisfies Prisma.UserSelect;
@@ -48,6 +49,7 @@ export const adminUserListSelect = {
       displayName: true,
       fullName: true,
       avatar: true,
+      tags: true,
     },
   },
 } satisfies Prisma.UserSelect;
@@ -77,6 +79,7 @@ export interface AdminUserWriteData {
   country?: string | null;
   zipCode?: string | null;
   website?: string | null;
+  tags?: string[];
 }
 
 @Injectable()
@@ -94,6 +97,14 @@ export class AdminUserRepository {
       this.prisma.user.count({ where: args.where }),
     ]);
     return { items, total };
+  }
+
+  async findTagLists(where: Prisma.UserProfileWhereInput): Promise<string[][]> {
+    const rows = await this.prisma.userProfile.findMany({
+      where,
+      select: { tags: true },
+    });
+    return rows.map((row) => row.tags);
   }
 
   findById(id: string): Promise<AdminUserRecord | null> {
@@ -142,6 +153,7 @@ export class AdminUserRepository {
       country,
       zipCode,
       website,
+      tags,
       ...userData
     } = data;
     const profileData = {
@@ -156,9 +168,12 @@ export class AdminUserRepository {
       country,
       zipCode,
       website,
+      tags,
     };
-    const hasProfileData = Object.values(profileData).some(
-      (value) => value !== undefined && value !== null,
+    const hasProfileData = Object.values(profileData).some((value) =>
+      Array.isArray(value)
+        ? value.length > 0
+        : value !== undefined && value !== null,
     );
     return this.prisma.user.create({
       data: {
@@ -183,6 +198,7 @@ export class AdminUserRepository {
       country,
       zipCode,
       website,
+      tags,
       ...userData
     } = data;
     const profileData = {
@@ -197,6 +213,7 @@ export class AdminUserRepository {
       country,
       zipCode,
       website,
+      tags,
     };
     const hasProfileUpdate = Object.values(profileData).some(
       (value) => value !== undefined,

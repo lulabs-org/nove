@@ -24,6 +24,7 @@ import Spin from 'antd/es/spin';
 import Switch from 'antd/es/switch';
 import Table from 'antd/es/table';
 import Tag from 'antd/es/tag';
+import Tooltip from 'antd/es/tooltip';
 import Typography from 'antd/es/typography';
 import Upload from 'antd/es/upload';
 import type { TableProps } from 'antd/es/table';
@@ -72,6 +73,13 @@ export function UserManagement() {
     placeholderData: (previous) => previous,
   });
 
+  // 已有标签（新增/编辑/删除/导入会使 LIST_KEY 前缀的查询失效，候选随之刷新）
+  const tagOptionsQuery = useQuery({
+    queryKey: [LIST_KEY, 'tag-options'],
+    queryFn: () => userApi.getTagOptions(),
+  });
+  const tagSelectOptions = tagOptionsQuery.data?.items.map((tag) => ({ value: tag }));
+
   const editDetailQuery = useQuery({
     queryKey: ['admin-user-detail', editing?.id],
     queryFn: () => userApi.getById(editing!.id),
@@ -84,7 +92,7 @@ export function UserManagement() {
     if (!formOpen) return;
     if (!editing) {
       form.resetFields();
-      form.setFieldsValue({ countryCode: '+86', active: true });
+      form.setFieldsValue({ countryCode: '+86', active: true, tags: [] });
       return;
     }
     if (editDetailQuery.data) {
@@ -208,6 +216,28 @@ export function UserManagement() {
         record.phone ? `${record.countryCode ?? ''} ${record.phone}` : '—',
     },
     {
+      title: '标签',
+      dataIndex: 'tags',
+      width: 180,
+      render: (tags: string[] | undefined) =>
+        tags?.length ? (
+          <Space size={[0, 4]} wrap>
+            {tags.slice(0, 3).map((tag) => (
+              <Tag key={tag} color="blue">
+                {tag}
+              </Tag>
+            ))}
+            {tags.length > 3 && (
+              <Tooltip title={tags.slice(3).join('、')}>
+                <Tag style={{ cursor: 'default' }}>+{tags.length - 3}</Tag>
+              </Tooltip>
+            )}
+          </Space>
+        ) : (
+          '—'
+        ),
+    },
+    {
       title: '状态',
       dataIndex: 'active',
       width: 90,
@@ -280,6 +310,15 @@ export function UserManagement() {
             ]}
             onChange={(active) => setFilters((current) => ({ ...current, active, page: 1 }))}
           />
+          <Select
+            allowClear
+            showSearch
+            placeholder="按标签筛选"
+            loading={tagOptionsQuery.isFetching}
+            value={filters.tag}
+            options={tagSelectOptions}
+            onChange={(tag?: string) => setFilters((current) => ({ ...current, tag, page: 1 }))}
+          />
         </div>
 
         <div className="user-management-actions">
@@ -311,7 +350,7 @@ export function UserManagement() {
         columns={columns}
         dataSource={usersQuery.data?.items ?? []}
         loading={usersQuery.isFetching}
-        scroll={{ x: 1100 }}
+        scroll={{ x: 1280 }}
         pagination={{
           current: filters.page,
           pageSize: filters.pageSize,
@@ -446,6 +485,14 @@ export function UserManagement() {
                 <Form.Item label="详细地址" name="address">
                   <Input maxLength={500} placeholder="请输入详细地址" />
                 </Form.Item>
+                <Form.Item label="用户标签" name="tags" className="user-form-wide">
+                  <Select
+                    mode="tags"
+                    tokenSeparators={[',', '，']}
+                    options={tagSelectOptions}
+                    placeholder="选择已有标签，或输入后按回车添加"
+                  />
+                </Form.Item>
                 <Form.Item label="个人简介" name="bio" className="user-form-wide">
                   <Input.TextArea maxLength={500} rows={3} showCount placeholder="补充用户简介" />
                 </Form.Item>
@@ -479,7 +526,7 @@ export function UserManagement() {
             </Button>
           </div>
           <Text type="secondary">
-            表头可用：username/用户名、email/邮箱、countryCode/国家代码、phone/手机号、displayName/显示名称、fullName/完整姓名、active/是否启用；也支持头像、简介、出生日期、性别、地址、城市、国家、邮编和个人网站等资料字段。
+            表头可用：username/用户名、email/邮箱、countryCode/国家代码、phone/手机号、displayName/显示名称、fullName/完整姓名、tags/标签（多个用逗号分隔）、active/是否启用；也支持头像、简介、出生日期、性别、地址、城市、国家、邮编和个人网站等资料字段。
           </Text>
         </div>
         <Upload.Dragger
