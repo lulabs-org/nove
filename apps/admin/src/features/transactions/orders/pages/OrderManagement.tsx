@@ -41,6 +41,7 @@ import { OrderBenefitModal } from '../components/OrderBenefitModal';
 import { OrderChannelSelect } from '../components/OrderChannelSelect';
 import { OrderProductSelect } from '../components/OrderProductSelect';
 import { ORDER_STATUS_OPTIONS } from '../components/orderStatusOptions';
+import { normalizeOrderTags, validateOrderTags } from '../components/orderTags';
 import { stripeOrderSyncApi } from '../api/stripeOrderSyncApi';
 import { OrderUserSelect } from '../components/OrderUserSelect';
 import { toNullableOrderOwnerId } from '../components/orderOwnerValue';
@@ -152,7 +153,7 @@ function buildPayload(values: OrderFormValues): CreateOrder {
     orderCode: cleanString(values.orderCode),
     orderNumber: cleanString(values.orderNumber),
     externalId: cleanString(values.externalId),
-    tags: [...new Set((values.tags ?? []).map((tag) => tag.trim()).filter(Boolean))],
+    tags: normalizeOrderTags(values.tags),
     productId: cleanString(values.productId),
     productName: cleanString(values.productName),
     purchaserId: cleanString(values.purchaserId),
@@ -823,7 +824,18 @@ export function OrderManagement() {
           </Row>
           <Row gutter={16}>
             <Col span={24}>
-              <Form.Item name="tags" label="订单标签">
+              <Form.Item
+                name="tags"
+                label="订单标签"
+                rules={[
+                  {
+                    validator: (_, value?: string[]) => {
+                      const error = validateOrderTags(value);
+                      return error ? Promise.reject(new Error(error)) : Promise.resolve();
+                    },
+                  },
+                ]}
+              >
                 <Select
                   mode="tags"
                   tokenSeparators={[',', '，']}
