@@ -667,9 +667,11 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
 
               <div className="profit-structure-insight">
                 💡 <strong>结构洞察</strong>：
-                {commPercent > basePercent
-                  ? '该员工提成贡献占比高于固定底薪，属于高绩效、高产出的业绩驱动型收益结构。'
-                  : '该员工固定课酬/底薪贡献占比较高，属于高稳定性、底薪课酬保障型收益结构。'}
+                {totalPositive <= 0
+                  ? '当前周期暂无薪资数据，暂时无法生成结构洞察。'
+                  : commPercent > basePercent
+                    ? '该员工提成贡献占比高于固定底薪，属于高绩效、高产出的业绩驱动型收益结构。'
+                    : '该员工固定课酬/底薪贡献占比较高，属于高稳定性、底薪课酬保障型收益结构。'}
               </div>
             </div>
           </Card>
