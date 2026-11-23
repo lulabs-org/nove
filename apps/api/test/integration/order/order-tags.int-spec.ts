@@ -101,6 +101,23 @@ describe('OrderRepository tags (PostgreSQL)', () => {
     expect(await countTags([fresh])).toBe(1);
   });
 
+  it('handles concurrent orders introducing the same new tags in opposite orders', async () => {
+    const pairs = Array.from({ length: 10 }, (_, i) => [
+      tag(`swap-${i}-a`),
+      tag(`swap-${i}-b`),
+    ]);
+
+    const orders = await Promise.all(
+      pairs.flatMap(([a, b]) => [createOrder([a, b]), createOrder([b, a])]),
+    );
+
+    pairs.forEach(([a, b], i) => {
+      expect(tagNames(orders[i * 2])).toEqual([a, b]);
+      expect(tagNames(orders[i * 2 + 1])).toEqual([b, a]);
+    });
+    expect(await countTags(pairs.flat())).toBe(20);
+  });
+
   it('filters orders by tag through the relation', async () => {
     const target = tag('filter-target');
     const hit = await createOrder([target, tag('filter-other')]);

@@ -203,14 +203,17 @@ export class OrderRepository {
     return tags.map((tag) => tag.name);
   }
 
-  // 补齐标签字典；并发写入同名标签时由唯一约束 + skipDuplicates 兜底
+  // 补齐标签字典；并发写入同名标签时由唯一约束 + skipDuplicates 兜底。
+  // 按固定顺序插入：两个事务以不同顺序引入同一批新标签时，
+  // 会各自占住一个未提交的唯一索引项再互相等待，导致死锁。
+  // 排序只作用于字典插入，链接的 position 仍沿用调用方的顺序。
   private async ensureTags(
     tx: Prisma.TransactionClient,
     tags: string[],
   ): Promise<void> {
     if (tags.length === 0) return;
     await tx.orderTag.createMany({
-      data: tags.map((name) => ({ name })),
+      data: [...tags].sort().map((name) => ({ name })),
       skipDuplicates: true,
     });
   }
