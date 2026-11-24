@@ -25,6 +25,26 @@ describe('ProfitSharingPayslipService', () => {
   });
 
   describe('getPayslips', () => {
+    it('restricts payroll records to the selected member ID and month', async () => {
+      prismaService.profitShareRecord.findMany.mockResolvedValue([]);
+
+      const result = await payslipService.getPayslips({
+        month: '2026-08',
+        memberId: 'employee-1',
+      });
+
+      expect(prismaService.profitShareRecord.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            memberId: 'employee-1',
+            OR: expect.arrayContaining([{ periodMonth: '2026-08' }]),
+          }),
+        }),
+      );
+      expect(result.month).toBe('2026-08');
+      expect(result.items).toEqual([]);
+    });
+
     it('should aggregate fixed amount, commission, clawbacks and settlement status into monthly payslip', async () => {
       const records = [
         // 教师固定课酬: 5000 元 (已结算)

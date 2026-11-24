@@ -2,7 +2,11 @@ import { mutator } from '../../../../shared/lib/api/mutator';
 import type { PayslipListResponse, PayslipDetailResponse } from '../types';
 
 export const payslipApi = {
-  list(params?: { month?: string; keyword?: string }): Promise<PayslipListResponse> {
+  list(params?: {
+    month?: string;
+    keyword?: string;
+    memberId?: string;
+  }): Promise<PayslipListResponse> {
     return mutator({
       url: '/profit-sharing/payslips',
       method: 'GET',

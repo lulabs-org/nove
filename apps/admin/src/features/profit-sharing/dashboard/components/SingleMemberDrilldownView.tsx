@@ -189,12 +189,20 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
     {
       title: '操作',
       key: 'action',
-      render: () => (
+      render: (_: unknown, row: HistoricalMonthPoint) => (
         <Button
           type="link"
           size="small"
           icon={<ArrowRightOutlined />}
-          onClick={() => navigate(`/profit-sharing/payslips`)}
+          onClick={() => {
+            const params = new URLSearchParams({
+              month: row.month,
+              memberId: selectedMemberId,
+            });
+            navigate(`/profit-sharing/payslips?${params}`, {
+              state: { memberId: selectedMemberId, memberName: selectedMember?.name },
+            });
+          }}
         >
           查看工资条
         </Button>
