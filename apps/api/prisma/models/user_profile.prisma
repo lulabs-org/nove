@@ -9,7 +9,7 @@ model UserProfile {
   /// 个人简介
   bio         String? @db.VarChar(500)
 
-  /// 用户业务标签（如学员阶段、特长领域、运营分群等），由管理后台维护
+  /// 用户业务标签（如学员阶段、特长领域、运营分群等）
   tags String[] @default([]) @map("tags")
 
   /// 详细个人信息
@@ -44,7 +44,6 @@ model UserProfile {
   @@index([dateOfBirth], map: "idx_user_profile_date_of_birth")
   @@index([gender], map: "idx_user_profile_gender")
   @@index([country], map: "idx_user_profile_country")
-  // 标签筛选（has 为数组包含运算，需 GIN 索引）
   @@index([tags], type: Gin, map: "idx_user_profile_tags")
   @@map("user_profiles")
 }
