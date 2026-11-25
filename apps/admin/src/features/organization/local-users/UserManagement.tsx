@@ -526,7 +526,7 @@ export function UserManagement() {
             </Button>
           </div>
           <Text type="secondary">
-            表头可用：username/用户名、email/邮箱、countryCode/国家代码、phone/手机号、displayName/显示名称、fullName/完整姓名、tags/标签（多个用逗号分隔）、active/是否启用；也支持头像、简介、出生日期、性别、地址、城市、国家、邮编和个人网站等资料字段。
+            表头可用：username/用户名、email/邮箱、countryCode/国家代码、phone/手机号、displayName/显示名称、fullName/完整姓名、tags/标签（多个用逗号或分号分隔）、active/是否启用；也支持头像、简介、出生日期、性别、地址、城市、国家、邮编和个人网站等资料字段。
           </Text>
         </div>
         <Upload.Dragger
