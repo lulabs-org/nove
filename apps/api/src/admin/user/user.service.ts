@@ -163,8 +163,9 @@ export class AdminUserService {
       user: { deletedAt: null },
       NOT: { tags: { isEmpty: true } },
     });
-    const items = [...new Set(tagLists.flat())]
-      .sort((a, b) => a.localeCompare(b, 'zh-CN'))
+    const items = [...new Set(tagLists.flat())].sort((a, b) =>
+      a.localeCompare(b, 'zh-CN'),
+    );
     return { items };
   }
 
