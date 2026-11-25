@@ -454,14 +454,14 @@ describe('AdminUserService', () => {
       expect(result.items).toHaveLength(4);
     });
 
-    it('caps tag options at 200 items', async () => {
+    it('returns all distinct tag options without a cap', async () => {
       repository.findTagLists.mockResolvedValue([
         Array.from({ length: 250 }, (_, index) => `tag-${index}`),
       ]);
 
       const result = await service.listTagOptions();
 
-      expect(result.items).toHaveLength(200);
+      expect(result.items).toHaveLength(250);
     });
   });
 });
