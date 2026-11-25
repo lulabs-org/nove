@@ -45,9 +45,6 @@ const SORT_FIELD_MAP: Record<
   settledAt: 'settledAt',
 };
 
-// 标签候选数量上限：标签是低基数数据，由前端 Select 做本地搜索
-const TAG_OPTIONS_LIMIT = 200;
-
 @Injectable()
 export class OrderService {
   constructor(
@@ -198,9 +195,7 @@ export class OrderService {
     const tags = new Set(
       (await this.orderRepository.findTagLists(where)).flat(),
     );
-    const items = [...tags]
-      .sort((a, b) => a.localeCompare(b, 'zh-CN'))
-      .slice(0, TAG_OPTIONS_LIMIT);
+    const items = [...tags].sort((a, b) => a.localeCompare(b, 'zh-CN'));
 
     return { items };
   }

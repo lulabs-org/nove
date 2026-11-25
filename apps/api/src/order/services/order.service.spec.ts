@@ -252,14 +252,14 @@ describe('OrderService - Benefit Freeze, Unfreeze & Extension', () => {
       );
     });
 
-    it('caps the number of returned tags', async () => {
+    it('returns every distinct tag without truncation', async () => {
       repository.findTagLists.mockResolvedValue([
         Array.from({ length: 250 }, (_, i) => `tag-${i}`),
       ]);
 
       const result = await service.listTagOptions();
 
-      expect(result.items).toHaveLength(200);
+      expect(result.items).toHaveLength(250);
     });
 
     it('only reads non-deleted, tagged orders within the accessible scope', async () => {
