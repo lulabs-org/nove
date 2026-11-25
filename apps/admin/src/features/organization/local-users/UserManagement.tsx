@@ -82,12 +82,7 @@ export function UserManagement() {
 
   useEffect(() => {
     if (!formOpen) return;
-    if (!editing) {
-      form.resetFields();
-      form.setFieldsValue({ countryCode: '+86', active: true });
-      return;
-    }
-    if (editDetailQuery.data) {
+    if (editing && editDetailQuery.data) {
       form.resetFields();
       form.setFieldsValue(userToFormValues(editDetailQuery.data));
     }
@@ -348,7 +343,13 @@ export function UserManagement() {
         width={820}
       >
         <Spin spinning={Boolean(editing) && editDetailQuery.isFetching}>
-          <Form form={form} layout="vertical" preserve={false} className="user-account-form">
+          <Form
+            form={form}
+            layout="vertical"
+            preserve={false}
+            initialValues={{ countryCode: '+86', active: true }}
+            className="user-account-form"
+          >
             <section className="user-form-section">
               <div className="user-form-section-header">
                 <Text strong>账号信息</Text>
