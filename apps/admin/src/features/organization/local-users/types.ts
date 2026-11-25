@@ -22,7 +22,6 @@ export interface AdminUser {
   displayName?: string | null;
   fullName?: string | null;
   avatar?: string | null;
-  /** 列表接口直接返回；详情接口在 profile.tags 中 */
   tags?: string[];
   countryCode: string | null;
   phone: string | null;

@@ -92,7 +92,7 @@ export function UserManagement() {
     if (!formOpen) return;
     if (!editing) {
       form.resetFields();
-      form.setFieldsValue({ countryCode: '+86', active: true, tags: [] });
+      form.setFieldsValue({ countryCode: '+86', active: true });
       return;
     }
     if (editDetailQuery.data) {
