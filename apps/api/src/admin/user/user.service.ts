@@ -29,8 +29,6 @@ import {
 } from './user.repository';
 
 const MAX_IMPORT_ROWS = 5000;
-// 标签候选数量上限：标签是低基数数据，由前端 Select 做本地搜索
-const TAG_OPTIONS_LIMIT = 200;
 const HEADER_ALIASES: Record<string, keyof ImportRow> = {
   username: 'username',
   用户名: 'username',
@@ -160,10 +158,6 @@ export class AdminUserService {
     };
   }
 
-  /**
-   * 已有标签候选：只统计未删除用户，去重后按名称排序（中文按拼音）。
-   * 接口与用户列表同为 user:read，可见范围一致。
-   */
   async listTagOptions(): Promise<AdminUserTagOptionListResponseDto> {
     const tagLists = await this.repository.findTagLists({
       user: { deletedAt: null },
@@ -171,7 +165,6 @@ export class AdminUserService {
     });
     const items = [...new Set(tagLists.flat())]
       .sort((a, b) => a.localeCompare(b, 'zh-CN'))
-      .slice(0, TAG_OPTIONS_LIMIT);
     return { items };
   }
 

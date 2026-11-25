@@ -350,7 +350,7 @@ export function UserManagement() {
         columns={columns}
         dataSource={usersQuery.data?.items ?? []}
         loading={usersQuery.isFetching}
-        scroll={{ x: 1280 }}
+        scroll={{ x: 1100 }}
         pagination={{
           current: filters.page,
           pageSize: filters.pageSize,
