@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  IsArray,
   IsBoolean,
   IsEmail,
   IsEnum,
@@ -80,6 +82,12 @@ export class QueryUsersDto {
   @Transform(queryBoolean)
   @IsBoolean()
   active?: boolean;
+
+  @ApiPropertyOptional({ description: '按指定标签筛选', example: '大客户' })
+  @IsOptional()
+  @Transform(trimToUndefined)
+  @IsString()
+  tag?: string;
 
   @ApiPropertyOptional({
     description: '排序字段',
@@ -252,6 +260,19 @@ export class CreateAdminUserDto {
   @MaxLength(255)
   website?: string | null;
 
+  @ApiPropertyOptional({
+    description: '用户标签；不传或传 null 保持不变，传 [] 清空',
+    type: [String],
+    nullable: true,
+    example: ['大客户', '全栈'],
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(50)
+  @IsString({ each: true })
+  @MaxLength(50, { each: true })
+  tags?: string[] | null;
+
   @ApiPropertyOptional({ default: true })
   @IsOptional()
   @Transform(trimToUndefined)
@@ -294,6 +315,9 @@ export class AdminUserProfileDto {
 
   @ApiPropertyOptional({ nullable: true, type: String })
   website: string | null;
+
+  @ApiProperty({ type: [String], default: [] })
+  tags: string[];
 }
 
 export class AdminUserDto {
@@ -359,6 +383,9 @@ export class AdminUserListItemDto {
   @ApiPropertyOptional({ nullable: true, type: String })
   avatar: string | null;
 
+  @ApiProperty({ type: [String], default: [] })
+  tags: string[];
+
   @ApiProperty()
   active: boolean;
 
@@ -390,6 +417,15 @@ export class AdminUserListResponseDto {
 
   @ApiProperty()
   totalPages: number;
+}
+
+export class AdminUserTagOptionListResponseDto {
+  @ApiProperty({
+    description: '已有标签',
+    type: [String],
+    example: ['大客户', '全栈'],
+  })
+  items: string[];
 }
 
 export class UserImportFailureDto {

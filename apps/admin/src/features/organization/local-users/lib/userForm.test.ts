@@ -29,6 +29,17 @@ describe('user form helpers', () => {
     });
   });
 
+  it('trims, drops blanks and de-duplicates tags', () => {
+    expect(
+      normalizeUserPayload({ email: 'a@example.com', tags: [' 大客户 ', '', '全栈', '大客户'] })
+        .tags
+    ).toEqual(['大客户', '全栈']);
+  });
+
+  it('sends an empty tag list so removing every tag clears them', () => {
+    expect(normalizeUserPayload({ email: 'a@example.com' }).tags).toEqual([]);
+  });
+
   it('requires at least one identifier', () => {
     expect(validateUserPayload({ displayName: '匿名用户' })).toBe(
       '用户名、邮箱、手机号至少填写一个'
@@ -69,6 +80,7 @@ describe('user form helpers', () => {
         country: '中国',
         zipCode: '200000',
         website: 'https://example.com',
+        tags: ['大客户', '全栈'],
       },
     };
 
@@ -81,6 +93,7 @@ describe('user form helpers', () => {
       fullName: '张三',
       dateOfBirth: '2000-01-02',
       gender: 'MALE',
+      tags: ['大客户', '全栈'],
       active: true,
     });
     expect(values).not.toHaveProperty('avatar');

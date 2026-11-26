@@ -34,6 +34,7 @@ const userRecord = (
     country: null,
     zipCode: null,
     website: null,
+    tags: [],
   },
   ...overrides,
 });
@@ -55,6 +56,7 @@ const userListRecord = (
     displayName: 'Alice',
     fullName: 'Alice',
     avatar: 'https://example.com/avatar.png',
+    tags: ['大客户'],
   },
   ...overrides,
 });
@@ -71,6 +73,7 @@ describe('AdminUserService', () => {
       create: jest.fn(),
       update: jest.fn(),
       softDelete: jest.fn(),
+      findTagLists: jest.fn(),
     } as unknown as jest.Mocked<AdminUserRepository>;
     service = new AdminUserService(repository);
   });
@@ -94,6 +97,7 @@ describe('AdminUserService', () => {
       displayName: 'Alice',
       fullName: 'Alice',
       avatar: 'https://example.com/avatar.png',
+      tags: ['大客户'],
       active: true,
       emailVerified: true,
       phoneVerified: false,
@@ -109,6 +113,7 @@ describe('AdminUserService', () => {
       displayName: true,
       fullName: true,
       avatar: true,
+      tags: true,
     });
   });
 
@@ -289,6 +294,25 @@ describe('AdminUserService', () => {
     });
   });
 
+  it('imports tags separated by Chinese or English commas', async () => {
+    repository.findConflict.mockResolvedValue(null);
+    repository.create.mockResolvedValue(userRecord());
+    const csv = Buffer.from(
+      'email,标签\nalice@example.com,"大客户， 全栈,大客户;"\n',
+    );
+
+    await service.importUsers({
+      originalname: 'users.csv',
+      mimetype: 'text/csv',
+      size: csv.length,
+      buffer: csv,
+    });
+
+    expect(repository.create.mock.calls[0][0]).toMatchObject({
+      tags: ['大客户', '全栈'],
+    });
+  });
+
   it('reports invalid email syntax as a row failure', async () => {
     const csv = Buffer.from('email\nnot-an-email\n');
 
@@ -319,5 +343,125 @@ describe('AdminUserService', () => {
         buffer: csv,
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  describe('tags', () => {
+    it('lists tag fields with an empty array when the user has no profile', async () => {
+      repository.list.mockResolvedValue({
+        items: [userListRecord({ profile: null })],
+        total: 1,
+      });
+
+      const result = await service.list({
+        page: 1,
+        pageSize: 20,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+      });
+
+      expect(result.items[0].tags).toEqual([]);
+    });
+
+    it('filters the user list by a trimmed tag', async () => {
+      repository.list.mockResolvedValue({ items: [], total: 0 });
+
+      await service.list({
+        page: 1,
+        pageSize: 20,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+        tag: ' 大客户 ',
+      });
+
+      expect(repository.list.mock.calls[0][0].where).toEqual({
+        deletedAt: null,
+        profile: { is: { tags: { has: '大客户' } } },
+      });
+    });
+
+    it('ignores a blank tag filter', async () => {
+      repository.list.mockResolvedValue({ items: [], total: 0 });
+
+      await service.list({
+        page: 1,
+        pageSize: 20,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+        tag: '   ',
+      });
+
+      expect(repository.list.mock.calls[0][0].where).toEqual({
+        deletedAt: null,
+      });
+    });
+
+    it('trims, drops blanks and de-duplicates tags on create', async () => {
+      repository.findConflict.mockResolvedValue(null);
+      repository.create.mockResolvedValue(userRecord());
+
+      await service.create({
+        email: 'alice@example.com',
+        tags: [' 大客户 ', '', '全栈', '大客户'],
+      });
+
+      expect(repository.create.mock.calls[0][0]).toMatchObject({
+        tags: ['大客户', '全栈'],
+      });
+    });
+
+    it('clears tags when an empty array is sent on update', async () => {
+      repository.findById.mockResolvedValue(
+        userRecord({ profile: { ...userRecord().profile!, tags: ['旧标签'] } }),
+      );
+      repository.findConflict.mockResolvedValue(null);
+      repository.update.mockResolvedValue(userRecord());
+
+      await service.update('cm12345678901234567890123', { tags: [] });
+
+      expect(repository.update.mock.calls[0][1]).toEqual({ tags: [] });
+    });
+
+    it('keeps tags untouched when the field is omitted or null', async () => {
+      repository.findById.mockResolvedValue(userRecord());
+      repository.findConflict.mockResolvedValue(null);
+      repository.update.mockResolvedValue(userRecord());
+
+      await service.update('cm12345678901234567890123', { bio: '简介' });
+      await service.update('cm12345678901234567890123', { tags: null });
+
+      expect(repository.update.mock.calls[0][1]).not.toHaveProperty('tags');
+      expect(repository.update.mock.calls[1][1]).not.toHaveProperty('tags');
+    });
+
+    it('returns de-duplicated tag options of active users sorted by name', async () => {
+      repository.findTagLists.mockResolvedValue([
+        ['全栈', '大客户'],
+        ['大客户', 'TypeScript'],
+        ['阿里'],
+      ]);
+
+      const result = await service.listTagOptions();
+
+      expect(repository.findTagLists.mock.calls[0][0]).toEqual({
+        user: { deletedAt: null },
+        NOT: { tags: { isEmpty: true } },
+      });
+      expect(result.items).toEqual(
+        ['全栈', '大客户', 'TypeScript', '阿里'].sort((a, b) =>
+          a.localeCompare(b, 'zh-CN'),
+        ),
+      );
+      expect(result.items).toHaveLength(4);
+    });
+
+    it('returns all distinct tag options without a cap', async () => {
+      repository.findTagLists.mockResolvedValue([
+        Array.from({ length: 250 }, (_, index) => `tag-${index}`),
+      ]);
+
+      const result = await service.listTagOptions();
+
+      expect(result.items).toHaveLength(250);
+    });
   });
 });

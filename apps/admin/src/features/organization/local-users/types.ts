@@ -10,6 +10,7 @@ export interface AdminUserProfile {
   country: string | null;
   zipCode: string | null;
   website: string | null;
+  tags: string[];
 }
 
 export type UserGender = 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY';
@@ -21,6 +22,7 @@ export interface AdminUser {
   displayName?: string | null;
   fullName?: string | null;
   avatar?: string | null;
+  tags?: string[];
   countryCode: string | null;
   phone: string | null;
   active: boolean;
@@ -37,6 +39,7 @@ export interface UserListParams {
   pageSize?: number;
   keyword?: string;
   active?: boolean;
+  tag?: string;
   sortBy?: 'createdAt' | 'updatedAt' | 'lastLoginAt' | 'username' | 'email';
   sortOrder?: 'asc' | 'desc';
 }
@@ -64,7 +67,12 @@ export interface UserWritePayload {
   country?: string | null;
   zipCode?: string | null;
   website?: string | null;
+  tags?: string[];
   active?: boolean;
+}
+
+export interface UserTagOptionList {
+  items: string[];
 }
 
 export interface UserImportFailure {

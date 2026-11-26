@@ -16,6 +16,7 @@ export function userToFormValues(user: AdminUser): UserWritePayload {
     country: user.profile?.country ?? undefined,
     zipCode: user.profile?.zipCode ?? undefined,
     website: user.profile?.website ?? undefined,
+    tags: user.profile?.tags ?? [],
     active: user.active,
   };
 }
@@ -38,8 +39,13 @@ export function normalizeUserPayload(values: UserWritePayload): UserWritePayload
     country: text(values.country),
     zipCode: text(values.zipCode),
     website: text(values.website),
+    tags: normalizeTags(values.tags),
     active: values.active ?? true,
   };
+}
+
+export function normalizeTags(tags?: string[] | null): string[] {
+  return [...new Set((tags ?? []).map((tag) => tag.trim()).filter(Boolean))];
 }
 
 export function validateUserPayload(values: UserWritePayload): string | null {

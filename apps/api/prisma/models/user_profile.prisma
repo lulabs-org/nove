@@ -9,6 +9,9 @@ model UserProfile {
   /// 个人简介
   bio         String? @db.VarChar(500)
 
+  /// 用户业务标签（如学员阶段、特长领域、运营分群等）
+  tags String[] @default([]) @map("tags")
+
   /// 详细个人信息
   /// 用户填写的完整姓名，未经实名认证
   fullName    String?   @map("full_name") @db.VarChar(200)
@@ -41,6 +44,7 @@ model UserProfile {
   @@index([dateOfBirth], map: "idx_user_profile_date_of_birth")
   @@index([gender], map: "idx_user_profile_gender")
   @@index([country], map: "idx_user_profile_country")
+  @@index([tags], type: Gin, map: "idx_user_profile_tags")
   @@map("user_profiles")
 }
 
