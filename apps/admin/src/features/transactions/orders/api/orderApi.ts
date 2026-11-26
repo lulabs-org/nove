@@ -10,6 +10,7 @@ import type {
   OrderListParams,
   OrderProductOptionList,
   OrderStatus,
+  OrderTagOptionList,
   OrderUserOptionList,
   UnfreezeOrderPayload,
   UpdateOrder,
@@ -43,6 +44,13 @@ export const orderApi = {
         isActive: true,
         keyword: keyword || undefined,
       },
+    });
+  },
+
+  getTagOptions(): Promise<OrderTagOptionList> {
+    return mutator<OrderTagOptionList>({
+      url: '/admin/orders/tag-options',
+      method: 'GET',
     });
   },
 
