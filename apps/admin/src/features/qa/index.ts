@@ -1,0 +1,1 @@
+export { qaRoutes } from './routes';
