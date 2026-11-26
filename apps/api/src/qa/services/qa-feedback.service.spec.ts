@@ -29,13 +29,11 @@ describe('QAFeedbackService', () => {
 
     await service.submit('org-1', 'record-1', {
       rating: QAFeedbackRating.DISLIKE,
-      reason: ' inaccurate ',
       comment: ' missing context ',
     });
 
     expect(records.updateFeedback).toHaveBeenCalledWith('record-1', 'org-1', {
       rating: QAFeedbackRating.DISLIKE,
-      feedbackReason: 'inaccurate',
       feedbackComment: 'missing context',
     });
   });
@@ -46,14 +44,13 @@ describe('QAFeedbackService', () => {
 
     await service.submit('org-1', 'record-1', {
       rating: QAFeedbackRating.LIKE,
-      reason: '  ',
+      comment: '  ',
     });
 
     expect(records.updateFeedback).toHaveBeenCalledWith(
       'record-1',
       'org-1',
       expect.objectContaining({
-        feedbackReason: null,
         feedbackComment: null,
       }),
     );
@@ -67,7 +64,6 @@ describe('QAFeedbackService', () => {
 
     expect(records.updateFeedback).toHaveBeenCalledWith('record-1', 'org-1', {
       rating: null,
-      feedbackReason: null,
       feedbackComment: null,
     });
   });

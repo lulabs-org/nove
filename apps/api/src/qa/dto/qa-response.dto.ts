@@ -33,7 +33,6 @@ export class QARecordResponseDto {
   @ApiProperty({ enum: QAGeneratedBy }) generatedBy: QAGeneratedBy;
   @ApiPropertyOptional({ enum: QAFeedbackRating, nullable: true })
   rating: QAFeedbackRating | null;
-  @ApiPropertyOptional({ nullable: true }) feedbackReason: string | null;
   @ApiPropertyOptional({ nullable: true }) feedbackComment: string | null;
   @ApiProperty({ type: 'object', additionalProperties: true })
   metadata: unknown;

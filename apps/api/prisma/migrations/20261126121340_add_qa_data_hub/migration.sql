@@ -31,7 +31,6 @@ CREATE TABLE "qa_records" (
     "answer" TEXT NOT NULL,
     "generated_by" "QAGeneratedBy" NOT NULL DEFAULT 'AI',
     "rating" "QAFeedbackRating",
-    "feedback_reason" VARCHAR(50),
     "feedback_comment" TEXT,
     "metadata" JSONB NOT NULL DEFAULT '{}',
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -47,7 +47,6 @@ model QARecord {
   answer           String            @db.Text
   generatedBy      QAGeneratedBy     @default(AI) @map("generated_by")
   rating           QAFeedbackRating?
-  feedbackReason   String?           @map("feedback_reason") @db.VarChar(50)
   feedbackComment  String?           @map("feedback_comment") @db.Text
   metadata         Json              @default("{}") @db.JsonB
   citations        QACitation[]

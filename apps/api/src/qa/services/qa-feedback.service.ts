@@ -12,7 +12,6 @@ export class QAFeedbackService {
     }
     return this.records.updateFeedback(recordId, orgId, {
       rating: dto.rating,
-      feedbackReason: dto.reason?.trim() || null,
       feedbackComment: dto.comment?.trim() || null,
     });
   }

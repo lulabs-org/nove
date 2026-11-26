@@ -178,7 +178,6 @@ export class QARecordRepository {
     orgId: string,
     data: {
       rating: QAFeedbackRating | null;
-      feedbackReason?: string | null;
       feedbackComment?: string | null;
     },
   ) {

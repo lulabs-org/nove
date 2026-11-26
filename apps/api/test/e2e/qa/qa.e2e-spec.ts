@@ -345,7 +345,6 @@ describe('QA data hub (e2e)', () => {
       .post(`/api/v1/qa/records/${recordId}/feedback`)
       .send({
         rating: 'LIKE',
-        reason: '回答准确',
         comment: '答案与会议原文一致',
       })
       .expect(201);
@@ -354,7 +353,6 @@ describe('QA data hub (e2e)', () => {
       expect.objectContaining({
         id: recordId,
         rating: 'LIKE',
-        feedbackReason: '回答准确',
         feedbackComment: '答案与会议原文一致',
       }),
     );

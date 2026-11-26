@@ -14,12 +14,6 @@ export class QAFeedbackDto {
   @IsEnum(QAFeedbackRating)
   rating: QAFeedbackRating | null;
 
-  @ApiPropertyOptional({ maxLength: 50 })
-  @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  reason?: string;
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
