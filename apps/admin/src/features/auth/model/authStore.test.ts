@@ -13,8 +13,20 @@ vi.mock('../api/api', () => ({
   logout: apiMocks.logout,
 }));
 
+import { queryClient } from '../../../shared/lib/queryClient';
 import { authService } from '../api/service';
 import { useAuthStore } from './authStore';
+
+const cachedKey = ['orders', 'tag-options'];
+
+function seedQueryCache() {
+  queryClient.setQueryData(cachedKey, ['previous-account-data']);
+}
+
+function expectQueryCacheCleared() {
+  expect(queryClient.getQueryData(cachedKey)).toBeUndefined();
+  expect(queryClient.getQueryCache().getAll()).toHaveLength(0);
+}
 
 const mockUser: User = {
   id: 'user-1',
@@ -42,6 +54,7 @@ describe('useAuthStore', () => {
 
   afterEach(() => {
     localStorage.clear();
+    queryClient.clear();
   });
 
   describe('initialize', () => {
@@ -122,6 +135,7 @@ describe('useAuthStore', () => {
 
   describe('logout', () => {
     it('calls logout API and clears store & token on success', async () => {
+      seedQueryCache();
       authService.setToken('active-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
       apiMocks.logout.mockResolvedValueOnce(undefined);
@@ -130,19 +144,25 @@ describe('useAuthStore', () => {
 
       expect(apiMocks.logout).toHaveBeenCalled();
       expect(authService.getToken()).toBeNull();
+      expectQueryCacheCleared();
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(false);
       expect(state.user).toBeNull();
     });
 
-    it('preserves auth when logout API throws an error', async () => {
+    it('preserves auth and query cache when logout API throws an error', async () => {
+      seedQueryCache();
       authService.setToken('active-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
       apiMocks.logout.mockRejectedValueOnce(new Error('Network error'));
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await useAuthStore.getState().logout();
 
+      expect(consoleError).toHaveBeenCalledWith('Logout error:', expect.any(Error));
+      consoleError.mockRestore();
       expect(authService.getToken()).toBe('active-token');
+      expect(queryClient.getQueryData(cachedKey)).toEqual(['previous-account-data']);
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(true);
       expect(state.user).toEqual(mockUser);
@@ -170,24 +190,28 @@ describe('useAuthStore', () => {
 
   describe('clearAuth', () => {
     it('clears token and resets store state', () => {
+      seedQueryCache();
       authService.setToken('sample-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
 
       useAuthStore.getState().clearAuth();
 
       expect(authService.getToken()).toBeNull();
+      expectQueryCacheCleared();
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(false);
       expect(state.user).toBeNull();
     });
 
     it('responds to auth-unauthorized window event', () => {
+      seedQueryCache();
       authService.setToken('expired-token');
       useAuthStore.setState({ isAuthenticated: true, user: mockUser });
 
       window.dispatchEvent(new Event('auth-unauthorized'));
 
       expect(authService.getToken()).toBeNull();
+      expectQueryCacheCleared();
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(false);
       expect(state.user).toBeNull();

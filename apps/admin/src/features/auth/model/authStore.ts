@@ -11,6 +11,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { login, getMe, logout as logoutApi } from '../api/api';
+import { queryClient } from '../../../shared/lib/queryClient';
 import { authService } from '../api/service';
 import type { LoginRequest, User } from './types';
 import { canAccessPermission } from './permissions';
@@ -71,6 +72,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           await logoutApi();
           authService.removeToken();
+          queryClient.clear();
           set({ user: null, isAuthenticated: false });
         } catch (error) {
           console.error('Logout error:', error);
@@ -83,6 +85,7 @@ export const useAuthStore = create<AuthState>()(
 
       clearAuth: () => {
         authService.removeToken();
+        queryClient.clear();
         set({ user: null, isAuthenticated: false });
       },
 
