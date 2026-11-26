@@ -92,12 +92,6 @@ export class CreateQARecordDto {
   @IsEnum(QAGeneratedBy)
   generatedBy?: QAGeneratedBy;
 
-  @ApiPropertyOptional({ maxLength: 100 })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  aiModel?: string;
-
   @ApiPropertyOptional({
     type: 'object',
     additionalProperties: true,

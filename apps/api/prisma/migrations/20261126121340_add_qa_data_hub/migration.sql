@@ -30,7 +30,6 @@ CREATE TABLE "qa_records" (
     "question" TEXT NOT NULL,
     "answer" TEXT NOT NULL,
     "generated_by" "QAGeneratedBy" NOT NULL DEFAULT 'AI',
-    "ai_model" VARCHAR(100),
     "rating" "QAFeedbackRating",
     "feedback_reason" VARCHAR(50),
     "feedback_comment" TEXT,

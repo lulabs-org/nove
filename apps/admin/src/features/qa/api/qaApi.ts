@@ -38,7 +38,6 @@ export interface QARecord {
   question: string;
   answer: string;
   generatedBy: QAGeneratedBy;
-  aiModel: string | null;
   rating: QAFeedbackRating | null;
   citations: QACitation[];
   createdAt: string;
@@ -71,7 +70,6 @@ export interface CreateRecordInput {
   question: string;
   answer: string;
   generatedBy?: QAGeneratedBy;
-  aiModel?: string;
   citations?: Array<{
     sourceType: string;
     sourceId: string;

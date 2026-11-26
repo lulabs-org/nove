@@ -141,12 +141,6 @@ export class QARecordRepository {
           ...(data.generatedBy !== undefined
             ? { generatedBy: data.generatedBy }
             : {}),
-          ...(data.generatedBy !== undefined &&
-          data.generatedBy !== QAGeneratedBy.AI
-            ? { aiModel: null }
-            : data.aiModel !== undefined
-              ? { aiModel: data.aiModel?.trim() || null }
-              : {}),
           ...(data.metadata !== undefined
             ? { metadata: data.metadata as Prisma.InputJsonValue }
             : {}),
@@ -218,10 +212,6 @@ export class QARecordRepository {
       question: data.question.trim(),
       answer: data.answer.trim(),
       generatedBy: data.generatedBy ?? QAGeneratedBy.AI,
-      aiModel:
-        (data.generatedBy ?? QAGeneratedBy.AI) === QAGeneratedBy.AI
-          ? data.aiModel?.trim() || null
-          : null,
       metadata: (data.metadata ?? {}) as Prisma.InputJsonValue,
       citations: {
         create: (data.citations ?? []).map((citation) =>

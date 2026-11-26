@@ -46,7 +46,6 @@ model QARecord {
   question         String            @db.Text
   answer           String            @db.Text
   generatedBy      QAGeneratedBy     @default(AI) @map("generated_by")
-  aiModel          String?           @map("ai_model") @db.VarChar(100)
   rating           QAFeedbackRating?
   feedbackReason   String?           @map("feedback_reason") @db.VarChar(50)
   feedbackComment  String?           @map("feedback_comment") @db.Text
