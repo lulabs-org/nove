@@ -7,6 +7,7 @@ import message from 'antd/es/message';
 import Alert from 'antd/es/alert';
 import Descriptions from 'antd/es/descriptions';
 import Tag from 'antd/es/tag';
+import theme from 'antd/es/theme';
 import { CheckCircleFilled, CheckOutlined, CopyOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useAuth } from '../../../../shared/hooks/useAuth';
@@ -30,6 +31,7 @@ export function CreateApiKeyModal({
   result,
   onComplete,
 }: CreateApiKeyModalProps) {
+  const { token } = theme.useToken();
   const [form] = Form.useForm();
   const [copied, setCopied] = useState(false);
   const { user } = useAuth();
@@ -94,20 +96,20 @@ export function CreateApiKeyModal({
       {result ? (
         <div style={{ padding: '8px 0 4px' }}>
           <div style={{ textAlign: 'center', marginBottom: 20 }}>
-            <CheckCircleFilled style={{ color: '#52c41a', fontSize: 48 }} />
+            <CheckCircleFilled style={{ color: token.colorSuccess, fontSize: 48 }} />
             <div style={{ marginTop: 10, fontSize: 20, fontWeight: 600 }}>API Key 创建成功</div>
-            <div style={{ marginTop: 4, color: '#666' }}>现在可以使用此密钥访问已授权的服务</div>
+            <div style={{ marginTop: 4, color: token.colorTextSecondary }}>现在可以使用此密钥访问已授权的服务</div>
           </div>
 
           <div
             style={{
               padding: 16,
-              backgroundColor: '#f0f7ff',
-              border: '1px solid #91caff',
+              backgroundColor: token.colorPrimaryBg,
+              border: `1px solid ${token.colorPrimaryBorder}`,
               borderRadius: 8,
             }}
           >
-            <div style={{ marginBottom: 8, color: '#666', fontSize: 12, fontWeight: 500 }}>
+            <div style={{ marginBottom: 8, color: token.colorTextSecondary, fontSize: 12, fontWeight: 500 }}>
               API Key
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

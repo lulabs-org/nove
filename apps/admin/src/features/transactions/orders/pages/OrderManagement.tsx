@@ -14,6 +14,7 @@ import Table from 'antd/es/table';
 import Tag from 'antd/es/tag';
 import Tooltip from 'antd/es/tooltip';
 import type { TableProps } from 'antd/es/table';
+import theme from 'antd/es/theme';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
@@ -179,6 +180,7 @@ function buildPayload(values: OrderFormValues): CreateOrder {
 }
 
 export function OrderManagement() {
+  const { token } = theme.useToken();
   const [filters, setFilters] = useState<TableQueryParams>({
     page: 1,
     pageSize: 10,
@@ -394,9 +396,9 @@ export function OrderManagement() {
       render: (_: unknown, record) => (
         <Space direction="vertical" size={2}>
           <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{record.orderCode}</span>
-          <span style={{ color: '#64748b', fontSize: 12 }}>{record.orderNumber}</span>
+          <span style={{ color: token.colorTextSecondary, fontSize: 12 }}>{record.orderNumber}</span>
           {record.externalId && (
-            <span style={{ color: '#94a3b8', fontSize: 12 }}>{record.externalId}</span>
+            <span style={{ color: token.colorTextTertiary, fontSize: 12 }}>{record.externalId}</span>
           )}
         </Space>
       ),
@@ -408,7 +410,7 @@ export function OrderManagement() {
       render: (_: unknown, record) => (
         <Space direction="vertical" size={2}>
           <span>{record.productName || record.product?.name || '-'}</span>
-          <span style={{ color: '#64748b', fontSize: 12 }}>
+          <span style={{ color: token.colorTextSecondary, fontSize: 12 }}>
             {[record.email, record.phone].filter(Boolean).join(' / ') || '-'}
           </span>
         </Space>
@@ -440,7 +442,7 @@ export function OrderManagement() {
       render: (_: unknown, record) => (
         <Space direction="vertical" size={2}>
           <span>{record.paymentProvider || '-'}</span>
-          <span style={{ color: '#64748b', fontSize: 12 }}>{formatDateTime(record.paidAt)}</span>
+          <span style={{ color: token.colorTextSecondary, fontSize: 12 }}>{formatDateTime(record.paidAt)}</span>
         </Space>
       ),
     },

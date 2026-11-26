@@ -30,7 +30,7 @@
 .tracking-report-markdown {
   max-height: 480px;
   overflow: auto;
-  color: #1f2329;
+  color: var(--ant-color-text);
   font-size: 14px;
   line-height: 1.75;
   overflow-wrap: anywhere;
@@ -49,14 +49,14 @@
 .tracking-report-markdown h3,
 .tracking-report-markdown h4 {
   margin: 20px 0 10px;
-  color: #1f2329;
+  color: var(--ant-color-text);
   font-weight: 600;
   line-height: 1.35;
 }
 
 .tracking-report-markdown h1 {
   padding-bottom: 10px;
-  border-bottom: 1px solid #e5e6eb;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
   font-size: 22px;
 }
 
@@ -92,15 +92,15 @@
 
 .tracking-report-markdown blockquote {
   padding: 10px 14px;
-  border-left: 3px solid #3370ff;
-  background: #f6f8ff;
-  color: #4e5969;
+  border-left: 3px solid var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-text-secondary);
 }
 
 .tracking-report-markdown code {
   padding: 2px 5px;
   border-radius: 4px;
-  background: #f2f3f5;
+  background: var(--ant-color-fill-tertiary);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.9em;
 }
@@ -109,8 +109,8 @@
   overflow-x: auto;
   padding: 12px 14px;
   border-radius: 6px;
-  background: #1f2329;
-  color: #f6f7f9;
+  background: var(--ant-color-bg-spotlight);
+  color: var(--ant-color-text-light-solid);
 }
 
 .tracking-report-markdown pre code {
@@ -129,17 +129,17 @@
 .tracking-report-markdown th,
 .tracking-report-markdown td {
   padding: 8px 10px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid var(--ant-color-border-secondary);
   text-align: left;
 }
 
 .tracking-report-markdown th {
-  background: #f6f7f9;
+  background: var(--ant-color-fill-tertiary);
   font-weight: 600;
 }
 
 .tracking-report-markdown a {
-  color: #1677ff;
+  color: var(--ant-color-primary);
 }
 
 .tracking-report-markdown img {
@@ -150,5 +150,5 @@
 .tracking-report-markdown hr {
   margin: 20px 0;
   border: 0;
-  border-top: 1px solid #e5e6eb;
+  border-top: 1px solid var(--ant-color-border-secondary);
 }

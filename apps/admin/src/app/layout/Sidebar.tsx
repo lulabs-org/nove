@@ -10,6 +10,7 @@
  */
 
 import Menu from 'antd/es/menu';
+import theme from 'antd/es/theme';
 import type { RouteConfig } from '../../shared/types';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd/es/menu';
@@ -22,8 +23,6 @@ interface SidebarProps {
   routes: RouteConfig[];
   collapsed?: boolean;
 }
-
-export const SIDEBAR_BACKGROUND = '#f5f6f8';
 
 function findActiveParentKeys(
   routes: RouteConfig[],
@@ -42,6 +41,7 @@ function findActiveParentKeys(
 }
 
 export function Sidebar({ routes, collapsed }: SidebarProps) {
+  const { token } = theme.useToken();
   const location = useLocation();
   const navigate = useNavigate();
   const { checkPermission } = useAuth();
@@ -111,7 +111,7 @@ export function Sidebar({ routes, collapsed }: SidebarProps) {
       triggerSubMenuAction="hover"
       subMenuOpenDelay={0.12}
       subMenuCloseDelay={0.18}
-      style={{ height: '100%', borderRight: 0, background: SIDEBAR_BACKGROUND }}
+      style={{ height: '100%', borderRight: 0, background: token.colorBgLayout }}
     />
   );
 }

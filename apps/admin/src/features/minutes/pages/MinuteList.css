@@ -17,8 +17,8 @@
   margin-bottom: 12px;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #f0f5ff;
-  color: #526079;
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-text-secondary);
 }
 
 .minute-meeting-cell {
@@ -33,15 +33,15 @@
   overflow: hidden;
   justify-content: flex-start;
   text-overflow: ellipsis;
-  color: #1f2937;
+  color: var(--ant-color-text);
   font-weight: 600;
 }
 
 .minute-meeting-cell .ant-btn:hover {
-  color: #1677ff;
+  color: var(--ant-color-primary);
 }
 
 .minute-meeting-cell > span {
-  color: #64748b;
+  color: var(--ant-color-text-secondary);
   font-size: 12px;
 }

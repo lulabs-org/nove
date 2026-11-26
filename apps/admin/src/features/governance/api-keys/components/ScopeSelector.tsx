@@ -4,6 +4,7 @@ import Checkbox from 'antd/es/checkbox';
 import Input from 'antd/es/input';
 import Space from 'antd/es/space';
 import Tag from 'antd/es/tag';
+import theme from 'antd/es/theme';
 
 interface ScopeSelectorProps {
   value?: string[];
@@ -16,6 +17,7 @@ function getScopeGroup(scope: string) {
 }
 
 export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorProps) {
+  const { token } = theme.useToken();
   const [keyword, setKeyword] = useState('');
   const selectedScopes = useMemo(() => new Set(value), [value]);
   const availableScopes = useMemo(
@@ -51,10 +53,10 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
   return (
     <div
       style={{
-        border: '1px solid #d9d9d9',
+        border: `1px solid ${token.colorBorder}`,
         borderRadius: 8,
         overflow: 'hidden',
-        background: '#fff',
+        background: token.colorBgContainer,
       }}
     >
       <div
@@ -63,8 +65,8 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
           display: 'flex',
           gap: 8,
           alignItems: 'center',
-          borderBottom: '1px solid #f0f0f0',
-          background: '#fafafa',
+          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+          background: token.colorFillQuaternary,
         }}
       >
         <Input
@@ -86,13 +88,13 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
         </Button>
       </div>
 
-      <div style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0' }}>
+      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${token.colorBorderSecondary}` }}>
         <Space size={6}>
-          <span style={{ color: '#666' }}>已选择</span>
+          <span style={{ color: token.colorTextSecondary }}>已选择</span>
           <Tag color="blue" style={{ marginInlineEnd: 0 }}>
             {value.length}
           </Tag>
-          <span style={{ color: '#999' }}>/ {availableScopes.length} 项</span>
+          <span style={{ color: token.colorTextTertiary }}>/ {availableScopes.length} 项</span>
         </Space>
       </div>
 
@@ -109,7 +111,7 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
                 style={{ fontWeight: 600, marginBottom: 8 }}
               >
                 {group}
-                <span style={{ marginLeft: 6, color: '#999', fontWeight: 400 }}>
+                <span style={{ marginLeft: 6, color: token.colorTextTertiary, fontWeight: 400 }}>
                   {selectedCount}/{scopes.length}
                 </span>
               </Checkbox>
@@ -136,7 +138,7 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
         })}
 
         {visibleScopes.length === 0 && (
-          <div style={{ padding: 24, textAlign: 'center', color: '#999' }}>没有匹配的权限</div>
+          <div style={{ padding: 24, textAlign: 'center', color: token.colorTextTertiary }}>没有匹配的权限</div>
         )}
       </div>
     </div>
