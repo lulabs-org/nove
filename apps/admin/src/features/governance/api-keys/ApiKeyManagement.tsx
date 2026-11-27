@@ -158,7 +158,7 @@ export function ApiKeyManagement() {
       dataIndex: 'expiresAt',
       key: 'expiresAt',
       render: (expiresAt: string | null) => {
-        if (!expiresAt) return <span style={{ color: '#999' }}>永不过期</span>;
+        if (!expiresAt) return <span style={{ color: 'var(--ant-color-text-tertiary)' }}>永不过期</span>;
         return new Date(expiresAt).toLocaleString('zh-CN');
       },
     },
@@ -167,7 +167,7 @@ export function ApiKeyManagement() {
       dataIndex: 'lastUsedAt',
       key: 'lastUsedAt',
       render: (lastUsedAt: string | null) => {
-        if (!lastUsedAt) return <span style={{ color: '#999' }}>未使用</span>;
+        if (!lastUsedAt) return <span style={{ color: 'var(--ant-color-text-tertiary)' }}>未使用</span>;
         return new Date(lastUsedAt).toLocaleString('zh-CN');
       },
     },

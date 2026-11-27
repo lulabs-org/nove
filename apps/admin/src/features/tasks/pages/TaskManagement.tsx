@@ -475,7 +475,7 @@ export function TaskManagement() {
               <Tooltip title={`Cron：${record.cron || '-'}`}>
                 <span>{describeCronExpression(record.cron)}</span>
               </Tooltip>
-              <span style={{ color: '#8c8c8c', fontSize: 12 }}>
+              <span style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 12 }}>
                 {record.timezone || 'Asia/Shanghai'}
               </span>
             </Space>
@@ -493,7 +493,7 @@ export function TaskManagement() {
       render: (lastError: string | null) =>
         lastError ? (
           <Tooltip title={lastError}>
-            <span style={{ color: '#cf1322' }}>{lastError}</span>
+            <span style={{ color: 'var(--ant-red-7)' }}>{lastError}</span>
           </Tooltip>
         ) : (
           '-'

@@ -394,16 +394,16 @@ export function DrivePermissionModal({ node, space, open, onClose }: DrivePermis
             <Popover
               title={
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
-                  <InfoCircleOutlined style={{ color: '#2563eb' }} />
+                  <InfoCircleOutlined style={{ color: 'var(--ant-color-primary)' }} />
                   <span>权限判定规则说明</span>
                 </div>
               }
               content={
-                <div style={{ maxWidth: 280, fontSize: 13, lineHeight: 1.6, color: '#475569' }}>
+                <div style={{ maxWidth: 280, fontSize: 13, lineHeight: 1.6, color: 'var(--ant-color-text-secondary)' }}>
                   <div style={{ marginBottom: 6 }}>• 组织成员默认具备基础只读与查看权限。</div>
                   <div>
                     • 若配置了{' '}
-                    <span style={{ color: '#dc2626', fontWeight: 600 }}>「显式拒绝 (DENY)」</span>
+                    <span style={{ color: 'var(--ant-color-error)', fontWeight: 600 }}>「显式拒绝 (DENY)」</span>
                     ，其优先级高于任何允许或继承规则，将直接阻断对应操作。
                   </div>
                 </div>
@@ -417,7 +417,7 @@ export function DrivePermissionModal({ node, space, open, onClose }: DrivePermis
                   shape="circle"
                   size="small"
                   className="drive-perm-help-btn"
-                  icon={<QuestionCircleOutlined style={{ fontSize: 14, color: '#94a3b8' }} />}
+                  icon={<QuestionCircleOutlined style={{ fontSize: 14, color: 'var(--ant-color-text-tertiary)' }} />}
                   aria-label="查看权限判定规则说明"
                 />
               </Tooltip>
@@ -434,7 +434,7 @@ export function DrivePermissionModal({ node, space, open, onClose }: DrivePermis
       <div className="drive-perm-section">
         <div className="drive-perm-section-title">
           <span>新增授权规则</span>
-          <SettingOutlined style={{ color: '#94a3b8' }} />
+          <SettingOutlined style={{ color: 'var(--ant-color-text-tertiary)' }} />
         </div>
 
         {/* 1. Principal Type & Selector */}
@@ -532,12 +532,12 @@ export function DrivePermissionModal({ node, space, open, onClose }: DrivePermis
             buttonStyle="solid"
           >
             <Radio.Button value="ALLOW">
-              <span style={{ color: effect === 'ALLOW' ? '#fff' : '#16a34a' }}>
+              <span style={{ color: effect === 'ALLOW' ? 'var(--ant-color-text-light-solid)' : 'var(--ant-color-success)' }}>
                 <CheckCircleOutlined /> 允许 (ALLOW)
               </span>
             </Radio.Button>
             <Radio.Button value="DENY">
-              <span style={{ color: effect === 'DENY' ? '#fff' : '#dc2626' }}>
+              <span style={{ color: effect === 'DENY' ? 'var(--ant-color-text-light-solid)' : 'var(--ant-color-error)' }}>
                 <StopOutlined /> 显式拒绝 (DENY)
               </span>
             </Radio.Button>
@@ -548,7 +548,7 @@ export function DrivePermissionModal({ node, space, open, onClose }: DrivePermis
         <div className="drive-perm-form-item">
           <div className="drive-perm-form-label">
             <span>权限范围 (Actions)</span>
-            <span style={{ fontSize: 11, color: '#94a3b8' }}>已选 {actions.length} 项</span>
+            <span style={{ fontSize: 11, color: 'var(--ant-color-text-tertiary)' }}>已选 {actions.length} 项</span>
           </div>
 
           <div className="drive-perm-presets">
@@ -615,7 +615,7 @@ export function DrivePermissionModal({ node, space, open, onClose }: DrivePermis
         </div>
 
         {loadingGrants ? (
-          <div style={{ textAlign: 'center', padding: '24px 0', color: '#64748b' }}>
+          <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--ant-color-text-secondary)' }}>
             <Spin />
             <div style={{ marginTop: 8, fontSize: 13 }}>正在加载权限规则...</div>
           </div>

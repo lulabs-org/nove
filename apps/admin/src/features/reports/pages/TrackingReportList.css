@@ -21,7 +21,7 @@
 }
 
 .tracking-report-period__cadence {
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--ant-color-text-tertiary);
   font-size: 12px;
 }
 

@@ -295,14 +295,14 @@ export function ProductManagement() {
           <ProjectCoverAvatar reference={record.imageUrl} />
           <Space orientation="vertical" size={1}>
             <span style={{ fontWeight: 600 }}>{record.name}</span>
-            <span style={{ color: '#64748b', fontFamily: 'monospace', fontSize: 12 }}>
+            <span style={{ color: 'var(--ant-color-text-secondary)', fontFamily: 'monospace', fontSize: 12 }}>
               {record.productCode}
             </span>
             {record.shortDescription ? (
               <Tooltip title={record.shortDescription}>
                 <span
                   style={{
-                    color: '#94a3b8',
+                    color: 'var(--ant-color-text-tertiary)',
                     fontSize: 12,
                     maxWidth: 210,
                     overflow: 'hidden',
@@ -336,7 +336,7 @@ export function ProductManagement() {
         <Space orientation="vertical" size={0}>
           <span>{formatMoney(record.price, record.currency)}</span>
           {record.originalPrice !== null ? (
-            <span style={{ color: '#94a3b8', fontSize: 12, textDecoration: 'line-through' }}>
+            <span style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 12, textDecoration: 'line-through' }}>
               {formatMoney(record.originalPrice, record.currency)}
             </span>
           ) : null}
@@ -360,7 +360,7 @@ export function ProductManagement() {
       render: (_value: number, record) => (
         <Space orientation="vertical" size={0}>
           <span>销量 {record.salesCount}</span>
-          <span style={{ color: '#64748b', fontSize: 12 }}>
+          <span style={{ color: 'var(--ant-color-text-secondary)', fontSize: 12 }}>
             浏览 {record.viewCount} · {record.rating === null ? '暂无评分' : `${record.rating} 分`}
           </span>
         </Space>

@@ -116,7 +116,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       dataIndex: 'baseSalaryAmount',
       key: 'baseSalaryAmount',
       render: (val: number) => (
-        <span style={{ color: '#722ed1', fontWeight: 500 }}>¥{(val / 100).toFixed(2)}</span>
+        <span style={{ color: 'var(--ant-purple)', fontWeight: 500 }}>¥{(val / 100).toFixed(2)}</span>
       ),
     },
     {
@@ -124,7 +124,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       dataIndex: 'commissionAmount',
       key: 'commissionAmount',
       render: (val: number) => (
-        <span style={{ color: '#52c41a', fontWeight: 500 }}>¥{(val / 100).toFixed(2)}</span>
+        <span style={{ color: 'var(--ant-color-success)', fontWeight: 500 }}>¥{(val / 100).toFixed(2)}</span>
       ),
     },
     {
@@ -133,9 +133,9 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       key: 'bonusAmount',
       render: (val: number) =>
         val > 0 ? (
-          <span style={{ color: '#fa8c16', fontWeight: 500 }}>+¥{(val / 100).toFixed(2)}</span>
+          <span style={{ color: 'var(--ant-color-warning)', fontWeight: 500 }}>+¥{(val / 100).toFixed(2)}</span>
         ) : (
-          <span style={{ color: '#cbd5e1' }}>-</span>
+          <span style={{ color: 'var(--ant-color-text-quaternary)' }}>-</span>
         ),
     },
     {
@@ -144,9 +144,9 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       key: 'subsidyAmount',
       render: (val: number) =>
         val > 0 ? (
-          <span style={{ color: '#13c2c2', fontWeight: 500 }}>+¥{(val / 100).toFixed(2)}</span>
+          <span style={{ color: 'var(--ant-cyan)', fontWeight: 500 }}>+¥{(val / 100).toFixed(2)}</span>
         ) : (
-          <span style={{ color: '#cbd5e1' }}>-</span>
+          <span style={{ color: 'var(--ant-color-text-quaternary)' }}>-</span>
         ),
     },
     {
@@ -155,9 +155,9 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       key: 'deductionAmount',
       render: (val: number) =>
         val > 0 ? (
-          <span style={{ color: '#ff4d4f', fontWeight: 500 }}>-¥{(val / 100).toFixed(2)}</span>
+          <span style={{ color: 'var(--ant-color-error)', fontWeight: 500 }}>-¥{(val / 100).toFixed(2)}</span>
         ) : (
-          <span style={{ color: '#cbd5e1' }}>-</span>
+          <span style={{ color: 'var(--ant-color-text-quaternary)' }}>-</span>
         ),
     },
     {
@@ -165,7 +165,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       dataIndex: 'totalGrossAmount',
       key: 'totalGrossAmount',
       render: (val: number) => (
-        <span style={{ color: '#1677ff', fontWeight: 700, fontFamily: 'monospace', fontSize: 14 }}>
+        <span style={{ color: 'var(--ant-color-primary)', fontWeight: 700, fontFamily: 'monospace', fontSize: 14 }}>
           ¥{(val / 100).toFixed(2)}
         </span>
       ),
@@ -175,13 +175,13 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       key: 'split',
       render: (_: unknown, r: HistoricalMonthPoint) => (
         <div style={{ fontSize: 12 }}>
-          <div style={{ color: '#64748b' }}>已发: ¥{(r.settledAmount / 100).toFixed(2)}</div>
+          <div style={{ color: 'var(--ant-color-text-secondary)' }}>已发: ¥{(r.settledAmount / 100).toFixed(2)}</div>
           {r.pendingAmount > 0 ? (
-            <div style={{ color: '#fa8c16', fontWeight: 600 }}>
+            <div style={{ color: 'var(--ant-color-warning)', fontWeight: 600 }}>
               待发: ¥{(r.pendingAmount / 100).toFixed(2)}
             </div>
           ) : (
-            <div style={{ color: '#52c41a' }}>已结清</div>
+            <div style={{ color: 'var(--ant-color-success)' }}>已结清</div>
           )}
         </div>
       ),
@@ -207,7 +207,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       {/* 顶部个人控制卡片 */}
       <div className="profit-toolbar-card">
         <Space size="middle" wrap>
-          <span style={{ fontWeight: 600, color: '#1e293b', fontSize: 13 }}>聚焦透视员工：</span>
+          <span style={{ fontWeight: 600, color: 'var(--ant-color-text)', fontSize: 13 }}>聚焦透视员工：</span>
           <Select
             showSearch
             value={selectedMemberId}
@@ -229,7 +229,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                 {selectedMember.role || '员工'}
               </Tag>
               {selectedMember.department && (
-                <span style={{ fontSize: 12, color: '#64748b' }}>
+                <span style={{ fontSize: 12, color: 'var(--ant-color-text-secondary)' }}>
                   部门：{selectedMember.department}
                 </span>
               )}
@@ -239,7 +239,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
 
         <Space size="middle" wrap>
           <Space size="small">
-            <span style={{ fontSize: 12, color: '#64748b' }}>统计周期：</span>
+            <span style={{ fontSize: 12, color: 'var(--ant-color-text-secondary)' }}>统计周期：</span>
             <Segmented
               size="small"
               value={monthsCount}
@@ -273,7 +273,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
               <div
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
               >
-                <span style={{ fontWeight: 600, color: '#1e293b' }}>
+                <span style={{ fontWeight: 600, color: 'var(--ant-color-text)' }}>
                   {chartMode === 'STACKED'
                     ? `${selectedMember?.name || '员工'} · 各月薪资板块构成堆叠柱状图`
                     : `${selectedMember?.name || '员工'} · 过往月份实发总薪酬走势折线图`}
@@ -302,14 +302,14 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                           y1={y}
                           x2={chartWidth - paddingX}
                           y2={y}
-                          stroke="#e2e8f0"
+                          style={{ stroke: 'var(--ant-color-border-secondary)' }}
                           strokeDasharray="4 4"
                         />
                         <text
                           x={paddingX - 10}
                           y={y + 4}
                           textAnchor="end"
-                          fill="#94a3b8"
+                          style={{ fill: 'var(--ant-color-text-tertiary)' }}
                           fontSize="11"
                           fontFamily="monospace"
                         >
@@ -361,7 +361,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                                 cx={x + barWidth / 2}
                                 cy={paddingY + innerHeight}
                                 r={3}
-                                fill="#cbd5e1"
+                                style={{ fill: 'var(--ant-color-text-quaternary)' }}
                               />
                             )}
 
@@ -372,7 +372,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                                 y={yBase}
                                 width={barWidth}
                                 height={hBase}
-                                fill="#722ed1"
+                                style={{ fill: 'var(--ant-purple)' }}
                                 rx={hComm === 0 && hBonus === 0 && hSubsidy === 0 ? 4 : 0}
                               />
                             )}
@@ -383,7 +383,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                                 y={yComm}
                                 width={barWidth}
                                 height={hComm}
-                                fill="#52c41a"
+                                style={{ fill: 'var(--ant-color-success)' }}
                                 rx={hBonus === 0 && hSubsidy === 0 ? 4 : 0}
                               />
                             )}
@@ -394,7 +394,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                                 y={yBonus}
                                 width={barWidth}
                                 height={hBonus}
-                                fill="#fa8c16"
+                                style={{ fill: 'var(--ant-color-warning)' }}
                                 rx={hSubsidy === 0 ? 4 : 0}
                               />
                             )}
@@ -405,7 +405,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                                 y={ySubsidy}
                                 width={barWidth}
                                 height={hSubsidy}
-                                fill="#13c2c2"
+                                style={{ fill: 'var(--ant-cyan)' }}
                                 rx={4}
                               />
                             )}
@@ -416,7 +416,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                               y={paddingY + innerHeight + 20}
                               textAnchor="middle"
                               fontSize="12"
-                              fill={isHover ? '#1677ff' : '#64748b'}
+                              style={{ fill: isHover ? 'var(--ant-color-primary)' : 'var(--ant-color-text-secondary)' }}
                               fontWeight={isHover ? 700 : 500}
                             >
                               {m.label}
@@ -449,15 +449,15 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                           <>
                             <defs>
                               <linearGradient id="singleTrendGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#1677ff" stopOpacity="0.25" />
-                                <stop offset="100%" stopColor="#1677ff" stopOpacity="0.0" />
+                                <stop offset="0%" style={{ stopColor: 'var(--ant-color-primary)' }} stopOpacity="0.25" />
+                                <stop offset="100%" style={{ stopColor: 'var(--ant-color-primary)' }} stopOpacity="0.0" />
                               </linearGradient>
                             </defs>
                             <path d={areaD} fill="url(#singleTrendGrad)" />
                             <path
                               d={pathD}
                               fill="none"
-                              stroke="#1677ff"
+                              style={{ stroke: 'var(--ant-color-primary)' }}
                               strokeWidth="3"
                               strokeLinecap="round"
                             />
@@ -474,8 +474,12 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                                     cx={p.x}
                                     cy={p.y}
                                     r={isHover ? 6 : 4}
-                                    fill={isHover ? '#1677ff' : '#ffffff'}
-                                    stroke="#1677ff"
+                                    style={{
+                                      fill: isHover
+                                        ? 'var(--ant-color-primary)'
+                                        : 'var(--ant-color-bg-container)',
+                                      stroke: 'var(--ant-color-primary)',
+                                    }}
                                     strokeWidth="2.5"
                                   />
                                   <text
@@ -483,7 +487,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                                     y={paddingY + innerHeight + 20}
                                     textAnchor="middle"
                                     fontSize="12"
-                                    fill={isHover ? '#1677ff' : '#64748b'}
+                                    style={{ fill: isHover ? 'var(--ant-color-primary)' : 'var(--ant-color-text-secondary)' }}
                                     fontWeight={isHover ? 700 : 500}
                                   >
                                     {p.m.label}
@@ -503,37 +507,37 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                   <div className="profit-chart-tooltip">
                     <div className="profit-tooltip-header">
                       <span>{hoveredMonth.month} 工资账期</span>
-                      <span style={{ color: '#1677ff', fontFamily: 'monospace' }}>
+                      <span style={{ color: 'var(--ant-color-primary)', fontFamily: 'monospace' }}>
                         实发: ¥{(hoveredMonth.totalGrossAmount / 100).toFixed(2)}
                       </span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                       <div className="profit-tooltip-row">
-                        <span style={{ color: '#722ed1' }}>● 固定底薪/课酬:</span>
+                        <span style={{ color: 'var(--ant-purple)' }}>● 固定底薪/课酬:</span>
                         <span style={{ fontFamily: 'monospace' }}>
                           ¥{(hoveredMonth.baseSalaryAmount / 100).toFixed(2)}
                         </span>
                       </div>
                       <div className="profit-tooltip-row">
-                        <span style={{ color: '#52c41a' }}>● 订单提成:</span>
+                        <span style={{ color: 'var(--ant-color-success)' }}>● 订单提成:</span>
                         <span style={{ fontFamily: 'monospace' }}>
                           ¥{(hoveredMonth.commissionAmount / 100).toFixed(2)}
                         </span>
                       </div>
                       <div className="profit-tooltip-row">
-                        <span style={{ color: '#fa8c16' }}>● 各类奖金:</span>
+                        <span style={{ color: 'var(--ant-color-warning)' }}>● 各类奖金:</span>
                         <span style={{ fontFamily: 'monospace' }}>
                           +¥{(hoveredMonth.bonusAmount / 100).toFixed(2)}
                         </span>
                       </div>
                       <div className="profit-tooltip-row">
-                        <span style={{ color: '#13c2c2' }}>● 福利津贴:</span>
+                        <span style={{ color: 'var(--ant-cyan)' }}>● 福利津贴:</span>
                         <span style={{ fontFamily: 'monospace' }}>
                           +¥{(hoveredMonth.subsidyAmount / 100).toFixed(2)}
                         </span>
                       </div>
                       {hoveredMonth.deductionAmount > 0 && (
-                        <div className="profit-tooltip-row" style={{ color: '#ff4d4f' }}>
+                        <div className="profit-tooltip-row" style={{ color: 'var(--ant-color-error)' }}>
                           <span>● 考勤扣除:</span>
                           <span style={{ fontFamily: 'monospace' }}>
                             -¥{(hoveredMonth.deductionAmount / 100).toFixed(2)}
@@ -546,12 +550,12 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
 
                 {/* 图例 (使用 Ant Design 原生 Badge 组件，规整横排) */}
                 <div className="profit-chart-legend">
-                  <Badge color="#722ed1" text="固定底薪/课酬" />
-                  <Badge color="#52c41a" text="订单提成" />
-                  <Badge color="#fa8c16" text="各类奖金" />
-                  <Badge color="#13c2c2" text="福利津贴" />
-                  <Badge color="#ff4d4f" text="各项扣除" />
-                  <Badge color="#1677ff" text="实发合计" />
+                  <Badge color="var(--ant-purple)" text="固定底薪/课酬" />
+                  <Badge color="var(--ant-color-success)" text="订单提成" />
+                  <Badge color="var(--ant-color-warning)" text="各类奖金" />
+                  <Badge color="var(--ant-cyan)" text="福利津贴" />
+                  <Badge color="var(--ant-color-error)" text="各项扣除" />
+                  <Badge color="var(--ant-color-primary)" text="实发合计" />
                 </div>
               </div>
             )}
@@ -563,8 +567,8 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
           <Card
             title={
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <PieChartOutlined style={{ color: '#722ed1' }} />
-                <span style={{ fontWeight: 600, color: '#1e293b' }}>
+                <PieChartOutlined style={{ color: 'var(--ant-purple)' }} />
+                <span style={{ fontWeight: 600, color: 'var(--ant-color-text)' }}>
                   {selectedMember?.name || '该员工'} · 薪资结构分布
                 </span>
               </div>
@@ -577,7 +581,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
               {/* 底薪 */}
               <div className="profit-structure-item">
                 <div className="profit-structure-header">
-                  <span className="profit-structure-title" style={{ color: '#722ed1' }}>
+                  <span className="profit-structure-title" style={{ color: 'var(--ant-purple)' }}>
                     固定底薪 / 课酬 ({basePercent}%)
                   </span>
                   <span className="profit-structure-amount">
@@ -586,7 +590,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                 </div>
                 <Progress
                   percent={basePercent}
-                  strokeColor="#722ed1"
+                  strokeColor="var(--ant-purple)"
                   showInfo={false}
                   size="small"
                 />
@@ -595,7 +599,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
               {/* 提成 */}
               <div className="profit-structure-item">
                 <div className="profit-structure-header">
-                  <span className="profit-structure-title" style={{ color: '#52c41a' }}>
+                  <span className="profit-structure-title" style={{ color: 'var(--ant-color-success)' }}>
                     订单提成 ({commPercent}%)
                   </span>
                   <span className="profit-structure-amount">
@@ -604,7 +608,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                 </div>
                 <Progress
                   percent={commPercent}
-                  strokeColor="#52c41a"
+                  strokeColor="var(--ant-color-success)"
                   showInfo={false}
                   size="small"
                 />
@@ -613,7 +617,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
               {/* 奖金 */}
               <div className="profit-structure-item">
                 <div className="profit-structure-header">
-                  <span className="profit-structure-title" style={{ color: '#fa8c16' }}>
+                  <span className="profit-structure-title" style={{ color: 'var(--ant-color-warning)' }}>
                     各类奖金 ({bonusPercent}%)
                   </span>
                   <span className="profit-structure-amount">
@@ -622,7 +626,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                 </div>
                 <Progress
                   percent={bonusPercent}
-                  strokeColor="#fa8c16"
+                  strokeColor="var(--ant-color-warning)"
                   showInfo={false}
                   size="small"
                 />
@@ -631,7 +635,7 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
               {/* 津贴 */}
               <div className="profit-structure-item">
                 <div className="profit-structure-header">
-                  <span className="profit-structure-title" style={{ color: '#13c2c2' }}>
+                  <span className="profit-structure-title" style={{ color: 'var(--ant-cyan)' }}>
                     福利津贴 ({subsidyPercent}%)
                   </span>
                   <span className="profit-structure-amount">
@@ -640,19 +644,19 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
                 </div>
                 <Progress
                   percent={subsidyPercent}
-                  strokeColor="#13c2c2"
+                  strokeColor="var(--ant-cyan)"
                   showInfo={false}
                   size="small"
                 />
               </div>
 
               {categoryTotals.deductionAmount > 0 && (
-                <div style={{ paddingTop: 8, borderTop: '1px solid #f1f5f9' }}>
+                <div style={{ paddingTop: 8, borderTop: '1px solid var(--ant-color-border-secondary)' }}>
                   <div
                     style={{
                       display: 'flex',
                       justifyContent: 'space-between',
-                      color: '#ff4d4f',
+                      color: 'var(--ant-color-error)',
                       fontSize: 12,
                       fontWeight: 600,
                     }}
@@ -680,10 +684,10 @@ export const SingleMemberDrilldownView: React.FC<SingleMemberDrilldownViewProps>
       <Card
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontWeight: 600, color: '#1e293b' }}>
+            <span style={{ fontWeight: 600, color: 'var(--ant-color-text)' }}>
               {selectedMember?.name || '该员工'} · 过往月份薪资明细台账
             </span>
-            <span style={{ fontSize: 12, color: '#94a3b8' }}>
+            <span style={{ fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>
               共 {months.length} 个历史月度账期
             </span>
           </div>

@@ -233,7 +233,7 @@ export function PlatformUserManagement() {
       key: 'platform',
       width: 130,
       render: (platform: Platform) => {
-        const info = PLATFORM_LABELS[platform] ?? { label: platform, color: '#8f959e' };
+        const info = PLATFORM_LABELS[platform] ?? { label: platform, color: 'var(--ant-color-text-tertiary)' };
         return (
           <Tag color={info.color} style={{ margin: 0 }}>
             {info.label}
@@ -265,7 +265,7 @@ export function PlatformUserManagement() {
       ellipsis: true,
       render: (val: string) => (
         <Tooltip title={val}>
-          <Text copyable style={{ fontSize: 12, color: '#646a73' }}>
+          <Text copyable style={{ fontSize: 12, color: 'var(--ant-color-text-secondary)' }}>
             {val}
           </Text>
         </Tooltip>
@@ -587,7 +587,7 @@ function DetailPanel({ detail, loading }: { detail: PlatformUserDetail | null; l
   }
 
   const platform = detail.platform as Platform;
-  const platformInfo = PLATFORM_LABELS[platform] ?? { label: platform, color: '#8f959e' };
+  const platformInfo = PLATFORM_LABELS[platform] ?? { label: platform, color: 'var(--ant-color-text-tertiary)' };
 
   return (
     <div className="platform-user-detail">
@@ -644,7 +644,7 @@ function DetailPanel({ detail, loading }: { detail: PlatformUserDetail | null; l
               {detail.user.id && (
                 <Text
                   copyable={{ text: detail.user.id }}
-                  style={{ fontSize: 11, color: '#8f959e' }}
+                  style={{ fontSize: 11, color: 'var(--ant-color-text-tertiary)' }}
                 >
                   {detail.user.id}
                 </Text>

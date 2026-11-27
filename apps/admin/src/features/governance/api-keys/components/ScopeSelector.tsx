@@ -51,10 +51,10 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
   return (
     <div
       style={{
-        border: '1px solid #d9d9d9',
+        border: '1px solid var(--ant-color-border)',
         borderRadius: 8,
         overflow: 'hidden',
-        background: '#fff',
+        background: 'var(--ant-color-bg-container)',
       }}
     >
       <div
@@ -63,8 +63,8 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
           display: 'flex',
           gap: 8,
           alignItems: 'center',
-          borderBottom: '1px solid #f0f0f0',
-          background: '#fafafa',
+          borderBottom: '1px solid var(--ant-color-border-secondary)',
+          background: 'var(--ant-color-fill-quaternary)',
         }}
       >
         <Input
@@ -86,13 +86,13 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
         </Button>
       </div>
 
-      <div style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0' }}>
+      <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
         <Space size={6}>
-          <span style={{ color: '#666' }}>已选择</span>
+          <span style={{ color: 'var(--ant-color-text-secondary)' }}>已选择</span>
           <Tag color="blue" style={{ marginInlineEnd: 0 }}>
             {value.length}
           </Tag>
-          <span style={{ color: '#999' }}>/ {availableScopes.length} 项</span>
+          <span style={{ color: 'var(--ant-color-text-tertiary)' }}>/ {availableScopes.length} 项</span>
         </Space>
       </div>
 
@@ -109,7 +109,7 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
                 style={{ fontWeight: 600, marginBottom: 8 }}
               >
                 {group}
-                <span style={{ marginLeft: 6, color: '#999', fontWeight: 400 }}>
+                <span style={{ marginLeft: 6, color: 'var(--ant-color-text-tertiary)', fontWeight: 400 }}>
                   {selectedCount}/{scopes.length}
                 </span>
               </Checkbox>
@@ -136,7 +136,7 @@ export function ScopeSelector({ value = [], onChange, options }: ScopeSelectorPr
         })}
 
         {visibleScopes.length === 0 && (
-          <div style={{ padding: 24, textAlign: 'center', color: '#999' }}>没有匹配的权限</div>
+          <div style={{ padding: 24, textAlign: 'center', color: 'var(--ant-color-text-tertiary)' }}>没有匹配的权限</div>
         )}
       </div>
     </div>

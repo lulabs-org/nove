@@ -153,9 +153,9 @@ export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalPro
     <Modal
       title={
         <Space>
-          <ClockCircleOutlined style={{ color: '#1677ff' }} />
+          <ClockCircleOutlined style={{ color: 'var(--ant-color-primary)' }} />
           <span>订单权益调整与冻结记录</span>
-          <span style={{ fontSize: 13, color: '#64748b', fontWeight: 'normal' }}>
+          <span style={{ fontSize: 13, color: 'var(--ant-color-text-secondary)', fontWeight: 'normal' }}>
             ({order.orderCode})
           </span>
         </Space>
@@ -188,7 +188,7 @@ export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalPro
             {formatDateTime(order.benefitStart)}
           </Descriptions.Item>
           <Descriptions.Item label="权益结束时间" span={2}>
-            <Text strong style={{ color: '#0958d9' }}>
+            <Text strong style={{ color: 'var(--ant-color-primary-active)' }}>
               {formatDateTime(order.benefitEnd)}
             </Text>
           </Descriptions.Item>
@@ -331,7 +331,7 @@ export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalPro
                     <Space>
                       {getAdjustmentTag(item.type)}
                       {item.days > 0 && <Tag>{`调整 ${item.days} 天`}</Tag>}
-                      <span style={{ fontSize: 12, color: '#94a3b8' }}>
+                      <span style={{ fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>
                         {dayjs(item.createdAt).format('YYYY-MM-DD HH:mm:ss')}
                       </span>
                     </Space>
@@ -339,15 +339,15 @@ export function OrderBenefitModal({ order, open, onClose }: OrderBenefitModalPro
                       <Text type="secondary">到期日变动：</Text>
                       <Text delete>{formatDateTime(item.beforeEnd)}</Text>
                       <span style={{ margin: '0 6px' }}>➔</span>
-                      <Text strong style={{ color: '#0958d9' }}>
+                      <Text strong style={{ color: 'var(--ant-color-primary-active)' }}>
                         {formatDateTime(item.afterEnd)}
                       </Text>
                     </div>
                     {item.reason && (
-                      <div style={{ fontSize: 13, color: '#475569' }}>原因：{item.reason}</div>
+                      <div style={{ fontSize: 13, color: 'var(--ant-color-text-secondary)' }}>原因：{item.reason}</div>
                     )}
                     {item.operator?.name && (
-                      <div style={{ fontSize: 12, color: '#94a3b8' }}>
+                      <div style={{ fontSize: 12, color: 'var(--ant-color-text-tertiary)' }}>
                         操作人：{item.operator.name}
                       </div>
                     )}

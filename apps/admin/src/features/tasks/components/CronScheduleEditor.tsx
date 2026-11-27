@@ -167,7 +167,7 @@ export function CronScheduleEditor({
         style={{
           padding: '10px 12px',
           borderRadius: 8,
-          background: '#f5f5f5',
+          background: 'var(--ant-color-fill-tertiary)',
           fontFamily: 'monospace',
         }}
       >
