@@ -1,0 +1,81 @@
+enum QATargetType {
+  MINUTE
+  DRIVE_FILE
+  PROJECT
+  GLOBAL
+}
+
+enum QAGeneratedBy {
+  AI
+  HUMAN
+  SYSTEM
+}
+
+enum QAFeedbackRating {
+  LIKE
+  DISLIKE
+}
+
+model QASession {
+  id         String       @id @default(cuid())
+  orgId      String       @map("org_id")
+  userId     String       @map("user_id")
+  title      String       @db.VarChar(200)
+  targetType QATargetType @default(GLOBAL) @map("target_type")
+  targetId   String?      @map("target_id")
+  metadata   Json         @default("{}") @db.JsonB
+
+  org     Org        @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user    User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  records QARecord[]
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@index([orgId, userId])
+  @@index([targetType, targetId])
+  @@map("qa_sessions")
+}
+
+model QARecord {
+  id               String            @id @default(cuid())
+  sessionId        String            @map("session_id")
+  session          QASession         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question         String            @db.Text
+  answer           String            @db.Text
+  generatedBy      QAGeneratedBy     @default(AI) @map("generated_by")
+  aiModel          String?           @map("ai_model") @db.VarChar(100)
+  promptTokens     Int?              @map("prompt_tokens")
+  completionTokens Int?              @map("completion_tokens")
+  totalTokens      Int?              @map("total_tokens")
+  latencyMs        Int?              @map("latency_ms")
+  rating           QAFeedbackRating?
+  feedbackReason   String?           @map("feedback_reason") @db.VarChar(50)
+  feedbackComment  String?           @map("feedback_comment") @db.Text
+  metadata         Json              @default("{}") @db.JsonB
+  citations        QACitation[]
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([sessionId, createdAt])
+  @@map("qa_records")
+}
+
+model QACitation {
+  id             String   @id @default(cuid())
+  recordId       String   @map("record_id")
+  record         QARecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  sourceType     String   @map("source_type") @db.VarChar(50)
+  sourceId       String   @map("source_id")
+  title          String?  @db.VarChar(200)
+  location       String?  @db.VarChar(100)
+  snippet        String   @db.Text
+  relevanceScore Float?   @map("relevance_score")
+  metadata       Json     @default("{}") @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([recordId])
+  @@index([sourceType, sourceId])
+  @@map("qa_citations")
+}
