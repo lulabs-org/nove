@@ -10,7 +10,8 @@ import {
   ThunderboltOutlined,
 } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
 import { payslipApi } from './api/payslipApi';
 import { PayslipDetailDrawer } from './PayslipDetailDrawer';
@@ -21,18 +22,29 @@ const { Search } = Input;
 
 export const PayslipList: React.FC = () => {
   const queryClient = useQueryClient();
-  const [selectedMonth, setSelectedMonth] = useState<Dayjs>(dayjs());
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { state } = useLocation();
   const [keyword, setKeyword] = useState<string>('');
 
+  const requestedMonth = searchParams.get('month') ?? '';
+  const selectedMonth = /^[1-9]\d{3}-(0[1-9]|1[0-2])$/.test(requestedMonth)
+    ? dayjs(`${requestedMonth}-01`)
+    : dayjs();
   const monthStr = selectedMonth.format('YYYY-MM');
+  const memberId = searchParams.get('memberId')?.trim() || undefined;
+  const navigationMember = state as { memberId?: string; memberName?: string } | null;
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['profit-sharing-payslips', monthStr, keyword],
-    queryFn: () => payslipApi.list({ month: monthStr, keyword: keyword || undefined }),
+    queryKey: ['profit-sharing-payslips', monthStr, keyword, memberId],
+    queryFn: () => payslipApi.list({ month: monthStr, keyword: keyword || undefined, memberId }),
   });
 
   const items = data?.items || [];
   const summary = data?.summary;
+  const memberName =
+    items[0]?.memberName ||
+    (navigationMember?.memberId === memberId ? navigationMember?.memberName : undefined) ||
+    memberId;
 
   // 抽屉详情状态
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -171,7 +183,7 @@ export const PayslipList: React.FC = () => {
     }
   };
 
-  const hasPendingSalaries = items.some((i) => (i.pendingAmount ?? 0) > 0);
+  const canBatchSettle = !memberId && items.some((i) => (i.pendingAmount ?? 0) > 0);
 
   const columns: ColumnsType<PayslipSummaryItem> = [
     {
@@ -420,7 +432,11 @@ export const PayslipList: React.FC = () => {
               picker="month"
               value={selectedMonth}
               onChange={(date) => {
-                if (date) setSelectedMonth(date);
+                if (date) {
+                  const params = new URLSearchParams(searchParams);
+                  params.set('month', date.format('YYYY-MM'));
+                  setSearchParams(params, { state });
+                }
               }}
               allowClear={false}
               style={{ width: 115, flexShrink: 0 }}
@@ -465,19 +481,35 @@ export const PayslipList: React.FC = () => {
               onConfirm={() => batchSettleMutation.mutate()}
               okText="确认一键发薪"
               cancelText="取消"
-              disabled={!hasPendingSalaries}
+              disabled={!canBatchSettle}
             >
               <Button
                 type="primary"
                 icon={<ThunderboltOutlined />}
                 loading={batchSettleMutation.isPending}
-                disabled={!hasPendingSalaries}
+                disabled={!canBatchSettle}
               >
                 一键全员发薪
               </Button>
             </Popconfirm>
           </Space>
         </div>
+        {memberId && (
+          <Space size="small" style={{ marginTop: 8 }}>
+            <Tag>员工：{memberName}</Tag>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                const params = new URLSearchParams(searchParams);
+                params.delete('memberId');
+                setSearchParams(params);
+              }}
+            >
+              清除员工筛选
+            </Button>
+          </Space>
+        )}
       </Card>
 
       {/* 核心工资条表格：首屏立即可见，支持翻页、穿透明细、加减项调整与逐人发薪 */}
